@@ -2,11 +2,11 @@
 using namespace frc;
 using namespace rev;
 
-void Shooter::ShootPercentOutput(int percent1, int percent2) {
+void Shooter::ShootPercentOutput(double percent1, double percent2) {
   shooterneo_lead.Set(percent1);
   shooterneo_follow.Set(percent2);
 }
-void Shooter::VelocityControl(int lead_velocity, int follow_velocity) {
+void Shooter::VelocityControl(double lead_velocity, double follow_velocity) {
   m_pidController.SetReference(lead_velocity, rev::ControlType::kVelocity);
   m_pidController2.SetReference(follow_velocity, rev::ControlType::kVelocity);
 }

@@ -30,9 +30,9 @@ class Shooter {
 
 public:
   //Takes in the two percent output of the motors and sets them to that output
-  void ShootPercentOutput(int percent1, int percent2);
+  void ShootPercentOutput(double percent1, double percent2);
   //Takes in the two velocities of the motors and sets them to the velocities
-  void VelocityControl(int lead_velocity, int follow_velocity);
+  void VelocityControl(double lead_velocity, double follow_velocity);
   //checks what the velocity of in inputed shooter motor ("Top", "Bottom")
   float VelocityOutput(std::string shooter_motor);
   void DisplayShooterInfo();
