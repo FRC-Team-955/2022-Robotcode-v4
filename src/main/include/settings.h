@@ -23,12 +23,12 @@ constexpr int kultrasonic_port = 0;
 
 namespace DriveConst {
 constexpr int kleft_lead_neo_number = 3;
-constexpr int kright_lead_neo_number = 4;
+constexpr int kright_lead_neo_number = 5;
 constexpr int kleft_follow_neo_number = 2;
-constexpr int kright_follow_neo_number = 5;
+constexpr int kright_follow_neo_number = 6;
 constexpr bool kleft_lead_is_inverted = false;
 constexpr bool kright_lead_is_inverted = true;
-constexpr double kturn_div = 3;
+constexpr double kturn_div = 20;
 } // namespace DriveConst
 
 namespace MechanismConst {
