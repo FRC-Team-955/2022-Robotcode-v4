@@ -25,7 +25,7 @@ class XYalign{
     private:
         DriveBase *drivebase; 
         frc::Joystick joystick{0};
-        BallManager ball_manage;
+        
 
         
 };

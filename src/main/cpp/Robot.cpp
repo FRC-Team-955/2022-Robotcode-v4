@@ -6,6 +6,7 @@
 #include "rev/CANSparkMax.h"
 #include "drivebase.h"
 #include "settings.h"
+#include "xy_align.h"
 
 using namespace rev;
 
@@ -16,6 +17,7 @@ CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
 
 photonlib::PhotonCamera camera{"BallDetect"};
+photonlib::PhotonCamera limecamera{"gloworm"};
 
 void Robot::RobotInit() {
   // frc::CameraServer::StartAutomaticCapture();
@@ -36,7 +38,9 @@ void Robot::TeleopInit() {
 }
 void Robot::TeleopPeriodic() {
   photonlib::PhotonPipelineResult result = camera.GetLatestResult();
+  photonlib::PhotonPipelineResult limeresult = limecamera.GetLatestResult();
   drive -> Drive(result);
+  
 }
 
 void Robot::DisabledInit() {}
