@@ -28,7 +28,7 @@ constexpr int kleft_follow_neo_number = 2;
 constexpr int kright_follow_neo_number = 6;
 constexpr bool kleft_lead_is_inverted = false;
 constexpr bool kright_lead_is_inverted = true;
-constexpr double kturn_div = 3;
+constexpr double kturn_div = 20;
 } // namespace DriveConst
 
 namespace MechanismConst {

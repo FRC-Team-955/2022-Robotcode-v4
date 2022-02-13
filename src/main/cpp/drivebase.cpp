@@ -15,8 +15,8 @@ void DriveBase::Drive(photonlib::PhotonPipelineResult result) {
     if (BallAimbot > 0.2 && ball_detector.BallDetectorX(result) < 10000) {
       std::cout<<"aimbot drive"<<std::endl;
       m_robotDrive.TankDrive(
-        ((ball_detector.BallDetectorX(result)/DriveConst::kturn_div)+0.2),
-        ((ball_detector.BallDetectorX(result)/DriveConst::kturn_div)+0.2)
+        ((ball_detector.BallDetectorX(result)/DriveConst::kturn_div)+0.20),
+        -((ball_detector.BallDetectorX(result)/DriveConst::kturn_div)+0.20)
         );
     } else {
       m_robotDrive.CurvatureDrive(
