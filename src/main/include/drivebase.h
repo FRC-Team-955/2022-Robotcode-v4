@@ -15,7 +15,8 @@ using namespace rev;
 
 class DriveBase {
 public:
-  DriveBase(CANSparkMax *m_leftLeadMotor, CANSparkMax *m_rightLeadMotor, CANSparkMax *m_leftFollowMotor, CANSparkMax *m_rightFollowMotor):m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor){
+  DriveBase(CANSparkMax *m_leftLeadMotor, CANSparkMax *m_rightLeadMotor, CANSparkMax *m_leftFollowMotor, CANSparkMax *m_rightFollowMotor):
+  m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor){
     m_rightFollowMotor->Follow(*m_rightLeadMotor);
     m_leftFollowMotor->Follow(*m_leftLeadMotor);
     m_leftLeadMotor->SetInverted(DriveConst::kleft_lead_is_inverted);

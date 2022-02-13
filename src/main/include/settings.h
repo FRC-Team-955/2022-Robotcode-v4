@@ -34,8 +34,8 @@ constexpr double kturn_div = 20;
 namespace MechanismConst {
 constexpr double kP = 1, kI = 1, kD = 1, kIz = 1, kFF = 1, kMaxOutput = 1,
                  kMinOutput = 1;
-constexpr int shooter_lead_port = 1;
-constexpr int shooter_follow_port = 2;
+constexpr int shooter_top_port = 1;
+constexpr int shooter_bottom_port = 2;
 constexpr int khopper_motor_top_port = 1;
 constexpr int khopper_motor_bottom_port = 2;
 constexpr float kcompressor_warning_pressure = 10;

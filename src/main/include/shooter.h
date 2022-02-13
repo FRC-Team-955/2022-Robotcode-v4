@@ -9,43 +9,51 @@
 using namespace rev;
 
 class Shooter {
-  Shooter(){
-    shooterneo_lead.SetSmartCurrentLimit(40);
-    shooterneo_follow.SetSmartCurrentLimit(40);
-
-    m_pidController.SetP(MechanismConst::kP);
-    m_pidController.SetI(MechanismConst::kI);
-    m_pidController.SetD(MechanismConst::kD);
-    m_pidController.SetFF(MechanismConst::kFF);
-    m_pidController.SetOutputRange(MechanismConst::kMinOutput,
-                                   MechanismConst::kMaxOutput);
-
-    m_pidController2.SetP(MechanismConst::kP);
-    m_pidController2.SetI(MechanismConst::kI);
-    m_pidController2.SetD(MechanismConst::kD);
-    m_pidController2.SetFF(MechanismConst::kFF);
-    m_pidController2.SetOutputRange(MechanismConst::kMinOutput,
-                                    MechanismConst::kMaxOutput);
-  };
 
 public:
+  Shooter(CANSparkMax *shooterneo_top, CANSparkMax *shooterneo_bottom):
+  shooterneo_top(shooterneo_top), shooterneo_bottom(shooterneo_bottom){
+    shooterneo_top->SetSmartCurrentLimit(40);
+    shooterneo_bottom->SetSmartCurrentLimit(40);
+
+    m_pidController = new rev::SparkMaxPIDController(shooterneo_top->GetPIDController());
+    m_pidController2= new rev::SparkMaxPIDController(shooterneo_bottom->GetPIDController());
+  
+    shooterneo_top_encoder = new rev::SparkMaxRelativeEncoder(shooterneo_top->GetEncoder());
+    shooterneo_bottom_encoder= new rev::SparkMaxRelativeEncoder(shooterneo_bottom->GetEncoder());
+
+    m_pidController->SetP(MechanismConst::kP);
+    m_pidController->SetI(MechanismConst::kI);
+    m_pidController->SetD(MechanismConst::kD);
+    m_pidController->SetFF(MechanismConst::kFF);
+    m_pidController->SetOutputRange(MechanismConst::kMinOutput,
+                                   MechanismConst::kMaxOutput);
+
+    m_pidController->SetP(MechanismConst::kP);
+    m_pidController->SetI(MechanismConst::kI);
+    m_pidController->SetD(MechanismConst::kD);
+    m_pidController->SetFF(MechanismConst::kFF);
+    m_pidController->SetOutputRange(MechanismConst::kMinOutput,
+                                    MechanismConst::kMaxOutput);
+  };
   //Takes in the two percent output of the motors and sets them to that output
   void ShootPercentOutput(double percent1, double percent2);
   //Takes in the two velocities of the motors and sets them to the velocities
-  void VelocityControl(double lead_velocity, double follow_velocity);
+  void VelocityControl(double top_velocity, double bottom_velocity);
   //checks what the velocity of in inputed shooter motor ("Top", "Bottom")
   float VelocityOutput(std::string shooter_motor);
   void DisplayShooterInfo();
 
 private:
-  rev::CANSparkMax shooterneo_lead{MechanismConst::shooter_lead_port,
-                                   CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax shooterneo_follow{MechanismConst::shooter_follow_port,
-                                     CANSparkMax::MotorType::kBrushless};
-  rev::SparkMaxPIDController m_pidController =
-      shooterneo_lead.GetPIDController();
-  rev::SparkMaxPIDController m_pidController2 =
-      shooterneo_follow.GetPIDController();
+  CANSparkMax *shooterneo_top;
+  CANSparkMax *shooterneo_bottom;
+
+  rev::SparkMaxPIDController *m_pidController;
+  rev::SparkMaxPIDController *m_pidController2;
+
+  rev::SparkMaxRelativeEncoder *shooterneo_top_encoder;
+  rev::SparkMaxRelativeEncoder *shooterneo_bottom_encoder;
+
 };
 
 #endif

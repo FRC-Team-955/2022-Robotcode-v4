@@ -4,17 +4,27 @@
 
 #include "Robot.h"
 #include "rev/CANSparkMax.h"
+
+#include "shooter.h"
 #include "drivebase.h"
-#include "settings.h"
 #include "xy_align.h"
+
+#include "settings.h"
 
 using namespace rev;
 
 DriveBase *drive;
+Shooter *shooter;
+
+//Drive Neos
 CANSparkMax *m_leftLeadMotor;
 CANSparkMax *m_rightLeadMotor;
 CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
+//Shooter Neos
+CANSparkMax *shooterneo_top;
+CANSparkMax *shooterneo_bottom;
+
 
 photonlib::PhotonCamera camera{"BallDetect"};
 photonlib::PhotonCamera limecamera{"gloworm"};
@@ -34,7 +44,12 @@ void Robot::TeleopInit() {
   m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
+
+  shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
+  shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
+
   drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor);
+  shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
 }
 void Robot::TeleopPeriodic() {
   photonlib::PhotonPipelineResult result = camera.GetLatestResult();
@@ -43,7 +58,16 @@ void Robot::TeleopPeriodic() {
   
 }
 
-void Robot::DisabledInit() {}
+void Robot::DisabledInit() {
+  delete m_leftLeadMotor;
+  delete m_rightLeadMotor;
+  delete m_leftFollowMotor;
+  delete m_rightFollowMotor;
+  delete shooterneo_top;
+  delete shooterneo_bottom;
+  delete shooter;
+  delete drive;
+}
 void Robot::DisabledPeriodic() {}
 
 void Robot::TestInit() {}
