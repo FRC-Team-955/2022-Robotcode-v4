@@ -37,3 +37,8 @@ void DriveBase::DisplayDriveInfo() {
 
 
 }
+
+void DriveBase::DriveTank(float leftWheelInput, float rightWheelInput){
+
+    m_robotDrive.TankDrive(leftWheelInput, rightWheelInput, false);
+}

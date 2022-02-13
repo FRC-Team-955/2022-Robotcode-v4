@@ -24,6 +24,7 @@ public:
   void Drive(photonlib::PhotonPipelineResult result);
   BallDetect ball_detector;
   void DisplayDriveInfo();
+  void DriveTank(float leftWheelInput, float rightWheelInput);
 
 private:
   CANSparkMax *m_leftLeadMotor;
