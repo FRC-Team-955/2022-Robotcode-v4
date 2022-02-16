@@ -7,26 +7,39 @@
 #include <frc/Joystick.h>
 #include "ctre/Phoenix.h"
 
-#include "shooter.h"
-#include "drivebase.h"
 #include "xy_align.h"
+#include "drivebase.h"
+#include "intake.h"
+#include "hopper.h"
+#include "shooter.h"
+#include "ballmanager.h"
 #include "elevator.h"
 
 #include "settings.h"
 
 using namespace rev;
 
-DriveBase *drive;
-Shooter *shooter;
 XYalign *xyalign;
+DriveBase *drive;
+Intake *intake;
+Hopper *hopper;
+Shooter *shooter;
+BallManager *ball_manager;
 Elevator *elevator;
 
-//Drive Neos
+//Drive
 CANSparkMax *m_leftLeadMotor;
 CANSparkMax *m_rightLeadMotor;
 CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
-//Shooter Neos
+//Intake
+TalonSRX *intake_talon;
+Solenoid *intake_solonoid_left;
+Solenoid *intake_solonoid_right;
+//Hopper
+TalonSRX *talon_hopper_top;
+TalonSRX *talon_hopper_bottom;
+//Shooter
 CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
 //Elevator Talon
@@ -65,13 +78,23 @@ void Robot::TeleopInit() {
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor, joystick_0);
   xyalign = new XYalign(drive, joystick_0);
+  //Intake
+  intake_talon = new TalonSRX(MechanismConst::kintake_motor);
+  intake_solonoid_left = new Solenoid{PneumaticsModuleType::CTREPCM, MechanismConst::kintake_solonoid_port_left};
+  intake_solonoid_right = new Solenoid{PneumaticsModuleType::CTREPCM, MechanismConst::kintake_solonoid_port_right};
+  intake = new Intake(intake_talon,intake_solonoid_left,intake_solonoid_right);
+  //Hopper
+  talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
+  talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
+  hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
   //shooter
   shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+  //BallManager
+  ball_manager = new BallManager(intake,hopper,shooter);
   //elevator
   elevator = new Elevator(elevator_motor);
-
   //timer
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
@@ -87,8 +110,24 @@ void Robot::TeleopPeriodic() {
   }
   //driver control
   else{
-    
     drive -> Drive(result);
+
+    if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)){
+      if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
+        ball_manager->Shoot();
+      }
+    }else{
+      //if not shooting
+      if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
+        ball_manager->Reject();
+      }else{
+        //if not rejecting
+        // if(ball_manager->IsFull()){
+        // }
+        // if(joystick_)
+      }
+    }
+
 
     //check if its around time to climb
     if(m_timer_elevator->GetMatchTime()>90_s){

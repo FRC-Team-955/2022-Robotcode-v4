@@ -1,11 +1,12 @@
 #ifndef INTAKE
 #define INTAKE
-#include "settings.h"
+
 #include <ctre/Phoenix.h>
 #include <frc/Joystick.h>
 #include <frc/Solenoid.h>
 #include <iostream>
 
+#include "settings.h"
 
 using namespace frc;
 

@@ -4,7 +4,6 @@
 #include <frc/Timer.h>
 #include <iostream>
 
-
 class ButtonToggle {
 public:
   ButtonToggle() { debounce_period = units::second_t(.1); }

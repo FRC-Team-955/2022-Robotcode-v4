@@ -5,10 +5,12 @@
 #include "rev/CANSparkMax.h"
 #include <frc/Joystick.h>
 #include <frc/drive/DifferentialDrive.h>
-#include "balldetect.h"
 #include <button_toggle.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <cameraserver/CameraServer.h>
+
+#include "balldetect.h"
+
 #include "settings.h"
 
 using namespace rev;

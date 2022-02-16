@@ -6,7 +6,6 @@
 #include <frc/util/Color.h>
 #include <iostream>
 
-
 #include "settings.h"
 
 using namespace rev;

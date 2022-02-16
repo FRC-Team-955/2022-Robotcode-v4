@@ -1,13 +1,16 @@
 #ifndef HOPPER
 #define HOPPER
-#include "settings.h"
+
 #include <algorithm>
 #include <iostream>
 #include <ctre/Phoenix.h>
 
+#include "settings.h"
+
 class Hopper {
 public:
-  Hopper(TalonSRX *talon_hopper_top, TalonSRX *talon_hopper_bottom):talon_hopper_top(talon_hopper_top), talon_hopper_bottom(talon_hopper_bottom) {
+  Hopper(TalonSRX *talon_hopper_top, TalonSRX *talon_hopper_bottom):
+  talon_hopper_top(talon_hopper_top), talon_hopper_bottom(talon_hopper_bottom) {
     talon_hopper_top->TalonSRX::ConfigPeakCurrentLimit(40);
     talon_hopper_bottom->TalonSRX::ConfigPeakCurrentLimit(40);
     talon_hopper_top->TalonSRX::EnableCurrentLimit(true);

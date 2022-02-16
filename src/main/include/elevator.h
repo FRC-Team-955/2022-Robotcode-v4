@@ -1,5 +1,6 @@
 #ifndef ELEVATOR
 #define ELEVATOR
+
 #include <ctre/Phoenix.h>
 #include <frc/DigitalInput.h>
 #include <frc/Joystick.h>

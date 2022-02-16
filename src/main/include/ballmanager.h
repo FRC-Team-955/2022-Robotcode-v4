@@ -19,6 +19,8 @@ using namespace frc;
 
 class BallManager {
 public:
+  BallManager(Intake *intake, Hopper *hopper, Shooter *shooter):
+  intake(intake), hopper(hopper),shooter(shooter){};
   std::string GetHopperState(int position);
   bool Rev(double target_velocity_top, double target_velocity_bottom);
   void MoveIndex();
@@ -35,9 +37,10 @@ private:
   std::string inbetween = "NULL";
 
   ColorSensor color_sensor;
-  Hopper hopper;
-  Shooter shooter;
   UltraSonic ultrasonic;
-  Intake intake;
+  
+  Intake *intake;
+  Hopper *hopper;
+  Shooter *shooter;
 };
 #endif
