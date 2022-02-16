@@ -15,8 +15,8 @@ using namespace rev;
 
 class DriveBase {
 public:
-  DriveBase(CANSparkMax *m_leftLeadMotor, CANSparkMax *m_rightLeadMotor, CANSparkMax *m_leftFollowMotor, CANSparkMax *m_rightFollowMotor):
-  m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor){
+  DriveBase(CANSparkMax *m_leftLeadMotor, CANSparkMax *m_rightLeadMotor, CANSparkMax *m_leftFollowMotor, CANSparkMax *m_rightFollowMotor, frc::Joystick *joystick_0):
+  m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor), joystick_0(joystick_0){
     m_rightFollowMotor->Follow(*m_rightLeadMotor);
     m_leftFollowMotor->Follow(*m_leftLeadMotor);
     m_leftLeadMotor->SetInverted(DriveConst::kleft_lead_is_inverted);
@@ -33,9 +33,9 @@ private:
   CANSparkMax *m_leftFollowMotor;
   CANSparkMax *m_rightFollowMotor;
 
-  frc::DifferentialDrive m_robotDrive{*m_leftLeadMotor, *m_rightLeadMotor};
+  frc::Joystick *joystick_0;
 
-  frc::Joystick joystick{0};
+  frc::DifferentialDrive m_robotDrive{*m_leftLeadMotor, *m_rightLeadMotor};
 
   ButtonToggle buttontoggle{};
 

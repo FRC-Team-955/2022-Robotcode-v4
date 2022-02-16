@@ -4,6 +4,7 @@
 
 #include "Robot.h"
 #include "rev/CANSparkMax.h"
+#include <frc/Joystick.h>
 
 #include "shooter.h"
 #include "drivebase.h"
@@ -15,6 +16,8 @@ using namespace rev;
 
 DriveBase *drive;
 Shooter *shooter;
+XYalign *xyalign;
+
 
 //Drive Neos
 CANSparkMax *m_leftLeadMotor;
@@ -25,6 +28,8 @@ CANSparkMax *m_rightFollowMotor;
 CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
 
+frc::Joystick *joystick_0;
+frc::Joystick *joystick_1;
 
 photonlib::PhotonCamera camera{"BallDetect"};
 photonlib::PhotonCamera limecamera{"gloworm"};
@@ -40,20 +45,29 @@ void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
+  joystick_0 = new frc::Joystick(0);
+  joystick_1 = new frc::Joystick(1);
+
+  //drivebase
   m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
-
+  drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor, joystick_0);
+  xyalign = new XYalign(drive);
+  //shooter
   shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
-
-  drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+
 }
 void Robot::TeleopPeriodic() {
   photonlib::PhotonPipelineResult result = camera.GetLatestResult();
   photonlib::PhotonPipelineResult limeresult = limecamera.GetLatestResult();
+  if(joystick_0->GetRawAxis(Joy0Const::kshoot_trigger)){
+
+
+  }
   drive -> Drive(result);
   
 }

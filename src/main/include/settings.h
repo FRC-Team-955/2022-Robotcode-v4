@@ -7,6 +7,7 @@ constexpr int kdrive_speed_axis = 1;
 constexpr int kdrive_curvature_axis = 4;
 constexpr int kreverse_drive =  1;
 constexpr int kball_aimbot_button = 3;
+constexpr int kshoot_trigger = 5;
 } // namespace Joy0Const
 
 namespace Joy1Const {}
