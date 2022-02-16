@@ -5,10 +5,12 @@
 #include "Robot.h"
 #include "rev/CANSparkMax.h"
 #include <frc/Joystick.h>
+#include "ctre/Phoenix.h"
 
 #include "shooter.h"
 #include "drivebase.h"
 #include "xy_align.h"
+#include "elevator.h"
 
 #include "settings.h"
 
@@ -17,7 +19,7 @@ using namespace rev;
 DriveBase *drive;
 Shooter *shooter;
 XYalign *xyalign;
-
+Elevator *elevator;
 
 //Drive Neos
 CANSparkMax *m_leftLeadMotor;
@@ -27,12 +29,20 @@ CANSparkMax *m_rightFollowMotor;
 //Shooter Neos
 CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
+//Elevator Talon
+TalonFX *elevator_motor;
 
 frc::Joystick *joystick_0;
 frc::Joystick *joystick_1;
 
 photonlib::PhotonCamera camera{"BallDetect"};
 photonlib::PhotonCamera limecamera{"gloworm"};
+
+frc::Timer * m_timer_intake;
+frc::Timer * m_timer_elevator;
+
+ButtonToggle elevator_lock;
+ButtonToggle intake_deploy;
 
 void Robot::RobotInit() {
   // frc::CameraServer::StartAutomaticCapture();
@@ -54,21 +64,43 @@ void Robot::TeleopInit() {
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor, joystick_0);
-  xyalign = new XYalign(drive);
+  xyalign = new XYalign(drive, joystick_0);
   //shooter
   shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+  //elevator
+  elevator = new Elevator(elevator_motor);
+
+  //timer
+  m_timer_intake = new frc::Timer();
+  m_timer_elevator = new frc::Timer();
 
 }
 void Robot::TeleopPeriodic() {
   photonlib::PhotonPipelineResult result = camera.GetLatestResult();
   photonlib::PhotonPipelineResult limeresult = limecamera.GetLatestResult();
-  if(joystick_0->GetRawAxis(Joy0Const::kshoot_trigger)){
-
-
+  
+  if(joystick_0->GetRawAxis(Joy0Const::kshoot_trigger) && xyalign->HasTargetLimeLight(limeresult)){
+    //auto align
+    xyalign->Align(limeresult);
   }
-  drive -> Drive(result);
+  //driver control
+  else{
+    
+    drive -> Drive(result);
+
+    //check if its around time to climb
+    if(m_timer_elevator->GetMatchTime()>90_s){
+      if(elevator_lock.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
+        elevator->LockElevator();
+      }else{
+        elevator->UnlockElevator();
+      }
+    elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+    }
+    
+  }
   
 }
 

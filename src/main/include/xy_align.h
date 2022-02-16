@@ -15,7 +15,7 @@ using namespace frc;
 
 class XYalign{
     public:
-        XYalign(DriveBase *drivebase):drivebase(drivebase) {
+        XYalign(DriveBase *drivebase, Joystick *joystick):drivebase(drivebase),joystick(joystick){
             //change name of table later
             auto table = nt::NetworkTableInstance::GetDefault().GetTable("photonvision");
         };
@@ -24,9 +24,7 @@ class XYalign{
 
     private:
         DriveBase *drivebase; 
-        frc::Joystick joystick{0};
-        
 
-        
+        frc::Joystick *joystick;        
 };
 #endif

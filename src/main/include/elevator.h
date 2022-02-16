@@ -4,8 +4,11 @@
 #include <frc/DigitalInput.h>
 #include <frc/Joystick.h>
 #include <frc/Solenoid.h>
-using namespace frc;
+
 #include "settings.h"
+
+using namespace frc;
+
 
 class Elevator {
 public:
