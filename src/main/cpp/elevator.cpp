@@ -111,6 +111,6 @@ bool Elevator::OffGround() {
 void Elevator::DisplayElevatorInfo(){
   frc::Shuffleboard::GetTab("End Game").Add("Elevator Amp", elevator_motor->GetOutputCurrent());
   frc::Shuffleboard::GetTab("End Game").Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0));
-  frc::Shuffleboard::GetTab("End Game").Add("Elevator Pnemactic State",solenoid0.Get());
+  frc::Shuffleboard::GetTab("End Game").Add("Elevator Pnemactic State",solenoid0.Get()).WithWidget(frc::BuiltInWidgets::kBooleanBox);
 
 }

@@ -66,6 +66,13 @@ photonlib::PhotonCamera limecamera{"gloworm"};
 ButtonToggle intake_deploy;
 ButtonToggle elevator_lock;
 
+// chris is so cool 
+// bryan ganyu simp
+// ganyu is pog
+// who?tao
+// hi guys its bryan welcome back to my channel today im teaching you * minecraft *
+// Thank you for listening to my ted talk
+
 void Robot::RobotInit() {
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
@@ -111,6 +118,9 @@ void Robot::TeleopInit() {
 void Robot::TeleopPeriodic() {
   photonlib::PhotonPipelineResult result = camera.GetLatestResult();
   photonlib::PhotonPipelineResult limeresult = limecamera.GetLatestResult();
+
+  //runs the shuffle board display
+  DisplayShuffle();
   
   if(joystick_0->GetRawAxis(Joy0Const::kshoot_trigger) && xyalign->HasTargetLimeLight(limeresult)){
     //auto align
@@ -167,7 +177,14 @@ void Robot::TeleopPeriodic() {
   }
   
 }
-
+void Robot::DisplayShuffle(){
+  drive->DisplayDriveInfo();
+  intake->DisplayIntakeInfo();
+  hopper->DiplayHopperInfo();
+  shooter->DisplayShooterInfo();
+  ball_manager->DisplayBallManagerInfo();
+  elevator->DisplayElevatorInfo();
+}
 void Robot::DisabledInit() {
   delete m_leftLeadMotor;
   delete m_rightLeadMotor;

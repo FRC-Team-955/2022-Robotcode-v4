@@ -18,3 +18,8 @@ void Intake::RunIntake(float intake_percent) {
   intake_talon->Set(ControlMode::PercentOutput, intake_percent);
 }
 void Intake::StopIntake() { intake_talon->Set(ControlMode::PercentOutput, 0); }
+void Intake::DisplayIntakeInfo(){
+  frc::Shuffleboard::GetTab("Telop").Add("IntakeMotorAmps", intake_talon->GetOutputCurrent());
+  frc::Shuffleboard::GetTab("Telop").Add("Sol1", sol1->Get());
+  frc::Shuffleboard::GetTab("Telop").Add("Sol2", sol2->Get());
+}

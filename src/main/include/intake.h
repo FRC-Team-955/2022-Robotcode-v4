@@ -21,6 +21,7 @@ public:
   void PistonDown();
   void RunIntake(float intake_percent);
   void StopIntake();
+  void DisplayIntakeInfo();
 
 private:
   TalonSRX *intake_talon;
