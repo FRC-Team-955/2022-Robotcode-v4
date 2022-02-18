@@ -11,9 +11,13 @@ constexpr int kshoot_trigger = 5;
 } // namespace Joy0Const
 
 namespace Joy1Const {
+
 constexpr int kreject_ball_button = 5;
 constexpr int kshoot_wall_trigger = 5;
-
+//intake
+constexpr int kintake_toggle_button = 6;
+constexpr int kintake_motor_run = 6;
+//elevator
 constexpr int kelevator_axis = 2;
 constexpr int kelevator_lock_button = 3;
 }
@@ -46,6 +50,9 @@ constexpr int elevator_slow_multiplier = 0.5;
 constexpr int kintake_motor = 10;
 constexpr int kintake_solonoid_port_left = 10;
 constexpr int kintake_solonoid_port_right= 10;
+//hopper
+constexpr int khopper_motor_top_port = 1;
+constexpr int khopper_motor_bottom_port = 2;
 //shooter
 constexpr float kP = 1.0, kI = 0.0, kD = 0.0, kIz = 0.0, kFF = 1.0, kMaxOutput = 1.0, kMinOutput = 1.0;
 constexpr int shooter_top_port = 1;
@@ -55,9 +62,6 @@ constexpr int khigh_range= 100;
 constexpr int khigh_target = 1000;
 constexpr int kreject_range= 100;
 constexpr int kreject_target = 1000;
-//hopper
-constexpr int khopper_motor_top_port = 1;
-constexpr int khopper_motor_bottom_port = 2;
 //compressor
 constexpr float kcompressor_warning_pressure = 10;
 } // namespace MechanismConst

@@ -9,7 +9,9 @@
 #include "rev/CANSparkMax.h"
 #include <frc/Joystick.h>
 #include "ctre/Phoenix.h"
+#include <frc/Timer.h>
 
+//our classes
 #include "xy_align.h"
 #include "drivebase.h"
 #include "intake.h"
@@ -30,6 +32,14 @@ Shooter *shooter;
 BallManager *ball_manager;
 Elevator *elevator;
 
+//Timers
+frc::Timer *m_timer_intake;
+frc::Timer *m_timer_elevator;
+
+//Joysticks
+frc::Joystick *joystick_0;
+frc::Joystick *joystick_1;
+
 //Drive
 CANSparkMax *m_leftLeadMotor;
 CANSparkMax *m_rightLeadMotor;
@@ -48,17 +58,11 @@ CANSparkMax *shooterneo_bottom;
 //Elevator Talon
 TalonFX *elevator_motor;
 
-frc::Joystick *joystick_0;
-frc::Joystick *joystick_1;
-
 photonlib::PhotonCamera camera{"BallDetect"};
 photonlib::PhotonCamera limecamera{"gloworm"};
 
-frc::Timer * m_timer_intake;
-frc::Timer * m_timer_elevator;
-
-ButtonToggle elevator_lock;
 ButtonToggle intake_deploy;
+ButtonToggle elevator_lock;
 
 void Robot::RobotInit() {
   frc::CameraServer::StartAutomaticCapture();
@@ -71,9 +75,9 @@ void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
+  //joysticks
   joystick_0 = new frc::Joystick(0);
   joystick_1 = new frc::Joystick(1);
-
   //drivebase
   m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
@@ -101,7 +105,6 @@ void Robot::TeleopInit() {
   //timer
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
-
 }
 void Robot::TeleopPeriodic() {
   photonlib::PhotonPipelineResult result = camera.GetLatestResult();
@@ -113,7 +116,7 @@ void Robot::TeleopPeriodic() {
   }
   //driver control
   else{
-    drive -> Drive(result);
+    drive->Drive(result);
 
     if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)){
       if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
@@ -128,10 +131,23 @@ void Robot::TeleopPeriodic() {
         // if(ball_manager->IsFull()){
         // }
         // if(joystick_)
+        if (intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+          intake->PistonDown();
+          //If the intake is in the down state allow the intake to run
+          if(joystick_1->GetRawButton(Joy1Const::kintake_motor_run)){
+            intake->RunIntake(1);
+            m_timer_intake->Start();
+            m_timer_intake->Reset();
+          }
+        }else{
+          intake->PistonUp();
+        }
+        //if the m_intake_timer is less than 5s then run the hopper
+        if(m_timer_intake->Get()<5_s){
+          ball_manager->LoadHopper();
+        }
       }
     }
-
-
     //check if its around time to climb
     if(m_timer_elevator->GetMatchTime()>90_s){
       if(elevator_lock.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){

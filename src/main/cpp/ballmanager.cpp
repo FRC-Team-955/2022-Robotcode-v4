@@ -8,7 +8,6 @@ std::string BallManager::GetHopperState(int slot){
     return position[slot];
     }
 }
-
 void BallManager::CheckHopperState(){
     if(color_sensor.CheckForBall()){
         position[0] = color_sensor.ClosestColor();
@@ -25,14 +24,11 @@ void BallManager::CheckHopperState(){
         position[1] = "None";
     }
 }
-
-void BallManager::MoveIndex()
-{
+void BallManager::MoveIndex(){
     if(ultrasonic.SonicDistance("in") > 3 && position[0] != "None"){
         hopper->RunHopperMotor(0.5, 0.5);
     }
 }
-
 void BallManager::LoadHopper(){
     if(ultrasonic.SonicDistance("in") > 3){
         hopper->RunHopperMotor(0.5, 0.5);
@@ -41,7 +37,6 @@ void BallManager::LoadHopper(){
         hopper->RunHopperMotor(0, 0.5);
     }
 }
-
 bool BallManager::IsFull(){
     if(position[1] != "None" && position[0] != "None"){
         return !false;
@@ -50,7 +45,6 @@ bool BallManager::IsFull(){
         return false;
     }
 }
-
 bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom){  
     //if the ball in position[1] is the right color, shoot at the inputted velocities
     if (position[1] == team_color){
@@ -86,7 +80,6 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
 void BallManager::Shoot(){
     hopper->RunHopperMotor(0.5, 0.5);
 }
-
 void BallManager::Reject(){
     shooter->VelocityControl(MechanismConst::kreject_target, MechanismConst::kreject_target);
     if(shooter->VelocityOutput("Top") >= MechanismConst::kreject_target - MechanismConst::kreject_range  
