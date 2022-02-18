@@ -4,11 +4,7 @@
 #include "rev/ColorMatch.h"
 #include "rev/ColorSensorV3.h"
 #include <frc/util/Color.h>
-<<<<<<< Updated upstream
-#include <iostream>
 
-=======
->>>>>>> Stashed changes
 #include "settings.h"
 
 using namespace rev;

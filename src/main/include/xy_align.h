@@ -11,7 +11,7 @@ using namespace DriveConst;
 
 class XYalign{
     public:
-        XYalign(DriveBase *drivebase, Joystick *joystick):drivebase(drivebase),joystick(joystick){
+        XYalign(DriveBase *drivebase, frc::Joystick *joystick):drivebase(drivebase),joystick(joystick){
             //change name of table later
             auto table = nt::NetworkTableInstance::GetDefault().GetTable("photonvision");
         };
@@ -19,12 +19,7 @@ class XYalign{
         bool HasTargetLimeLight(photonlib::PhotonPipelineResult limeresult);
 
     private:
-<<<<<<< Updated upstream
         DriveBase *drivebase; 
-
         frc::Joystick *joystick;        
-=======
-        DriveBase *drivebase;
->>>>>>> Stashed changes
 };
 #endif

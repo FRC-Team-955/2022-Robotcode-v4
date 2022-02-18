@@ -1,4 +1,5 @@
 #include "intake.h"
+
 using namespace frc;
 
 void Intake::PistonUp() {

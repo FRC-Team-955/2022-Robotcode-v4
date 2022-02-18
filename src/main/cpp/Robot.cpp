@@ -7,7 +7,6 @@
 //Not our classes?
 #include <cameraserver/CameraServer.h>
 #include "rev/CANSparkMax.h"
-<<<<<<< Updated upstream
 #include <frc/Joystick.h>
 #include "ctre/Phoenix.h"
 
@@ -18,21 +17,11 @@
 #include "shooter.h"
 #include "ballmanager.h"
 #include "elevator.h"
-=======
-#include <frc/Solenoid.h>
-
-//Our Classes
-#include "drivebase.h"
-#include "xy_align.h"
-#include "shooter.h"
-#include "intake.h"
->>>>>>> Stashed changes
 
 #include "settings.h"
 
 using namespace rev;
 
-<<<<<<< Updated upstream
 XYalign *xyalign;
 DriveBase *drive;
 Intake *intake;
@@ -42,14 +31,10 @@ BallManager *ball_manager;
 Elevator *elevator;
 
 //Drive
-=======
-//Drive Base
->>>>>>> Stashed changes
 CANSparkMax *m_leftLeadMotor;
 CANSparkMax *m_rightLeadMotor;
 CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
-<<<<<<< Updated upstream
 //Intake
 TalonSRX *intake_talon;
 Solenoid *intake_solonoid_left;
@@ -65,20 +50,6 @@ TalonFX *elevator_motor;
 
 frc::Joystick *joystick_0;
 frc::Joystick *joystick_1;
-=======
-DriveBase *drive;
-
-// //Shooter
-// CANSparkMax *shooterneo_top;
-// CANSparkMax *shooterneo_bottom;
-// Shooter *shooter;
-
-// //Intake
-// TalonSRX *intake_talon;
-// Solenoid *sol1;
-// Solenoid *sol2;
-// Intake *intake;
->>>>>>> Stashed changes
 
 photonlib::PhotonCamera camera{"BallDetect"};
 photonlib::PhotonCamera limecamera{"gloworm"};
@@ -100,18 +71,14 @@ void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
-<<<<<<< Updated upstream
   joystick_0 = new frc::Joystick(0);
   joystick_1 = new frc::Joystick(1);
 
-=======
->>>>>>> Stashed changes
   //drivebase
   m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
-<<<<<<< Updated upstream
   drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor, joystick_0);
   xyalign = new XYalign(drive, joystick_0);
   //Intake
@@ -135,15 +102,6 @@ void Robot::TeleopInit() {
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
 
-=======
-  drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor);
-  // //shooter
-  // shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
-  // shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
-  // shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
-  // //intake
-  // intake = new Intake(intake_talon,sol1,sol2);
->>>>>>> Stashed changes
 }
 void Robot::TeleopPeriodic() {
   photonlib::PhotonPipelineResult result = camera.GetLatestResult();

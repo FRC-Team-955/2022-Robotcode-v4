@@ -5,18 +5,9 @@
 #include "rev/CANSparkMax.h"
 #include <frc/Joystick.h>
 #include <frc/drive/DifferentialDrive.h>
-<<<<<<< Updated upstream
-#include <button_toggle.h>
-#include <frc/smartdashboard/SmartDashboard.h>
-#include <cameraserver/CameraServer.h>
-
-#include "balldetect.h"
-
-=======
 
 #include <button_toggle.h>
 #include "balldetect.h"
->>>>>>> Stashed changes
 #include "settings.h"
 
 using namespace rev;

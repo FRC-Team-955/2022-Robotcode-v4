@@ -31,15 +31,9 @@ private:
 
   ColorSensor color_sensor;
   UltraSonic ultrasonic;
-<<<<<<< Updated upstream
   
   Intake *intake;
   Hopper *hopper;
   Shooter *shooter;
-=======
-  Hopper *hopper;
-  Shooter *shooter;
-  Intake *intake;
->>>>>>> Stashed changes
 };
 #endif

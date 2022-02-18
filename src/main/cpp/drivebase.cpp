@@ -2,24 +2,14 @@
 
 void DriveBase::Drive(photonlib::PhotonPipelineResult result) {
 
-<<<<<<< Updated upstream
-  BallAimbot = joystick_0->GetRawAxis(Joy0Const::kball_aimbot_button);
-  isQuickTurn = joystick_0->GetRawButton(Joy0Const::kquick_turn_button);
+  ball_aimbot = joystick_0->GetRawAxis(Joy0Const::kball_aimbot_button);
+  is_quick_turn = joystick_0->GetRawButton(Joy0Const::kquick_turn_button);
 
   if (buttontoggle.GetToggleNoDebounce(
           joystick_0->GetRawButton(Joy0Const::kreverse_drive))) {
     m_robotDrive.CurvatureDrive(
         -joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),
-        joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), isQuickTurn);
-=======
-  ball_aimbot = joystick.GetRawAxis(Joy0Const::kball_aimbot_button);
-  is_quick_turn = joystick.GetRawButton(Joy0Const::kquick_turn_button);
-
-  if (buttontoggle.GetToggleNoDebounce(joystick.GetRawButton(Joy0Const::kreverse_drive))) {
-    m_robotDrive.CurvatureDrive(
-        -joystick.GetRawAxis(Joy0Const::kdrive_speed_axis),
-        joystick.GetRawAxis(Joy0Const::kdrive_curvature_axis), is_quick_turn);
->>>>>>> Stashed changes
+        joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), is_quick_turn);
         std::cout<<"reverse drive"<<std::endl;
   } else {
     if (ball_aimbot > 0.2 && BallDetect::BallDetectorX(result) < 10000) {
@@ -30,13 +20,8 @@ void DriveBase::Drive(photonlib::PhotonPipelineResult result) {
         );
     } else {
       m_robotDrive.CurvatureDrive(
-<<<<<<< Updated upstream
           joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),
-          joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), isQuickTurn);
-=======
-          joystick.GetRawAxis(Joy0Const::kdrive_speed_axis),
-          joystick.GetRawAxis(Joy0Const::kdrive_curvature_axis), is_quick_turn);
->>>>>>> Stashed changes
+          joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), is_quick_turn);
     }
   }
 }
