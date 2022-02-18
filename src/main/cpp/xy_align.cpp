@@ -4,7 +4,7 @@ void XYalign::Align(photonlib::PhotonPipelineResult limeresult){
 if (limeresult.HasTargets()) {
 
   float heading_error = limeresult.GetBestTarget().GetYaw();
-  float distance_error = limeresult.GetBestTarget().GetPitch();
+  // float distance_error = limeresult.GetBestTarget().GetPitch();
 
   float steering_adjust = 0;
     if (Kp*heading_error > 0){
@@ -13,7 +13,7 @@ if (limeresult.HasTargets()) {
     else if (Kp*heading_error <= 0){
       steering_adjust = std::min(Kp*heading_error, min_command);
     }
-    float distance_adjust = KpDistance * distance_error; //Set the variable in shooter code
+    // float distance_adjust = KpDistance * distance_error; //Set the variable in shooter code
 
     //experimental shooting code, uses the matrix to solve for the needed parabola to hit the shot
     // float rim_point_x = 2;
