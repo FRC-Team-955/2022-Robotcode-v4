@@ -1,5 +1,4 @@
 #include "ballmanager.h"
-using namespace frc;
 
 std::string BallManager::GetHopperState(int slot){
     if(slot != 0 && slot != 1){

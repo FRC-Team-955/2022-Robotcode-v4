@@ -1,17 +1,13 @@
 #ifndef XYALIGH
 #define XYALIGH
 
-#include <frc/Joystick.h>
-#include <iostream>
-#include <AHRS.h>
-#include <ctre/Phoenix.h>
 #include "networktables/NetworkTable.h"
 #include "networktables/NetworkTableInstance.h" 
 //#include "ball_manager.h"
 
 #include "drivebase.h"
 
-using namespace frc;
+using namespace DriveConst;
 
 class XYalign{
     public:
@@ -23,8 +19,12 @@ class XYalign{
         bool HasTargetLimeLight(photonlib::PhotonPipelineResult limeresult);
 
     private:
+<<<<<<< Updated upstream
         DriveBase *drivebase; 
 
         frc::Joystick *joystick;        
+=======
+        DriveBase *drivebase;
+>>>>>>> Stashed changes
 };
 #endif

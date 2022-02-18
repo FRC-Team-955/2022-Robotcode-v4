@@ -1,13 +1,6 @@
 #ifndef BALLMANAGER
 #define BALLMANAGER
-#include <iostream>
-#include <ctre/Phoenix.h>
-#include <frc/Joystick.h>
-#include <frc/Solenoid.h>
-#include <frc/DigitalInput.h>
-#include <networktables/NetworkTable.h>
 
-#include "settings.h"
 #include "hopper.h"
 #include "colorsensor.h"
 #include "hopper.h"
@@ -15,7 +8,7 @@
 #include "ultrasonic.h"
 #include "intake.h"
 
-using namespace frc;
+#include "settings.h"
 
 class BallManager {
 public:
@@ -38,9 +31,15 @@ private:
 
   ColorSensor color_sensor;
   UltraSonic ultrasonic;
+<<<<<<< Updated upstream
   
   Intake *intake;
   Hopper *hopper;
   Shooter *shooter;
+=======
+  Hopper *hopper;
+  Shooter *shooter;
+  Intake *intake;
+>>>>>>> Stashed changes
 };
 #endif

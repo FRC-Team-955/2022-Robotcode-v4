@@ -1,6 +1,4 @@
 #include "shooter.h"
-using namespace frc;
-using namespace rev;
 
 void Shooter::ShootPercentOutput(double percent1, double percent2) {
   shooterneo_top->Set(percent1);

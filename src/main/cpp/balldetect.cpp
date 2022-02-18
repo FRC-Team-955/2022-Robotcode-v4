@@ -4,7 +4,7 @@ double BallDetect::BallDetectorX(photonlib::PhotonPipelineResult result) {
   if (result.HasTargets()) {
     return result.GetBestTarget().GetYaw();
   }
-  return 9999999999969;
+  return 999969;
 }
 
 double BallDetect::BallDetectorY(photonlib::PhotonPipelineResult result) {

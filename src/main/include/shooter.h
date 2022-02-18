@@ -1,7 +1,6 @@
 #ifndef SHOOTER
 #define SHOOTER
-#include <iostream>
-#include "ctre/Phoenix.h"
+
 #include "rev/CANSparkMax.h"
 
 #include "settings.h"
@@ -9,7 +8,6 @@
 using namespace rev;
 
 class Shooter {
-
 public:
   Shooter(CANSparkMax *shooterneo_top, CANSparkMax *shooterneo_bottom):
   shooterneo_top(shooterneo_top), shooterneo_bottom(shooterneo_bottom){
@@ -40,7 +38,7 @@ public:
   void ShootPercentOutput(double percent1, double percent2);
   //Takes in the two velocities of the motors and sets them to the velocities
   void VelocityControl(double top_velocity, double bottom_velocity);
-  //checks what the velocity of in inputed shooter motor ("Top", "Bottom")
+  //Checks what the velocity of in inputed shooter motor ("Top", "Bottom")
   float VelocityOutput(std::string shooter_motor);
   void DisplayShooterInfo();
 
@@ -53,7 +51,6 @@ private:
 
   rev::SparkMaxRelativeEncoder *shooterneo_top_encoder;
   rev::SparkMaxRelativeEncoder *shooterneo_bottom_encoder;
-
 };
 
 #endif

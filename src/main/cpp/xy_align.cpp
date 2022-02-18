@@ -1,29 +1,16 @@
 #include "xy_align.h"
 
-using namespace frc;
-
-void XYalign::Align(photonlib::PhotonPipelineResult limeresult)
-{ 
+void XYalign::Align(photonlib::PhotonPipelineResult limeresult){ 
 if (limeresult.HasTargets()) {
-    float Kp = -0.1;
-  float KpDistance = -0.1;
 
-  float min_command = 0.05;
+  float heading_error = limeresult.GetBestTarget().GetYaw();
+  float distance_error = limeresult.GetBestTarget().GetPitch();
 
-  float targetYaw = limeresult.GetBestTarget().GetYaw();
-  float targetPitch = limeresult.GetBestTarget().GetPitch();
-
-
-  float heading_error =  targetYaw;
-  float distance_error = targetPitch;
-
-  float steering_adjust = 0.0f;
-    if (Kp*heading_error > 0)
-    {
+  float steering_adjust = 0;
+    if (Kp*heading_error > 0){
       steering_adjust = std::max(Kp*heading_error , min_command);
     }
-    else if (Kp*heading_error <= 0)
-    {
+    else if (Kp*heading_error <= 0){
       steering_adjust = std::min(Kp*heading_error, min_command);
     }
     float distance_adjust = KpDistance * distance_error; //Set the variable in shooter code
@@ -43,9 +30,6 @@ if (limeresult.HasTargets()) {
 
     //float parabola_a = 
 
-
-
-
     // ball_manage.target_velocity1 =  distance_adjust; 
     // ball_manage.target_velocity2 =  distance_adjust;
 
@@ -54,9 +38,8 @@ if (limeresult.HasTargets()) {
     //     ball_manage.Shoot();
     // } 
     drivebase->DriveTank(steering_adjust, -steering_adjust);
-  
 }
-  
+
 }
 bool XYalign::HasTargetLimeLight(photonlib::PhotonPipelineResult limeresult){
     if(limeresult.HasTargets()){

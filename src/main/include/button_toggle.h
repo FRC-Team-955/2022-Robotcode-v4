@@ -2,7 +2,10 @@
 #define BUTTONTOGGLE
 
 #include <frc/Timer.h>
+<<<<<<< Updated upstream
 #include <iostream>
+=======
+>>>>>>> Stashed changes
 
 class ButtonToggle {
 public:

@@ -1,7 +1,7 @@
 #include <ultrasonic.h>
 using namespace frc;
 
-double UltraSonic::SonicDistance(std::string passin) {
+double UltraSonic::SonicDistance(std::string passin = "in") {
   raw_value = ultrasonic.GetValue();
 
   if (passin == "in") {
@@ -9,7 +9,6 @@ double UltraSonic::SonicDistance(std::string passin) {
   }
   else if (passin == "cm") {
     return raw_value * 0.125;
-  }else{
-    return 99;
   }
+  return 69;
 }
