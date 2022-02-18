@@ -2,11 +2,11 @@
 
 void Shooter::ShootPercentOutput(double percent1, double percent2) {
   shooterneo_top->Set(percent1);
-  shooterneo_bottom->Set(percent2);
+  shooterneo_bottom->Set(-percent2);
 }
 void Shooter::VelocityControl(double top_velocity, double bottom_velocity) {
-  m_pidController->SetReference(top_velocity, rev::ControlType::kVelocity);
-  m_pidController->SetReference(bottom_velocity, rev::ControlType::kVelocity);
+  m_pidController_top->SetReference(top_velocity, rev::ControlType::kVelocity);
+  m_pidController_bottom->SetReference(-bottom_velocity, rev::ControlType::kVelocity);
 }
 float Shooter::VelocityOutput(std::string shooter_motor){
   if (shooter_motor == "Top"){

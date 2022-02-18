@@ -16,5 +16,4 @@ class RobotCompressor {
   private:
     Compressor compressor{PneumaticsModuleType::CTREPCM};
 };
-
 #endif

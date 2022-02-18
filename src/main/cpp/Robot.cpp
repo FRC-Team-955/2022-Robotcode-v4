@@ -19,6 +19,7 @@
 #include "shooter.h"
 #include "ballmanager.h"
 #include "elevator.h"
+#include "compressor.h"
 
 #include "settings.h"
 
@@ -31,6 +32,7 @@ Hopper *hopper;
 Shooter *shooter;
 BallManager *ball_manager;
 Elevator *elevator;
+RobotCompressor *compressor;
 
 //Timers
 frc::Timer *m_timer_intake;
@@ -55,7 +57,7 @@ TalonSRX *talon_hopper_bottom;
 //Shooter
 CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
-//Elevator Talon
+//Elevator
 TalonFX *elevator_motor;
 
 photonlib::PhotonCamera camera{"BallDetect"};
@@ -118,6 +120,13 @@ void Robot::TeleopPeriodic() {
   else{
     drive->Drive(result);
 
+    //compressor
+    if(compressor->DetectPressure()){
+      compressor->TurnOnCompressor();
+    }else{
+      compressor->TurnOffCompressor();
+    }
+    //shooting
     if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)){
       if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
         ball_manager->Shoot();
@@ -128,9 +137,6 @@ void Robot::TeleopPeriodic() {
         ball_manager->Reject();
       }else{
         //if not rejecting
-        // if(ball_manager->IsFull()){
-        // }
-        // if(joystick_)
         if (intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
           intake->PistonDown();
           //If the intake is in the down state allow the intake to run
