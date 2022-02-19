@@ -74,9 +74,9 @@ ButtonToggle elevator_lock;
 // Thank you for listening to my ted talk
 
 void Robot::RobotInit() {
-  frc::CameraServer::StartAutomaticCapture();
-  cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  cs::CvSource outputStream = frc::CameraServer::PutVideo("Blur", 640, 480);
+  // frc::CameraServer::StartAutomaticCapture();
+  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
+  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Blur", 640, 480);
 }
 void Robot::RobotPeriodic() {}
 
@@ -93,12 +93,12 @@ void Robot::TeleopInit() {
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor, joystick_0);
-  xyalign = new XYalign(drive, joystick_0);
+  // xyalign = new XYalign(drive, joystick_0);
   //Intake
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
-  intake_solonoid_left = new Solenoid{PneumaticsModuleType::CTREPCM, MechanismConst::kintake_solonoid_port_left};
-  intake_solonoid_right = new Solenoid{PneumaticsModuleType::CTREPCM, MechanismConst::kintake_solonoid_port_right};
-  intake = new Intake(intake_talon,intake_solonoid_left,intake_solonoid_right);
+  // intake_solonoid_left = new Solenoid{PneumaticsModuleType::CTREPCM, MechanismConst::kintake_solonoid_port_left};
+  // intake_solonoid_right = new Solenoid{PneumaticsModuleType::CTREPCM, MechanismConst::kintake_solonoid_port_right};
+  intake = new Intake(intake_talon);
   //Hopper
   talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
   talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
@@ -108,75 +108,21 @@ void Robot::TeleopInit() {
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
   //BallManager
-  ball_manager = new BallManager(intake,hopper,shooter);
+  // ball_manager = new BallManager(intake,hopper,shooter);
   //elevator
-  elevator = new Elevator(elevator_motor);
+  // elevator = new Elevator(elevator_motor);
   //timer
-  m_timer_intake = new frc::Timer();
-  m_timer_elevator = new frc::Timer();
+  // m_timer_intake = new frc::Timer();
+  // m_timer_elevator = new frc::Timer();
 }
 void Robot::TeleopPeriodic() {
-  photonlib::PhotonPipelineResult result = camera.GetLatestResult();
-  photonlib::PhotonPipelineResult limeresult = limecamera.GetLatestResult();
-
-  //runs the shuffle board display
-  DisplayShuffle();
-  
-  if(joystick_0->GetRawAxis(Joy0Const::kshoot_trigger) && xyalign->HasTargetLimeLight(limeresult)){
-    //auto align
-    xyalign->Align(limeresult);
-  }
-  //driver control
-  else{
-    drive->Drive(result);
-
-    //compressor
-    if(compressor->DetectPressure()){
-      compressor->TurnOnCompressor();
-    }else{
-      compressor->TurnOffCompressor();
-    }
-    //shooting
-    if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)){
-      if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
-        ball_manager->Shoot();
-      }
-    }else{
-      //if not shooting
-      if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
-        ball_manager->Reject();
-      }else{
-        //if not rejecting
-        if (intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-          intake->PistonDown();
-          //If the intake is in the down state allow the intake to run
-          if(joystick_1->GetRawButton(Joy1Const::kintake_motor_run)){
-            intake->RunIntake(1);
-            m_timer_intake->Start();
-            m_timer_intake->Reset();
-          }
-        }else{
-          intake->PistonUp();
-        }
-        //if the m_intake_timer is less than 5s then run the hopper
-        if(m_timer_intake->Get()<5_s){
-          ball_manager->LoadHopper();
-        }
-      }
-    }
-    //check if its around time to climb
-    if(m_timer_elevator->GetMatchTime()>90_s){
-      if(elevator_lock.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
-        elevator->LockElevator();
-      }else{
-        elevator->UnlockElevator();
-      }
-    elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
-    }
-    
-  }
-  
+  //intake->PistonUp();//
+  // intake->PistonDown();
+  intake->RunIntake(joystick_0->GetRawAxis(1));
+  hopper->RunHopperMotor(0.25, 0.25);
+  shooter -> VelocityControl(3000,3000);
 }
+
 void Robot::DisplayShuffle(){
   drive->DisplayDriveInfo();
   intake->DisplayIntakeInfo();
