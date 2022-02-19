@@ -27,6 +27,7 @@ constexpr int limit_switch_top_port = 1;
 constexpr int limit_switch_bottom_port = 2;
 constexpr int kvalue_for_ball = 2000; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
 constexpr int kultrasonic_port = 0;
+constexpr int kbreak_beam_port = 3;
 } // namespace SensorConst
 
 namespace DriveConst {

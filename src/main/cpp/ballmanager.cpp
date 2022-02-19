@@ -1,4 +1,5 @@
 #include "ballmanager.h"
+using namespace frc;
 
 std::string BallManager::GetHopperState(int slot){
     if(slot != 0 && slot != 1){
@@ -12,28 +13,28 @@ void BallManager::CheckHopperState(){
     if(color_sensor.CheckForBall()){
         position[0] = color_sensor.ClosestColor();
     }
-    if(ultrasonic.SonicDistance("in") > 3 && !color_sensor.CheckForBall() && position[0] != "None"){
+    if(digitalinput->Get() == 1 && !color_sensor.CheckForBall() && position[0] != "None"){
         inbetween = position[0];
         position[0] = "None";
     }
-    if(ultrasonic.SonicDistance("in") <= 3){
+    if(digitalinput->Get() == 0){
         position[1] = inbetween;
         inbetween = "None";
     }
-    if(ultrasonic.SonicDistance("in") >3){
+    if(digitalinput->Get() == 1){
         position[1] = "None";
     }
 }
 void BallManager::MoveIndex(){
-    if(ultrasonic.SonicDistance("in") > 3 && position[0] != "None"){
+    if(digitalinput->Get() == 1 && position[0] != "None"){
         hopper->RunHopperMotor(0.5, 0.5);
     }
 }
 void BallManager::LoadHopper(){
-    if(ultrasonic.SonicDistance("in") > 3){
+    if(digitalinput->Get() == 1){
         hopper->RunHopperMotor(0.5, 0.5);
     }
-    else if(ultrasonic.SonicDistance("in") <= 3 && !color_sensor.CheckForBall()){
+    else if(digitalinput->Get() == 0 && !color_sensor.CheckForBall()){
         hopper->RunHopperMotor(0, 0.5);
     }
 }
