@@ -14,6 +14,6 @@ class RobotCompressor {
     void TurnOffCompressor();
     bool DetectPressure();    
   private:
-    Compressor compressor{frc::PneumaticsModuleType::CTREPCM};
+    Compressor compressor{frc::PneumaticsModuleType::REVPH};
 };
 #endif

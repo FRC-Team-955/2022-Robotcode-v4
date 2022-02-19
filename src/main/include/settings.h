@@ -41,8 +41,13 @@ constexpr float Kp = -0.1, KpDistance = -0.1, min_command = -0.05;//For Limeligh
 namespace MechanismConst {
 //intake
 constexpr int kintake_motor = 10; //g
-constexpr int kintake_solonoid_port_left = 10;
-constexpr int kintake_solonoid_port_right= 10;
+
+constexpr int kintake_double_solonoid_port_left_forward = 7; //g
+constexpr int kintake_double_solonoid_port_left_reverse = 6; //g
+
+constexpr int kintake_double_solonoid_port_right_forward = 5; //g
+constexpr int kintake_double_solonoid_port_right_reverse = 9; //g
+
 //hopper
 constexpr int khopper_motor_top_port = 9; //g
 constexpr int khopper_motor_bottom_port = 11; //g

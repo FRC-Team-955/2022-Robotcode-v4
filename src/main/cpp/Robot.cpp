@@ -4,12 +4,18 @@
 
 #include "Robot.h"
 
+#include "iostream"
+
 //Not our classes?
 #include <cameraserver/CameraServer.h>
 #include "rev/CANSparkMax.h"
 #include <frc/Joystick.h>
 #include "ctre/Phoenix.h"
 #include <frc/Timer.h>
+#include "rev/ColorSensorV3.h"
+
+//del maybe
+#include <frc/Compressor.h>
 
 //our classes
 #include "xy_align.h"
@@ -19,7 +25,10 @@
 #include "shooter.h"
 #include "ballmanager.h"
 #include "elevator.h"
-#include "compressor.h"
+
+//maybe del later or now
+// #include "compressor.h"
+
 
 #include "settings.h"
 
@@ -30,9 +39,10 @@ DriveBase *drive;
 Intake *intake;
 Hopper *hopper;
 Shooter *shooter;
-BallManager *ball_manager;
+ColorSensor * color_sensor;
+// BallManager *ball_manager;
 Elevator *elevator;
-RobotCompressor *compressor;
+// RobotCompressor *compressor;
 
 //Timers
 frc::Timer *m_timer_intake;
@@ -49,8 +59,8 @@ CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
 //Intake
 TalonSRX *intake_talon;
-Solenoid *intake_solonoid_left;
-Solenoid *intake_solonoid_right;
+DoubleSolenoid *intake_double_solonoid_left;
+DoubleSolenoid *intake_double_solonoid_right;
 //Hopper
 TalonSRX *talon_hopper_top;
 TalonSRX *talon_hopper_bottom;
@@ -59,12 +69,17 @@ CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
 //Elevator
 TalonFX *elevator_motor;
+//Color Sensor
+ColorSensorV3 *rev_color_sensor;
 
-photonlib::PhotonCamera camera{"BallDetect"};
-photonlib::PhotonCamera limecamera{"gloworm"};
 
-ButtonToggle intake_deploy;
-ButtonToggle elevator_lock;
+// Compressor compressor{13, frc::PneumaticsModuleType::REVPH};
+
+// photonlib::PhotonCamera camera{"BallDetect"};
+// photonlib::PhotonCamera limecamera{"gloworm"};
+
+// ButtonToggle intake_deploy;
+// ButtonToggle elevator_lock;
 
 // chris is so cool 
 // bryan ganyu simp
@@ -74,9 +89,9 @@ ButtonToggle elevator_lock;
 // Thank you for listening to my ted talk
 
 void Robot::RobotInit() {
-  frc::CameraServer::StartAutomaticCapture();
-  cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  cs::CvSource outputStream = frc::CameraServer::PutVideo("Blur", 640, 480);
+  // frc::CameraServer::StartAutomaticCapture();
+  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
+  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Blur", 640, 480);
 }
 void Robot::RobotPeriodic() {}
 
@@ -96,9 +111,11 @@ void Robot::TeleopInit() {
   xyalign = new XYalign(drive, joystick_0);
   //Intake
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
-  intake_solonoid_left = new Solenoid{PneumaticsModuleType::CTREPCM, MechanismConst::kintake_solonoid_port_left};
-  intake_solonoid_right = new Solenoid{PneumaticsModuleType::CTREPCM, MechanismConst::kintake_solonoid_port_right};
-  intake = new Intake(intake_talon,intake_solonoid_left,intake_solonoid_right);
+  intake_double_solonoid_left = new DoubleSolenoid{PneumaticsModuleType::REVPH, 
+  MechanismConst::kintake_double_solonoid_port_left_forward, MechanismConst::kintake_double_solonoid_port_left_reverse};
+  intake_double_solonoid_right = new DoubleSolenoid{PneumaticsModuleType::REVPH, 
+  MechanismConst::kintake_double_solonoid_port_right_forward, MechanismConst::kintake_double_solonoid_port_right_reverse};
+  intake = new Intake(intake_talon,intake_double_solonoid_left, intake_double_solonoid_right);
   //Hopper
   talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
   talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
@@ -107,24 +124,39 @@ void Robot::TeleopInit() {
   shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+  //Color Sensor
+  rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
+  color_sensor= new ColorSensor(rev_color_sensor);
   //BallManager
-  ball_manager = new BallManager(intake,hopper,shooter);
+  // ball_manager = new BallManager(intake,hopper,shooter,color_sensor);
   //elevator
   elevator = new Elevator(elevator_motor);
+  //compressor
+  // compressor = new RobotCompressor();
   //timer
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
 }
 void Robot::TeleopPeriodic() {
-  photonlib::PhotonPipelineResult result = camera.GetLatestResult();
-  photonlib::PhotonPipelineResult limeresult = limecamera.GetLatestResult();
+  // photonlib::PhotonPipelineResult result = camera.GetLatestResult();
+  // photonlib::PhotonPipelineResult limeresult = limecamera.GetLatestResult();
 
   //runs the shuffle board display
   DisplayShuffle();
+  std::cout<<color_sensor->CheckForBall()<<std::endl;
+  // compressor.EnableDigital();
+    //   if(compressor->DetectPressure()){
+    //   compressor->TurnOnCompressor();
+    // }else{
+    //   compressor->TurnOffCompressor();
+    // }
+
+  //updates hopper state
   
-  if(joystick_0->GetRawAxis(Joy0Const::kshoot_trigger) && xyalign->HasTargetLimeLight(limeresult)){
+  /*if(joystick_0->GetRawAxis(Joy0Const::kshoot_trigger) && xyalign->HasTargetLimeLight(limeresult)){
     //auto align
     xyalign->Align(limeresult);
+    ball_manager->CheckHopperState();
   }
   //driver control
   else{
@@ -140,6 +172,7 @@ void Robot::TeleopPeriodic() {
     if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)){
       if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
         ball_manager->Shoot();
+        ball_manager->CheckHopperState();
       }
     }else{
       //if not shooting
@@ -154,6 +187,7 @@ void Robot::TeleopPeriodic() {
             intake->RunIntake(1);
             m_timer_intake->Start();
             m_timer_intake->Reset();
+            ball_manager->CheckHopperState();
           }
         }else{
           intake->PistonUp();
@@ -174,7 +208,7 @@ void Robot::TeleopPeriodic() {
     elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
     }
     
-  }
+  }*/
   
 }
 void Robot::DisplayShuffle(){
@@ -182,7 +216,7 @@ void Robot::DisplayShuffle(){
   intake->DisplayIntakeInfo();
   hopper->DiplayHopperInfo();
   shooter->DisplayShooterInfo();
-  ball_manager->DisplayBallManagerInfo();
+  // ball_manager->DisplayBallManagerInfo();
   elevator->DisplayElevatorInfo();
 }
 void Robot::DisabledInit() {

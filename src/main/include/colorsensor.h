@@ -11,11 +11,10 @@ using namespace rev;
 
 class ColorSensor {
 public:
-  ColorSensor() {
-    rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
+  ColorSensor(ColorSensorV3 *rev_color_sensor):rev_color_sensor(rev_color_sensor) {
     color_match = new ColorMatch();
 
-    // Adds the target colors to colorToMatch
+    // Adds the target colors to  colorToMatch
     color_match->AddColorMatch(blue_target);
     color_match->AddColorMatch(green_target);
     color_match->AddColorMatch(red_target);

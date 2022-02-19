@@ -12,8 +12,8 @@
 
 class BallManager {
 public:
-  BallManager(Intake *intake, Hopper *hopper, Shooter *shooter):
-  intake(intake), hopper(hopper),shooter(shooter){};
+  BallManager(Intake *intake, Hopper *hopper, Shooter *shooter, ColorSensor *color_sensor):
+  intake(intake), hopper(hopper),shooter(shooter), color_sensor(color_sensor){};
   std::string GetHopperState(int position);
   bool Rev(double target_velocity_top, double target_velocity_bottom);
   void MoveIndex();
@@ -29,11 +29,12 @@ private:
   std::string position[2] = {"NULL", "NULL"};//position[0] = color of position 1 position[1] = color of position 2
   std::string inbetween = "NULL";
 
-  ColorSensor color_sensor;
   UltraSonic ultrasonic;
   
   Intake *intake;
   Hopper *hopper;
   Shooter *shooter;
+  ColorSensor *color_sensor;
+
 };
 #endif

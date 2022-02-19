@@ -1,4 +1,5 @@
 #include "ballmanager.h"
+using namespace frc;
 
 std::string BallManager::GetHopperState(int slot){
     if(slot != 0 && slot != 1){
@@ -9,10 +10,10 @@ std::string BallManager::GetHopperState(int slot){
     }
 }
 void BallManager::CheckHopperState(){
-    if(color_sensor.CheckForBall()){
-        position[0] = color_sensor.ClosestColor();
+    if(color_sensor->CheckForBall()){
+        position[0] = color_sensor->ClosestColor();
     }
-    if(ultrasonic.SonicDistance("in") > 3 && !color_sensor.CheckForBall() && position[0] != "None"){
+    if(ultrasonic.SonicDistance("in") > 3 && !color_sensor->CheckForBall() && position[0] != "None"){
         inbetween = position[0];
         position[0] = "None";
     }
@@ -24,19 +25,23 @@ void BallManager::CheckHopperState(){
         position[1] = "None";
     }
 }
-void BallManager::MoveIndex(){
+
+void BallManager::MoveIndex()
+{
     if(ultrasonic.SonicDistance("in") > 3 && position[0] != "None"){
         hopper->RunHopperMotor(0.5, 0.5);
     }
 }
+
 void BallManager::LoadHopper(){
     if(ultrasonic.SonicDistance("in") > 3){
         hopper->RunHopperMotor(0.5, 0.5);
     }
-    else if(ultrasonic.SonicDistance("in") <= 3 && !color_sensor.CheckForBall()){
+    else if(ultrasonic.SonicDistance("in") <= 3 && !color_sensor->CheckForBall()){
         hopper->RunHopperMotor(0, 0.5);
     }
 }
+
 bool BallManager::IsFull(){
     if(position[1] != "None" && position[0] != "None"){
         return !false;
@@ -45,6 +50,7 @@ bool BallManager::IsFull(){
         return false;
     }
 }
+
 bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom){  
     //if the ball in position[1] is the right color, shoot at the inputted velocities
     if (position[1] == team_color){
@@ -80,6 +86,7 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
 void BallManager::Shoot(){
     hopper->RunHopperMotor(0.5, 0.5);
 }
+
 void BallManager::Reject(){
     shooter->VelocityControl(MechanismConst::kreject_target, MechanismConst::kreject_target);
     if(shooter->VelocityOutput("Top") >= MechanismConst::kreject_target - MechanismConst::kreject_range  
