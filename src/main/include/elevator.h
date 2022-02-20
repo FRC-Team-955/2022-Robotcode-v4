@@ -13,8 +13,8 @@ using namespace frc;
 
 class Elevator {
 public:
-  Elevator(TalonFX *elevator_motor, DigitalInput *limit_switch_top, DigitalInput *limit_switch_bottom, DoubleSolenoid *elevator_solenoid_lock): 
-  elevator_motor(elevator_motor),limit_switch_top(limit_switch_top), limit_switch_bottom(limit_switch_bottom), elevator_solenoid_lock(elevator_solenoid_lock){
+  Elevator(TalonFX *elevator_motor, DigitalInput *limit_switch_top, DigitalInput *limit_switch_bottom): 
+  elevator_motor(elevator_motor),limit_switch_top(limit_switch_top), limit_switch_bottom(limit_switch_bottom){
     elevator_motor->SetNeutralMode(NeutralMode::Coast);
     elevator_motor->TalonFX::ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 40, 0.1));
     // line above sets current limit. SupplyCurrentLimitConfiguration goes as
@@ -26,12 +26,13 @@ public:
   // void UnlockElevator();
   bool OffGround();
   void DisplayElevatorInfo();
+  void ResetPosition();
 
 private:
   bool set_up_done = false;
   TalonFX *elevator_motor;
   DigitalInput *limit_switch_top;
   DigitalInput *limit_switch_bottom;
-  DoubleSolenoid *elevator_solenoid_lock;
+  // DoubleSolenoid *elevator_solenoid_lock;
 };
 #endif
