@@ -119,8 +119,8 @@ void Robot::TeleopPeriodic() {
   //intake->PistonUp();//
   // intake->PistonDown();
   intake->RunIntake(joystick_0->GetRawAxis(1));
-  hopper->RunHopperMotor(0.25, 0.25);
-  shooter -> VelocityControl(3000,3000);
+  hopper->RunHopperMotor(-0.25, -0.25);
+  shooter -> VelocityControl(1800,1800);
 }
 
 void Robot::DisplayShuffle(){

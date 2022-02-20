@@ -2,7 +2,7 @@
 
 void Hopper::RunHopperMotor(float hopper_motor_percent_top,
                             float hopper_motor_percent_bottom) {
-std::cout<<"function run" << std::endl;
+//std::cout<<"function run" << std::endl;
   talon_hopper_top->Set(ControlMode::PercentOutput,
                        std::min(hopper_motor_percent_top, max));
   talon_hopper_bottom->Set(ControlMode::PercentOutput,
