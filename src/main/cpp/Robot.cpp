@@ -124,8 +124,8 @@ void Robot::TeleopInit() {
   elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
   limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
   limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
-  elevator_solenoid_lock = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
-  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
+  // elevator_solenoid_lock = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
+  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom);
   //compressor
   compressor = new Compressor(frc::PneumaticsModuleType::REVPH);
   //timer
@@ -135,6 +135,10 @@ void Robot::TeleopInit() {
 void Robot::TeleopPeriodic() {
   camera_result = camera.GetLatestResult();
   limelight_result = limecamera.GetLatestResult();
+  elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
+  if (joystick_0->GetRawButton(4)){
+    elevator->ResetPosition();
+  }
   
   //runs the shuffle board display
   // DisplayShuffle();

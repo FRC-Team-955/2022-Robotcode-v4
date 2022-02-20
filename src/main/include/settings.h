@@ -44,7 +44,7 @@ constexpr int kintake_double_solonoid_port_left_forward = 7; //g
 constexpr int kintake_double_solonoid_port_left_reverse = 6; //g
 constexpr int kintake_double_solonoid_port_right_forward = 5; //g
 constexpr int kintake_double_solonoid_port_right_reverse = 9; //g
-constexpr int kintake_reversal_amps = 10;
+constexpr int kintake_reversal_amps = 35;
 //hopper
 constexpr int khopper_motor_top_port = 9; //g
 constexpr int khopper_motor_bottom_port = 11; //g
