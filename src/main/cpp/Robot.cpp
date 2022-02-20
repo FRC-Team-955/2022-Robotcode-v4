@@ -135,10 +135,9 @@ void Robot::TeleopInit() {
 void Robot::TeleopPeriodic() {
   camera_result = camera.GetLatestResult();
   limelight_result = limecamera.GetLatestResult();
-
+  
   //runs the shuffle board display
-  DisplayShuffle();
-  std::cout<<color_sensor->CheckForBall()<<std::endl;
+  // DisplayShuffle();
   // compressor.EnableDigital();
     //   if(compressor->DetectPressure()){
     //   compressor->TurnOnCompressor();

@@ -15,7 +15,7 @@ class Elevator {
 public:
   Elevator(TalonFX *elevator_motor, DigitalInput *limit_switch_top, DigitalInput *limit_switch_bottom, DoubleSolenoid *elevator_solenoid_lock): 
   elevator_motor(elevator_motor),limit_switch_top(limit_switch_top), limit_switch_bottom(limit_switch_bottom), elevator_solenoid_lock(elevator_solenoid_lock){
-    elevator_motor->SetNeutralMode(NeutralMode::Brake);
+    elevator_motor->SetNeutralMode(NeutralMode::Coast);
     elevator_motor->TalonFX::ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 40, 0.1));
     // line above sets current limit. SupplyCurrentLimitConfiguration goes as
     // follow: CupplyCurrentLimitConfiguration(enable, current limit,
