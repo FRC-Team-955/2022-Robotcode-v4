@@ -7,19 +7,19 @@ constexpr int kdrive_speed_axis = 1;
 constexpr int kdrive_curvature_axis = 4;
 constexpr int kreverse_drive =  1;
 constexpr int kball_aimbot_button = 5;
-constexpr int kshoot_trigger = 5;
+constexpr int kshoot_trigger = 3;
+constexpr int kelevator_lock_button = 4;    
 } // namespace Joy0Const
 
 namespace Joy1Const {
 //intake
-constexpr int kintake_toggle_button = 6;
-constexpr int kintake_motor_run = 6;
+constexpr int kintake_toggle_button = 4;
+constexpr int kintake_motor_run = 2;
 //shooter
 constexpr int kreject_ball_button = 5;
-constexpr int kshoot_wall_trigger = 5;
+constexpr int kshoot_wall_trigger = 3;
 //elevator
-constexpr int kelevator_axis = 2;
-constexpr int kelevator_lock_button = 3;
+constexpr int kelevator_axis = 1;
 }
 namespace SensorConst {
 constexpr int limit_switch_top_port = 4; //g
