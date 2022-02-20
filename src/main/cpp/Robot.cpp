@@ -3,18 +3,12 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "Robot.h"
-
 #include "iostream"
 
 //Not our classes?
 #include <cameraserver/CameraServer.h>
 #include <frc/Joystick.h>
-//motor
-#include "rev/CANSparkMax.h"
-#include "ctre/Phoenix.h"
 #include <frc/Timer.h>
-
-
 //del maybe
 #include <frc/Compressor.h>
 
@@ -27,10 +21,6 @@
 #include "colorsensor.h"
 #include "ballmanager.h"
 #include "elevator.h"
-
-//maybe del later or now
-// #include "compressor.h"
-
 
 #include "settings.h"
 
