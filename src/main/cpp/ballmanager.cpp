@@ -13,31 +13,31 @@ void BallManager::CheckHopperState(){
     if(color_sensor->CheckForBall()){
         position[0] = color_sensor->ClosestColor();
     }
-    if(ultrasonic.SonicDistance("in") > 3 && !color_sensor->CheckForBall() && position[0] != "None"){
+    if(!IrIsBall() && !color_sensor->CheckForBall() && position[0] != "None"){
         inbetween = position[0];
         position[0] = "None";
     }
-    if(ultrasonic.SonicDistance("in") <= 3){
+    if(IrIsBall()){
         position[1] = inbetween;
         inbetween = "None";
     }
-    if(ultrasonic.SonicDistance("in") >3){
+    if(IrIsBall()){
         position[1] = "None";
     }
 }
 
 void BallManager::MoveIndex()
 {
-    if(ultrasonic.SonicDistance("in") > 3 && position[0] != "None"){
+    if(!IrIsBall() && !color_sensor->CheckForBall()){
         hopper->RunHopperMotor(0.5, 0.5);
     }
 }
 
 void BallManager::LoadHopper(){
-    if(ultrasonic.SonicDistance("in") > 3){
+    if(!IrIsBall()){
         hopper->RunHopperMotor(0.5, 0.5);
     }
-    else if(ultrasonic.SonicDistance("in") <= 3 && !color_sensor->CheckForBall()){
+    else if(IrIsBall() && !color_sensor->CheckForBall()){
         hopper->RunHopperMotor(0, 0.5);
     }
 }
@@ -100,6 +100,9 @@ void BallManager::Reject(){
         hopper->RunHopperMotor(0, -0.5);
         intake->RunIntake(-0.5);
     }
+}
+bool BallManager::IrIsBall(){
+    return ir_break_beam->Get() == 1;
 }
 void BallManager::DisplayBallManagerInfo(){
     //frc::ShuffleboardTab& tabpre

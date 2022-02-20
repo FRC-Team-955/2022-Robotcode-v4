@@ -1,19 +1,20 @@
 #ifndef BALLMANAGER
 #define BALLMANAGER
 
+#include <frc/DigitalInput.h>
+
 #include "hopper.h"
 #include "colorsensor.h"
 #include "hopper.h"
 #include "shooter.h"
-#include "ultrasonic.h"
 #include "intake.h"
 
 #include "settings.h"
 
 class BallManager {
 public:
-  BallManager(Intake *intake, Hopper *hopper, Shooter *shooter, ColorSensor *color_sensor):
-  intake(intake), hopper(hopper),shooter(shooter), color_sensor(color_sensor){};
+  BallManager(Intake *intake, Hopper *hopper, Shooter *shooter, ColorSensor *color_sensor, DigitalInput *ir_break_beam):
+  intake(intake), hopper(hopper),shooter(shooter), color_sensor(color_sensor), ir_break_beam(ir_break_beam){};
   std::string GetHopperState(int position);
   bool Rev(double target_velocity_top, double target_velocity_bottom);
   void MoveIndex();
@@ -23,18 +24,18 @@ public:
   void Reject();
   void Shoot();
   void DisplayBallManagerInfo();
+  bool IrIsBall();
   std::string team_color = "Red";
 
 private:
   std::string position[2] = {"NULL", "NULL"};//position[0] = color of position 1 position[1] = color of position 2
   std::string inbetween = "NULL";
 
-  UltraSonic ultrasonic;
-  
   Intake *intake;
   Hopper *hopper;
   Shooter *shooter;
   ColorSensor *color_sensor;
+  DigitalInput *ir_break_beam;
 
 };
 #endif

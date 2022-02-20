@@ -58,6 +58,8 @@ DoubleSolenoid *elevator_solenoid_lock;
 //Color Sensor
 ColorSensorV3 *rev_color_sensor;
 ColorMatch *color_match;
+//IR BreakBeam
+DigitalInput *ir_break_beam;
 // Compressor compressor{13, frc::PneumaticsModuleType::REVPH};
 Compressor *compressor;
 //Timers
@@ -116,8 +118,10 @@ void Robot::TeleopInit() {
   rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
   color_match = new ColorMatch();
   color_sensor= new ColorSensor(rev_color_sensor,color_match);
+  //Ir Break Beam
+  ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   //BallManager
-  ball_manager = new BallManager(intake,hopper,shooter,color_sensor);
+  ball_manager = new BallManager(intake,hopper,shooter,color_sensor,ir_break_beam);
   //elevator
   elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
   limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
