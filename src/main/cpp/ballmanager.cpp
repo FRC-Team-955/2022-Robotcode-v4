@@ -81,7 +81,7 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
 void BallManager::Shoot(){
     hopper->RunHopperMotor(0.5, 0.5);
 }
-void BallManager::Reject(){
+void BallManager::RejectTop(){
     shooter->VelocityControl(MechanismConst::kreject_target, MechanismConst::kreject_target);
     if(shooter->VelocityOutput("Top") >= MechanismConst::kreject_target - MechanismConst::kreject_range  
         && shooter->VelocityOutput("Top") <= MechanismConst::kreject_target + MechanismConst::kreject_range
@@ -90,6 +90,9 @@ void BallManager::Reject(){
         && position[1] != team_color){
         hopper->RunHopperMotor(0.5, 0);
     }
+}
+
+    void BallManager::RejectBottom(){
     if(position[0] != team_color){
         hopper->RunHopperMotor(0, -0.5);
         intake->RunIntake(-0.5);

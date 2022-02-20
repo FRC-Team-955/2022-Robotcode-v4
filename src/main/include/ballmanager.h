@@ -24,7 +24,8 @@ public:
   void CheckHopperState();
   bool IsFull();
   void LoadHopper();
-  void Reject();
+  void RejectTop();
+  void RejectBottom();
   void Shoot();
   void DisplayBallManagerInfo();
   std::string team_color = "Red";
