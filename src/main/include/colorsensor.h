@@ -11,9 +11,7 @@ using namespace rev;
 
 class ColorSensor {
 public:
-  ColorSensor(ColorSensorV3 *rev_color_sensor):rev_color_sensor(rev_color_sensor) {
-    color_match = new ColorMatch();
-
+  ColorSensor(ColorSensorV3 *rev_color_sensor, ColorMatch *color_match):rev_color_sensor(rev_color_sensor),color_match(color_match) {
     // Adds the target colors to  colorToMatch
     color_match->AddColorMatch(blue_target);
     color_match->AddColorMatch(green_target);

@@ -2,23 +2,23 @@
 using namespace frc;
 void Elevator::ElevatorMove(int joystick_position) {
 
-  if (solenoid0.Get() == 1) {
+  if (elevator_solenoid_lock->Get() == 1) {
     elevator_motor->Set(ControlMode::PercentOutput, 0);
   } else {
     // If elevator is still in the setup phase which is below the bottom limit
     // switch
     if (set_up_done == false) {
-      if (solenoid0.Get() == 1) {
+      if (elevator_solenoid_lock->Get() == 1) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
       }
       // if during set up it started below the bottom limit
-      else if (limit_switch_bottom.Get() == 1) {
+      else if (limit_switch_bottom->Get() == 1) {
         set_up_done = true;
         elevator_motor->SetSelectedSensorPosition(0);
       }
       // if it somehow started above the bottom limit switch as a fail safe
       // (will not slow down when reaching this point)
-      else if (limit_switch_top.Get() == 1) {
+      else if (limit_switch_top->Get() == 1) {
         // add actually top Encoder position later
         elevator_motor->SetSelectedSensorPosition(5000);
         if (joystick_position > 0) {
@@ -35,17 +35,17 @@ void Elevator::ElevatorMove(int joystick_position) {
     }
     // if the position of the elevator is now known
     if (set_up_done == true) {
-      if (solenoid0.Get() == 1) {
+      if (elevator_solenoid_lock->Get() == 1) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
-      } else if ((limit_switch_top.Get() == 1 ||
+      } else if ((limit_switch_top->Get() == 1 ||
                   elevator_motor->GetSelectedSensorPosition() > 5000) &&
                  joystick_position > 0) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
-      } else if ((limit_switch_top.Get() == 1 ||
+      } else if ((limit_switch_top->Get() == 1 ||
                   elevator_motor->GetSelectedSensorPosition() > 5000) &&
                  joystick_position < 0) {
         elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
-      } else if ((limit_switch_bottom.Get() == 1 ||
+      } else if ((limit_switch_bottom->Get() == 1 ||
                   elevator_motor->GetSelectedSensorPosition() < 0) &&
                  OffGround()) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
@@ -90,15 +90,15 @@ void Elevator::ElevatorMove(int joystick_position) {
   }
 }
 
-void Elevator::LockElevator() {
-  solenoid0.Set(1);
-  elevator_motor->Set(ControlMode::PercentOutput, 0);
-}
+// void Elevator::LockElevator() {
+//   solenoid0.Set(1);
+//   elevator_motor->Set(ControlMode::PercentOutput, 0);
+// }
 
-void Elevator::UnlockElevator() {
-  solenoid0.Set(0);
-  elevator_motor->Set(ControlMode::PercentOutput, 0);
-}
+// void Elevator::UnlockElevator() {
+//   solenoid0.Set(0);
+//   elevator_motor->Set(ControlMode::PercentOutput, 0);
+// }
 
 bool Elevator::OffGround() {
   if (elevator_motor->GetOutputCurrent() >= MechanismConst::climb_amperage) {
@@ -111,6 +111,6 @@ bool Elevator::OffGround() {
 void Elevator::DisplayElevatorInfo(){
   frc::Shuffleboard::GetTab("End Game").Add("Elevator Amp", elevator_motor->GetOutputCurrent());
   frc::Shuffleboard::GetTab("End Game").Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0));
-  frc::Shuffleboard::GetTab("End Game").Add("Elevator Pnemactic State",solenoid0.Get()).WithWidget(frc::BuiltInWidgets::kBooleanBox);
+  // frc::Shuffleboard::GetTab("End Game").Add("Elevator Pnemactic State",elevator_solenoid_lock->Get());
 
 }

@@ -8,11 +8,12 @@
 
 //Not our classes?
 #include <cameraserver/CameraServer.h>
-#include "rev/CANSparkMax.h"
 #include <frc/Joystick.h>
+//motor
+#include "rev/CANSparkMax.h"
 #include "ctre/Phoenix.h"
 #include <frc/Timer.h>
-#include "rev/ColorSensorV3.h"
+
 
 //del maybe
 #include <frc/Compressor.h>
@@ -23,6 +24,7 @@
 #include "intake.h"
 #include "hopper.h"
 #include "shooter.h"
+#include "colorsensor.h"
 #include "ballmanager.h"
 #include "elevator.h"
 
@@ -39,8 +41,8 @@ DriveBase *drive;
 Intake *intake;
 Hopper *hopper;
 Shooter *shooter;
-ColorSensor * color_sensor;
-// BallManager *ball_manager;
+ColorSensor *color_sensor;
+BallManager *ball_manager;
 Elevator *elevator;
 // RobotCompressor *compressor;
 
@@ -51,12 +53,13 @@ frc::Timer *m_timer_elevator;
 //Joysticks
 frc::Joystick *joystick_0;
 frc::Joystick *joystick_1;
-
 //Drive
 CANSparkMax *m_leftLeadMotor;
-CANSparkMax *m_rightLeadMotor;
 CANSparkMax *m_leftFollowMotor;
+CANSparkMax *m_rightLeadMotor;
 CANSparkMax *m_rightFollowMotor;
+frc::DifferentialDrive *differential_drive;
+ButtonToggle *reverse_drive_toggle;
 //Intake
 TalonSRX *intake_talon;
 DoubleSolenoid *intake_double_solonoid_left;
@@ -69,17 +72,22 @@ CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
 //Elevator
 TalonFX *elevator_motor;
+DigitalInput *limit_switch_top;
+DigitalInput *limit_switch_bottom;
+DoubleSolenoid *elevator_solenoid_lock;
 //Color Sensor
 ColorSensorV3 *rev_color_sensor;
-
+ColorMatch *color_match;
 
 // Compressor compressor{13, frc::PneumaticsModuleType::REVPH};
 
-// photonlib::PhotonCamera camera{"BallDetect"};
-// photonlib::PhotonCamera limecamera{"gloworm"};
+photonlib::PhotonCamera camera{"BallDetect"};
+photonlib::PhotonCamera limecamera{"gloworm"};
+photonlib::PhotonPipelineResult camera_result;
+photonlib::PhotonPipelineResult limelight_result;
 
-// ButtonToggle intake_deploy;
-// ButtonToggle elevator_lock;
+ButtonToggle intake_deploy;
+ButtonToggle elevator_lock;
 
 // chris is so cool 
 // bryan ganyu simp
@@ -107,14 +115,13 @@ void Robot::TeleopInit() {
   m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
-  drive = new DriveBase(m_leftLeadMotor, m_rightLeadMotor, m_leftFollowMotor, m_rightFollowMotor, joystick_0);
+  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
+
   xyalign = new XYalign(drive, joystick_0);
   //Intake
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
-  intake_double_solonoid_left = new DoubleSolenoid{PneumaticsModuleType::REVPH, 
-  MechanismConst::kintake_double_solonoid_port_left_forward, MechanismConst::kintake_double_solonoid_port_left_reverse};
-  intake_double_solonoid_right = new DoubleSolenoid{PneumaticsModuleType::REVPH, 
-  MechanismConst::kintake_double_solonoid_port_right_forward, MechanismConst::kintake_double_solonoid_port_right_reverse};
+  intake_double_solonoid_left = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_left_forward, MechanismConst::kintake_double_solonoid_port_left_reverse);
+  intake_double_solonoid_right = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_right_forward, MechanismConst::kintake_double_solonoid_port_right_reverse);
   intake = new Intake(intake_talon,intake_double_solonoid_left, intake_double_solonoid_right);
   //Hopper
   talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
@@ -126,11 +133,16 @@ void Robot::TeleopInit() {
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
   //Color Sensor
   rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
-  color_sensor= new ColorSensor(rev_color_sensor);
+  color_match = new ColorMatch();
+  color_sensor= new ColorSensor(rev_color_sensor,color_match);
   //BallManager
-  // ball_manager = new BallManager(intake,hopper,shooter,color_sensor);
+  ball_manager = new BallManager(intake,hopper,shooter,color_sensor);
   //elevator
-  elevator = new Elevator(elevator_motor);
+  elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
+  limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
+  limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
+  elevator_solenoid_lock = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
+  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
   //compressor
   // compressor = new RobotCompressor();
   //timer
@@ -138,8 +150,8 @@ void Robot::TeleopInit() {
   m_timer_elevator = new frc::Timer();
 }
 void Robot::TeleopPeriodic() {
-  // photonlib::PhotonPipelineResult result = camera.GetLatestResult();
-  // photonlib::PhotonPipelineResult limeresult = limecamera.GetLatestResult();
+  camera_result = camera.GetLatestResult();
+  limelight_result = limecamera.GetLatestResult();
 
   //runs the shuffle board display
   DisplayShuffle();
@@ -155,12 +167,12 @@ void Robot::TeleopPeriodic() {
   
   /*if(joystick_0->GetRawAxis(Joy0Const::kshoot_trigger) && xyalign->HasTargetLimeLight(limeresult)){
     //auto align
-    xyalign->Align(limeresult);
+    xyalign->Align(camera_result);
     ball_manager->CheckHopperState();
   }
   //driver control
   else{
-    drive->Drive(result);
+    drive->Drive(photon_result);
 
     //compressor
     if(compressor->DetectPressure()){

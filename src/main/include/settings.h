@@ -52,10 +52,8 @@ constexpr int kintake_double_solonoid_port_right_reverse = 9; //g
 constexpr int khopper_motor_top_port = 9; //g
 constexpr int khopper_motor_bottom_port = 11; //g
 //shooter
-constexpr double bottom_kP = 0.0003, bottom_kI = 0, bottom_kD = 0, bottom_kIz = 0, bottom_kFF = 0.00024, bottom_kMaxOutput = 1,
-                 bottom_kMinOutput = -1;
-constexpr double top_kP = 0.00026, top_kI = 0, top_kD = 0, top_kIz = 0, top_kFF = 0.00018, top_kMaxOutput = 1,
-                 top_kMinOutput = -1;
+constexpr double bottom_kP = 0.0003, bottom_kI = 0, bottom_kD = 0, bottom_kIz = 0, bottom_kFF = 0.00024, bottom_kMaxOutput = 1,bottom_kMinOutput = -1;
+constexpr double top_kP = 0.00026, top_kI = 0, top_kD = 0, top_kIz = 0, top_kFF = 0.00018, top_kMaxOutput = 1,top_kMinOutput = -1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
 constexpr int krange_target = 100;
@@ -65,7 +63,8 @@ constexpr int kreject_range= 100;
 constexpr int kreject_target = 1000;
 //elevator
 constexpr int kelevator_motor_port = 12; //g
-constexpr int kelevator_pnumatic_port = 0;
+constexpr int kelevator_pnumatic_port_forward = 0;
+constexpr int kelevator_pnumatic_port_reverse = 0;
 constexpr int kintake_reversal_amps = 10;
 constexpr int climb_amperage = 10;
 constexpr int elevator_slow_multiplier = 0.5;
