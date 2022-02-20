@@ -23,7 +23,7 @@ public:
     m_rightLeadMotor->SetInverted(true);
     differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
   };
-  void Drive(photonlib::PhotonPipelineResult result);
+  void Drive();
   void DisplayDriveInfo();
   void DriveTank(float leftWheelInput, float rightWheelInput);
 

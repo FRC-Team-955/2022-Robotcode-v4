@@ -137,10 +137,11 @@ void Robot::TeleopInit() {
 void Robot::TeleopPeriodic() {
   camera_result = camera.GetLatestResult();
   limelight_result = limecamera.GetLatestResult();
-  elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
-  if (joystick_0->GetRawButton(4)){
-    elevator->ResetPosition();
-  }
+  drive ->Drive();
+  // elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
+  // if (joystick_0->GetRawButton(4)){
+  //   elevator->ResetPosition();
+  // }
   
   //runs the shuffle board display
   // DisplayShuffle();

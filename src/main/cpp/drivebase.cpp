@@ -1,7 +1,7 @@
 #include "drivebase.h"
 
-void DriveBase::Drive(photonlib::PhotonPipelineResult result) {
-
+// void DriveBase::Drive(photonlib::PhotonPipelineResult result) {
+void DriveBase::Drive() {
   // ball_aimbot = joystick_0->GetRawAxis(Joy0Const::kball_aimbot_button);
   // is_quick_turn = joystick_0->GetRawButton(Joy0Const::kquick_turn_button);
 
