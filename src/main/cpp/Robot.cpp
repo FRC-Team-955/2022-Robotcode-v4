@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 #include "Robot.h"
 #include "iostream"
 
@@ -34,19 +30,14 @@ Shooter *shooter;
 ColorSensor *color_sensor;
 BallManager *ball_manager;
 Elevator *elevator;
-// RobotCompressor *compressor;
-
-//Timers
-frc::Timer *m_timer_intake;
-frc::Timer *m_timer_elevator;
 
 //Joysticks
 frc::Joystick *joystick_0;
 frc::Joystick *joystick_1;
 //Drive
 CANSparkMax *m_leftLeadMotor;
-CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightLeadMotor;
+CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
 frc::DifferentialDrive *differential_drive;
 ButtonToggle *reverse_drive_toggle;
@@ -68,16 +59,21 @@ DoubleSolenoid *elevator_solenoid_lock;
 //Color Sensor
 ColorSensorV3 *rev_color_sensor;
 ColorMatch *color_match;
-
 // Compressor compressor{13, frc::PneumaticsModuleType::REVPH};
+Compressor *compressor;
+//Timers
+frc::Timer *m_timer_intake;
+frc::Timer *m_timer_elevator;
+
+
 
 photonlib::PhotonCamera camera{"BallDetect"};
 photonlib::PhotonCamera limecamera{"gloworm"};
 photonlib::PhotonPipelineResult camera_result;
 photonlib::PhotonPipelineResult limelight_result;
 
-ButtonToggle intake_deploy;
-ButtonToggle elevator_lock;
+ButtonToggle intake_deploy_toggle;
+ButtonToggle elevator_lock_toggle;
 
 // chris is so cool 
 // bryan ganyu simp
@@ -89,7 +85,7 @@ ButtonToggle elevator_lock;
 void Robot::RobotInit() {
   // frc::CameraServer::StartAutomaticCapture();
   // cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Blur", 640, 480);
+  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
 }
 void Robot::RobotPeriodic() {}
 
@@ -106,7 +102,6 @@ void Robot::TeleopInit() {
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
-
   xyalign = new XYalign(drive, joystick_0);
   //Intake
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
@@ -134,7 +129,7 @@ void Robot::TeleopInit() {
   elevator_solenoid_lock = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
   elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
   //compressor
-  // compressor = new RobotCompressor();
+  compressor = new Compressor(frc::PneumaticsModuleType::REVPH);
   //timer
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
@@ -182,7 +177,7 @@ void Robot::TeleopPeriodic() {
         ball_manager->Reject();
       }else{
         //if not rejecting
-        if (intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+        if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
           intake->PistonDown();
           //If the intake is in the down state allow the intake to run
           if(joystick_1->GetRawButton(Joy1Const::kintake_motor_run)){
@@ -202,7 +197,7 @@ void Robot::TeleopPeriodic() {
     }
     //check if its around time to climb
     if(m_timer_elevator->GetMatchTime()>90_s){
-      if(elevator_lock.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
+      if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
         elevator->LockElevator();
       }else{
         elevator->UnlockElevator();
