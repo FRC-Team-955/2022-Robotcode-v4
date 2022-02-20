@@ -21,7 +21,6 @@ public:
     m_leftFollowMotor->Follow(*m_leftLeadMotor);
     m_leftLeadMotor->SetInverted(false);
     m_rightLeadMotor->SetInverted(true);
-    differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
   };
   void Drive();
   void DisplayDriveInfo();

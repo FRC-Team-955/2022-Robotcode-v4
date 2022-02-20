@@ -29,7 +29,7 @@ constexpr int kir_break_beam_port = 0;
 } // namespace SensorConst
 
 namespace DriveConst {
-constexpr int kleft_lead_neo_number = 4; //g
+constexpr int kleft_lead_neo_number = 6; //4; //g
 constexpr int kright_lead_neo_number = 2; //g
 constexpr int kleft_follow_neo_number = 5; //g
 constexpr int kright_follow_neo_number = 3; //g
@@ -40,8 +40,8 @@ constexpr float Kp = -0.1, KpDistance = -0.1, min_command = -0.05;//For Limeligh
 namespace MechanismConst {
 //intake
 constexpr int kintake_motor = 10; //g
-constexpr int kintake_double_solonoid_port_forward = 7;
-constexpr int kintake_double_solonoid_port_reverse = 6; 
+constexpr int kintake_double_solonoid_port_forward = 10;
+constexpr int kintake_double_solonoid_port_reverse = 9; 
 constexpr int kintake_reversal_amps = 35;
 //hopper
 constexpr int khopper_motor_top_port = 9; //g
