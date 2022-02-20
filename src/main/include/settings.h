@@ -14,7 +14,7 @@ constexpr int kelevator_lock_button = 4;
 namespace Joy1Const {
 //intake
 constexpr int kintake_toggle_button = 4;
-constexpr int kintake_motor_run = 2;
+constexpr int kintake_motor_run_axis = 2;
 //shooter
 constexpr int kreject_ball_button = 5;
 constexpr int kshoot_wall_trigger = 3;

@@ -179,7 +179,7 @@ void Robot::TeleopPeriodic() {
         if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
           intake->PistonDown();
           //If the intake is in the down state allow the intake to run
-          if(joystick_1->GetRawButton(Joy1Const::kintake_motor_run)){
+          if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)){
             intake->RunIntake(1);
             m_timer_intake->Start();
             m_timer_intake->Reset();
