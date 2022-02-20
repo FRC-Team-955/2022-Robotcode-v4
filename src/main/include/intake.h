@@ -12,8 +12,8 @@ using namespace frc;
 
 class Intake {
 public:
-  Intake(TalonSRX *intake_talon, DoubleSolenoid *double_solenoid_left, DoubleSolenoid *double_solenoid_right):
-  intake_talon(intake_talon), double_solenoid_left(double_solenoid_left), double_solenoid_right(double_solenoid_right){
+  Intake(TalonSRX *intake_talon, DoubleSolenoid *double_solenoid):
+  intake_talon(intake_talon), double_solenoid(double_solenoid){
     intake_talon->TalonSRX::ConfigPeakCurrentLimit(40);
     intake_talon->TalonSRX::EnableCurrentLimit(true);
   }
@@ -25,8 +25,7 @@ public:
 
 private:
   TalonSRX *intake_talon;
-  DoubleSolenoid *double_solenoid_left;
-  DoubleSolenoid *double_solenoid_right;
+  DoubleSolenoid *double_solenoid;
 };
 
 #endif

@@ -43,8 +43,7 @@ frc::DifferentialDrive *differential_drive;
 ButtonToggle *reverse_drive_toggle;
 //Intake
 TalonSRX *intake_talon;
-DoubleSolenoid *intake_double_solonoid_left;
-DoubleSolenoid *intake_double_solonoid_right;
+DoubleSolenoid *intake_double_solonoid;
 //Hopper
 TalonSRX *talon_hopper_top;
 TalonSRX *talon_hopper_bottom;
@@ -103,9 +102,8 @@ void Robot::TeleopInit() {
   xyalign = new XYalign(drive, joystick_0);
   //Intake
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
-  intake_double_solonoid_left = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_left_forward, MechanismConst::kintake_double_solonoid_port_left_reverse);
-  intake_double_solonoid_right = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_right_forward, MechanismConst::kintake_double_solonoid_port_right_reverse);
-  intake = new Intake(intake_talon,intake_double_solonoid_left, intake_double_solonoid_right);
+  intake_double_solonoid = new DoubleSolenoid(PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
+  intake = new Intake(intake_talon,intake_double_solonoid);
   //Hopper
   talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
   talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);

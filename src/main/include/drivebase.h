@@ -5,6 +5,7 @@
 #include "rev/CANSparkMax.h"
 #include <frc/Joystick.h>
 #include <frc/drive/DifferentialDrive.h>
+#include <stdlib.h>
 
 #include <button_toggle.h>
 #include "balldetect.h"
