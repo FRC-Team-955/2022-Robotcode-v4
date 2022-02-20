@@ -24,18 +24,16 @@ public:
     m_pidController_top->SetI(MechanismConst::top_kI);
     m_pidController_top->SetD(MechanismConst::top_kD);
     m_pidController_top->SetFF(MechanismConst::top_kFF);
-    m_pidController_top->SetOutputRange(MechanismConst::top_kMinOutput,
-                                   MechanismConst::top_kMaxOutput);
+    m_pidController_top->SetOutputRange(MechanismConst::kMinOutput,MechanismConst::kMaxOutput);
 
     m_pidController_bottom->SetP(MechanismConst::bottom_kP);
     m_pidController_bottom->SetI(MechanismConst::bottom_kI);
     m_pidController_bottom->SetD(MechanismConst::bottom_kD);
     m_pidController_bottom->SetFF(MechanismConst::bottom_kFF);
-    m_pidController_bottom->SetOutputRange(MechanismConst::bottom_kMinOutput,
-                                    MechanismConst::bottom_kMaxOutput);
+    m_pidController_bottom->SetOutputRange(MechanismConst::kMinOutput,MechanismConst::kMaxOutput);
   };
   //Takes in the two percent output of the motors and sets them to that output
-  void ShootPercentOutput(double percent1, double percent2);
+  void ShootPercentOutput(double top_percent, double bottom_percent);
   //Takes in the two velocities of the motors and sets them to the velocities
   void VelocityControl(double top_velocity, double bottom_velocity);
   //Checks what the velocity of in inputed shooter motor ("Top", "Bottom")

@@ -65,8 +65,6 @@ Compressor *compressor;
 frc::Timer *m_timer_intake;
 frc::Timer *m_timer_elevator;
 
-
-
 photonlib::PhotonCamera camera{"BallDetect"};
 photonlib::PhotonCamera limecamera{"gloworm"};
 photonlib::PhotonPipelineResult camera_result;

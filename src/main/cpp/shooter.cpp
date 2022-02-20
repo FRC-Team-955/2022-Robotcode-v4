@@ -1,8 +1,8 @@
 #include "shooter.h"
 
-void Shooter::ShootPercentOutput(double percent1, double percent2) {
-  shooterneo_top->Set(percent1);
-  shooterneo_bottom->Set(-percent2);
+void Shooter::ShootPercentOutput(double top_percent, double bottom_percent) {
+  shooterneo_top->Set(top_percent);
+  shooterneo_bottom->Set(-bottom_percent);
 }
 void Shooter::VelocityControl(double top_velocity, double bottom_velocity) {
   m_pidController_top->SetReference(top_velocity, rev::ControlType::kVelocity);
