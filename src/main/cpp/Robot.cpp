@@ -93,54 +93,90 @@ void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
-  //joysticks
+  // //joysticks
   joystick_0 = new frc::Joystick(0);
   joystick_1 = new frc::Joystick(1);
-  //drivebase
+  // //drivebase
   m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
-  differential_drive->SetSafetyEnabled(false);
+  // differential_drive->SetSafetyEnabled(false);
   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
-  xyalign = new XYalign(drive, joystick_0);
-  //Intake
+  // xyalign = new XYalign(drive, joystick_0);
+  // //Intake
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
   intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
   intake = new Intake(intake_talon,intake_double_solonoid);
-  //Hopper
+  // //Hopper
   talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
   talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
   hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
-  //shooter
-  shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
-  shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
-  shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
-  //Color Sensor
-  // rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
-  // color_match = new ColorMatch();
-  // color_sensor= new ColorSensor(rev_color_sensor,color_match);
-  //Ir Break Beam
-  ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
-  //BallManager
-  // ball_manager = new BallManager(intake,hopper,shooter,color_sensor,ir_break_beam);
-  //elevator
-  elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
-  limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
-  limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
-  // elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
-  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom);
-  //compressor
+  // //shooter
+  // shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
+  // shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
+  // shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+  // //Color Sensor
+  // // rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
+  // // color_match = new ColorMatch();
+  // // color_sensor= new ColorSensor(rev_color_sensor,color_match);
+  // //Ir Break Beam
+  // ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
+  // //BallManager
+  // // ball_manager = new BallManager(intake,hopper,shooter,color_sensor,ir_break_beam);
+  // //elevator
+  // elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
+  // limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
+  // limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
+  // // elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
+  // elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom);
+  // //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
-  //timer
-  m_timer_intake = new frc::Timer();
-  m_timer_elevator = new frc::Timer();
+  // //timer
+  // m_timer_intake = new frc::Timer();
+  // m_timer_elevator = new frc::Timer();
 }
 void Robot::TeleopPeriodic() {
-  camera_result = camera.GetLatestResult();
-  limelight_result = limecamera.GetLatestResult();
-  // drive ->Drive();
+  // camera_result = camera.GetLatestResult();
+  // limelight_result = limecamera.GetLatestResult();
+  drive ->Drive();
+
+if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+      intake->PistonDown();
+      //If the intake is in the down state allow the intake to run
+      if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+        intake->RunIntake(1);
+        // m_timer_intake->Start();
+        // m_timer_intake->Reset();
+        // ball_manager->CheckHopperState();
+      }
+    }else{
+      intake->PistonUp();
+    }
+
+
+  // if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
+  //   if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
+  //     ball_manager->Shoot();
+  //     // ball_manager->CheckHopperState();
+  //   }
+  // }else{
+  //   if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+  //     intake->PistonDown();
+  //     //If the intake is in the down state allow the intake to run
+  //     if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+  //       intake->RunIntake(1);
+  //       // m_timer_intake->Start();
+  //       // m_timer_intake->Reset();
+  //       // ball_manager->CheckHopperState();
+  //     }
+  //   }else{
+  //     intake->PistonUp();
+  //   }
+  // }
+
+
   // elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
   // if (joystick_0->GetRawButton(4)){
   //   elevator->ResetPosition();
@@ -173,7 +209,7 @@ void Robot::TeleopPeriodic() {
       compressor->TurnOffCompressor();
     }
     //shooting
-    if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)){
+    if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
       if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
         ball_manager->Shoot();
         ball_manager->CheckHopperState();
@@ -187,7 +223,7 @@ void Robot::TeleopPeriodic() {
         if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
           intake->PistonDown();
           //If the intake is in the down state allow the intake to run
-          if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)){
+          if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
             intake->RunIntake(1);
             m_timer_intake->Start();
             m_timer_intake->Reset();
@@ -215,7 +251,7 @@ void Robot::TeleopPeriodic() {
   }*/
   
 }
-void Robot::DisplayShuffle(){
+void Robot::DisplayShuffle() {
   drive->DisplayDriveInfo();
   intake->DisplayIntakeInfo();
   hopper->DiplayHopperInfo();
@@ -233,6 +269,7 @@ void Robot::DisabledInit() {
   delete m_leftFollowMotor;
   delete m_rightFollowMotor;
   delete differential_drive;
+  delete reverse_drive_toggle;
   delete drive;
   delete xyalign;
   //intake

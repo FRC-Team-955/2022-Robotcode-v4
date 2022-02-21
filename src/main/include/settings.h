@@ -30,8 +30,8 @@ constexpr int kir_break_beam_port = 0;
 
 namespace DriveConst {
 constexpr int kleft_lead_neo_number = 6; //4; //g
-constexpr int kright_lead_neo_number = 2; //g
 constexpr int kleft_follow_neo_number = 5; //g
+constexpr int kright_lead_neo_number = 2; //g
 constexpr int kright_follow_neo_number = 3; //g
 constexpr float kturn_div = 20; //For Ball Align
 constexpr float Kp = -0.1, KpDistance = -0.1, min_command = -0.05;//For Limelight Align
@@ -53,8 +53,8 @@ constexpr double kMinOutput = 0, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
 constexpr int krange_target = 100;
-constexpr int khigh_range= 100;
-constexpr int khigh_target = 1000;
+constexpr int khigh_range= 200; //m
+constexpr int khigh_target = 1800; //g
 constexpr int kreject_range= 100;
 constexpr int kreject_target = 1000;
 //elevator

@@ -53,7 +53,8 @@ bool BallManager::IsFull(){
 
 bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom){  
     //if the ball in position[1] is the right color, shoot at the inputted velocities
-    if (position[1] == team_color){
+    //if(position[1] == team_color)
+    if (true){
         shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
         if(shooter->VelocityOutput("Top") >= target_velocity_top - MechanismConst::krange_target && 
             shooter->VelocityOutput("Top") <= target_velocity_top + MechanismConst::krange_target &&
