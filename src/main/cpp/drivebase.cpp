@@ -8,9 +8,13 @@ void DriveBase::Drive() {
   if (reverse_drive_toggle->GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kreverse_drive))) {
     //in reverse
     if(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis)<0.05){
-      differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), true);
+      curve = joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis);
+      power = -joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis);
+      ReverseDrive = true;
     }else{
-      differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), false);
+      curve = joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis);
+      power = -joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis);
+      ReverseDrive = false;
     }
     std::cout<<"reverse drive"<<std::endl;
   }else {
@@ -23,11 +27,18 @@ void DriveBase::Drive() {
     // } 
     //normal drive
     if(abs(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis))<0.05){
-      differential_drive->CurvatureDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), true);
+       curve = joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis);
+      power = joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis);
+      ReverseDrive = true;
     }else {
-      differential_drive->CurvatureDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), false);
+       curve = joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis);
+      power = joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis);
+      ReverseDrive = false;
     }
   }
+  
+  differential_drive->CurvatureDrive(power,curve, ReverseDrive);
+
 }
 
 void DriveBase::DisplayDriveInfo() {

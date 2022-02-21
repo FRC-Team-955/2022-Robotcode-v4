@@ -23,14 +23,8 @@
 
 using namespace rev;
 
-XYalign *xyalign;
 DriveBase *drive;
-Intake *intake;
-Hopper *hopper;
-Shooter *shooter;
-ColorSensor *color_sensor;
-BallManager *ball_manager;
-Elevator *elevator;
+
 
 //Joysticks
 frc::Joystick *joystick_0;
@@ -53,24 +47,11 @@ CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
 //Elevator
 TalonFX *elevator_motor;
-DigitalInput *limit_switch_top;
-DigitalInput *limit_switch_bottom;
-DoubleSolenoid *elevator_solenoid_lock;
-//Color Sensor
-ColorSensorV3 *rev_color_sensor;
-ColorMatch *color_match;
-//IR BreakBeam
-DigitalInput *ir_break_beam;
-// Compressor compressor{13, frc::PneumaticsModuleType::REVPH};
-Compressor *compressor;
-//Timers
+
 frc::Timer *m_timer_intake;
 frc::Timer *m_timer_elevator;
 
-photonlib::PhotonCamera camera{"BallDetect"};
-photonlib::PhotonCamera limecamera{"gloworm"};
-photonlib::PhotonPipelineResult camera_result;
-photonlib::PhotonPipelineResult limelight_result;
+
 
 ButtonToggle intake_deploy_toggle;
 ButtonToggle elevator_lock_toggle;
@@ -104,42 +85,12 @@ void Robot::TeleopInit() {
   differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
   differential_drive->SetSafetyEnabled(false);
   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
-  xyalign = new XYalign(drive, joystick_0);
-  //Intake
-  intake_talon = new TalonSRX(MechanismConst::kintake_motor);
-  intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
-  intake = new Intake(intake_talon,intake_double_solonoid);
-  //Hopper
-  talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
-  talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
-  hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
-  //shooter
-  shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
-  shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
-  shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
-  //Color Sensor
-  // rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
-  // color_match = new ColorMatch();
-  // color_sensor= new ColorSensor(rev_color_sensor,color_match);
-  //Ir Break Beam
-  ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
-  //BallManager
-  // ball_manager = new BallManager(intake,hopper,shooter,color_sensor,ir_break_beam);
-  //elevator
-  elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
-  limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
-  limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
-  // elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
-  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom);
-  //compressor
-  compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
-  //timer
+
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
 }
 void Robot::TeleopPeriodic() {
-  camera_result = camera.GetLatestResult();
-  limelight_result = limecamera.GetLatestResult();
+
   // drive ->Drive();
   // elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
   // if (joystick_0->GetRawButton(4)){

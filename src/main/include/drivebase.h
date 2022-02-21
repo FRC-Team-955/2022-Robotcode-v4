@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #include <button_toggle.h>
-#include "balldetect.h"
 #include "settings.h"
 
 using namespace rev;
@@ -40,5 +39,7 @@ private:
   bool is_quick_turn = false;
   bool ReverseDrive = false;
   bool ball_aimbot = false;
+  double curve;
+  double power;
 };
 #endif
