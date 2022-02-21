@@ -118,9 +118,9 @@ void Robot::TeleopInit() {
   // shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   // shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
   // //Color Sensor
-  // // rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
-  // // color_match = new ColorMatch();
-  // // color_sensor= new ColorSensor(rev_color_sensor,color_match);
+  rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kMXP);
+  color_match = new ColorMatch();
+  color_sensor= new ColorSensor(rev_color_sensor,color_match);
   // //Ir Break Beam
   // ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   // //BallManager
@@ -141,6 +141,8 @@ void Robot::TeleopPeriodic() {
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
   drive ->Drive();
+  std::cout<<color_sensor ->ClosestColor()<<std::endl;
+
 
 if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
       intake->PistonDown();
