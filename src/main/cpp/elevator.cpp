@@ -8,9 +8,9 @@ void Elevator::ElevatorMove(double joystick_position) {
   joystick_position = -joystick_position;
   std::cout<<"bottom: "<<limit_switch_bottom->Get()<<std::endl;
   //std::cout<<"top: "<<limit_switch_top->Get()<<std::endl;
-  std::cout<<"elevator position"<<elevator_motor->GetSelectedSensorPosition()<<std::endl;
+  std::cout<<"elevator position: "<<elevator_motor->GetSelectedSensorPosition()<<std::endl;
 
-
+  std::cout<<"set up done"<<set_up_done<<std::endl;
   // If elevator is still in the setup phase which is below the bottom limit
   // switch
   if (set_up_done == false) {
@@ -21,7 +21,7 @@ void Elevator::ElevatorMove(double joystick_position) {
     }
   //   // if it somehow started above the bottom limit switch as a fail safe
   //   // (will not slow down when reaching this point)
-    else if (elevator_motor->GetSelectedSensorPosition() > 316000) {
+    else if (elevator_motor->GetSelectedSensorPosition() > 280000) {
       if (joystick_position > 0) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
       } else if (joystick_position < 0) {
@@ -43,9 +43,9 @@ void Elevator::ElevatorMove(double joystick_position) {
 
   // if the position of the elevator is now known
   if (set_up_done == true) {
-    if (elevator_motor->GetSelectedSensorPosition() > 316000 && joystick_position > 0) {
+    if (elevator_motor->GetSelectedSensorPosition() > 290000 && joystick_position > 0) {
       elevator_motor->Set(ControlMode::PercentOutput, 0);
-    } else if (elevator_motor->GetSelectedSensorPosition() > 316000 && joystick_position < 0) {
+    } else if (elevator_motor->GetSelectedSensorPosition() > 290000 && joystick_position < 0) {
       elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
     } else if ((elevator_motor->GetSelectedSensorPosition() < 10000) && joystick_position < 0) {
       elevator_motor->Set(ControlMode::PercentOutput, 0);
@@ -73,7 +73,10 @@ void Elevator::ElevatorMove(double joystick_position) {
     //   } else {
     //     elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
     //   }
-    // } 
+    // }
+    else if ((elevator_motor->GetSelectedSensorPosition() > 0) && (elevator_motor->GetSelectedSensorPosition() < 290000)) {
+      elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
+    }
     else {
       elevator_motor->Set(ControlMode::PercentOutput, 0);
     }

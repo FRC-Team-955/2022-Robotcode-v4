@@ -2,11 +2,12 @@
 
 // void DriveBase::Drive(photonlib::PhotonPipelineResult result) {
 void DriveBase::Drive() {
-  if (joystick_0->GetRawButton(Joy0Const::kreverse_drive)) {
-  differential_drive->CurvatureDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), false);
-  }else{
-    differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), false);
-  }
+  // if (reverse_drive_toggle->GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kreverse_drive))){
+  //   ReverseDrive = -1;
+  // }else{
+  //   ReverseDrive = 1;
+  // }
+  differential_drive->ArcadeDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*ReverseDrive);
 
   // ball_aimbot = joystick_0->GetRawAxis(Joy0Const::kball_aimbot_button);
   // is_quick_turn = joystick_0->GetRawButton(Joy0Const::kquick_turn_button);

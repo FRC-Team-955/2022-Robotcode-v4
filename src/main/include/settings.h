@@ -5,8 +5,8 @@ namespace Joy0Const {
 constexpr int kquick_turn_button = 2;
 constexpr int kdrive_speed_axis = 1;
 constexpr int kdrive_curvature_axis = 4;
-constexpr int kreverse_drive =  1;
-constexpr int kball_aimbot_button = 5;
+constexpr int kreverse_drive = 5;
+// constexpr int kball_aimbot_button = 5;
 constexpr int kshoot_trigger = 3;
 constexpr int kelevator_lock_button = 4;    
 } // namespace Joy0Const

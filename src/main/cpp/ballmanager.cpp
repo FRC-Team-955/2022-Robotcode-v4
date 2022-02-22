@@ -95,7 +95,7 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
 }
 
 void BallManager::Shoot(){
-    hopper->RunHopperMotor(0.5, 0.5);
+    hopper->RunHopperMotor(0.25, 0.25);
 }
 
 void BallManager::Reject(){
