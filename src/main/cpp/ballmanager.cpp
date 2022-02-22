@@ -18,12 +18,14 @@ void BallManager::CheckHopperState(){
         position[0] = "None";
     }
     if(IrIsBall()){
-        position[1] = inbetween;
-        inbetween = "None";
+        if(inbetween != "None"){
+            position[1] = inbetween;
+            inbetween = "None";
+        }
     }
-    if(!IrIsBall()){
-        position[1] = "None";
-    }
+    // if(!IrIsBall()){
+    //     position[1] = "None";
+    // }
 }
 
 void BallManager::MoveIndex(){
