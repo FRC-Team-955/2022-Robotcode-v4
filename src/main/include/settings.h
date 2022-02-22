@@ -53,8 +53,9 @@ constexpr double kMinOutput = -1, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
 constexpr int krange_target = 100;
-constexpr int khigh_range= 300; //m
-constexpr int khigh_target = 1800; //g
+constexpr int khigh_range= 100; //m
+constexpr int khigh_target_bottom = 2000; //g
+constexpr int khigh_target_top = 1800; //g
 constexpr int kreject_range= 100;
 constexpr int kreject_target = 1000;
 //elevator

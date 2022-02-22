@@ -144,7 +144,7 @@ void Robot::TeleopPeriodic() {
   elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
   ball_manager->CheckHopperState();
   if(joystick_0->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
-      if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
+      if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
         ball_manager->Shoot();
         ball_manager->CheckHopperState();
       }
