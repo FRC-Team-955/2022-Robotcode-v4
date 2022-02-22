@@ -48,7 +48,7 @@ constexpr int khopper_motor_top_port = 9; //g
 constexpr int khopper_motor_bottom_port = 11; //g
 //shooter
 constexpr double top_kP = 0.00026, top_kI = 0, top_kD = 0, top_kFF = 0.00018, top_kMinOutput=0,top_kMaxOutput = 1;
-constexpr double bottom_kP = 0.0003, bottom_kI = 0, bottom_kD = 0, bottom_kFF = 0.00024, bottom_kMinOutput=-1, bottom_kMaxOutput = 0;
+constexpr double bottom_kP = 0.00026, bottom_kI = 0, bottom_kD = 0, bottom_kFF = 0.00018, bottom_kMinOutput=-1, bottom_kMaxOutput = 0;
 constexpr double kMinOutput = -1, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
