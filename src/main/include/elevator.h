@@ -15,13 +15,14 @@ class Elevator {
 public:
   Elevator(TalonFX *elevator_motor, DigitalInput *limit_switch_top, DigitalInput *limit_switch_bottom): 
   elevator_motor(elevator_motor),limit_switch_top(limit_switch_top), limit_switch_bottom(limit_switch_bottom){
-    elevator_motor->SetNeutralMode(NeutralMode::Coast);
+    elevator_motor->SetNeutralMode(NeutralMode::Brake);
+    elevator_motor->SetSelectedSensorPosition(0);
     elevator_motor->TalonFX::ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 40, 0.1));
     // line above sets current limit. SupplyCurrentLimitConfiguration goes as
     // follow: CupplyCurrentLimitConfiguration(enable, current limit,
     // triggerThresholdCurrent, triggerThresholdTime)
   }
-  void ElevatorMove(int joystick_position);
+  void ElevatorMove(double joystick_position);
   // void LockElevator();
   // void UnlockElevator();
   bool OffGround();

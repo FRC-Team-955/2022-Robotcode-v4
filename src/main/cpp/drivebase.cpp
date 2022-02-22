@@ -5,7 +5,7 @@ void DriveBase::Drive() {
   if (joystick_0->GetRawButton(Joy0Const::kreverse_drive)) {
   differential_drive->CurvatureDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), false);
   }else{
-    differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis),-joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), false);
+    differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis), false);
   }
 
   // ball_aimbot = joystick_0->GetRawAxis(Joy0Const::kball_aimbot_button);

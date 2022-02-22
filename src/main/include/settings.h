@@ -24,7 +24,7 @@ constexpr int kelevator_axis = 1;
 namespace SensorConst {
 constexpr int limit_switch_top_port = 4; //g
 constexpr int limit_switch_bottom_port = 1; //g
-constexpr int kvalue_for_ball = 1000; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
+constexpr int kvalue_for_ball = 200; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
 constexpr int kir_break_beam_port = 2;
 } // namespace SensorConst
 
@@ -42,18 +42,18 @@ namespace MechanismConst {
 constexpr int kintake_motor = 10; //g
 constexpr int kintake_double_solonoid_port_forward = 10;
 constexpr int kintake_double_solonoid_port_reverse = 9; 
-constexpr int kintake_reversal_amps = 35;
+constexpr int kintake_reversal_amps = 50;
 //hopper
 constexpr int khopper_motor_top_port = 9; //g
 constexpr int khopper_motor_bottom_port = 11; //g
 //shooter
-constexpr double top_kP = 0.00026, top_kI = 0, top_kD = 0, top_kFF = 0.00018;
-constexpr double bottom_kP = 0.0003, bottom_kI = 0, bottom_kD = 0, bottom_kFF = 0.00024;
-constexpr double kMinOutput = 0, kMaxOutput = 1;
+constexpr double top_kP = 0.00026, top_kI = 0, top_kD = 0, top_kFF = 0.00018, top_kMinOutput=0,top_kMaxOutput = 1;
+constexpr double bottom_kP = 0.0003, bottom_kI = 0, bottom_kD = 0, bottom_kFF = 0.00024, bottom_kMinOutput=-1, bottom_kMaxOutput = 0;
+constexpr double kMinOutput = -1, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
 constexpr int krange_target = 100;
-constexpr int khigh_range= 200; //m
+constexpr int khigh_range= 300; //m
 constexpr int khigh_target = 1800; //g
 constexpr int kreject_range= 100;
 constexpr int kreject_target = 1000;

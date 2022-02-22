@@ -20,16 +20,16 @@ public:
   void MoveIndex();
   void CheckHopperState();
   bool IsFull();
-  void LoadHopper();
+  void LoadHopper(double joystick_input);
   void Reject();
   void Shoot();
   void DisplayBallManagerInfo();
   bool IrIsBall();
   std::string team_color = "Red";
+  std::string inbetween = "None";
 
 private:
-  std::string position[2] = {"NULL", "NULL"};//position[0] = color of position 1 position[1] = color of position 2
-  std::string inbetween = "NULL";
+  std::string position[2] = {"None", "None"};//position[0] = color of position 1 position[1] = color of position 2
 
   Intake *intake;
   Hopper *hopper;

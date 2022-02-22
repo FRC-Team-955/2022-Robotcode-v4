@@ -24,13 +24,13 @@ public:
     m_pidController_top->SetI(MechanismConst::top_kI);
     m_pidController_top->SetD(MechanismConst::top_kD);
     m_pidController_top->SetFF(MechanismConst::top_kFF);
-    m_pidController_top->SetOutputRange(MechanismConst::kMinOutput,MechanismConst::kMaxOutput);
+    m_pidController_top->SetOutputRange(MechanismConst::top_kMinOutput,MechanismConst::top_kMaxOutput);
 
     m_pidController_bottom->SetP(MechanismConst::bottom_kP);
     m_pidController_bottom->SetI(MechanismConst::bottom_kI);
     m_pidController_bottom->SetD(MechanismConst::bottom_kD);
     m_pidController_bottom->SetFF(MechanismConst::bottom_kFF);
-    m_pidController_bottom->SetOutputRange(MechanismConst::kMinOutput,MechanismConst::kMaxOutput);
+    m_pidController_bottom->SetOutputRange(MechanismConst::bottom_kMinOutput,MechanismConst::bottom_kMaxOutput);
   };
   //Takes in the two percent output of the motors and sets them to that output
   void ShootPercentOutput(double top_percent, double bottom_percent);

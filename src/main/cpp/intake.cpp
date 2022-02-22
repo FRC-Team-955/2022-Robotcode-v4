@@ -9,10 +9,9 @@ void Intake::PistonDown() {
   double_solenoid->Set(frc::DoubleSolenoid::Value::kReverse);
 }
 void Intake::RunIntake(float intake_percent) {
-  std::cout<<"function run"<<std::endl;
-  if (intake_talon->GetOutputCurrent() > MechanismConst::kintake_reversal_amps) {
-    intake_percent *= -1;
-  }
+  // if (intake_talon->GetOutputCurrent() > MechanismConst::kintake_reversal_amps) {
+  //   // intake_percent *= -1;
+  // }
   intake_talon->Set(ControlMode::PercentOutput, intake_percent);
 }
 void Intake::StopIntake() { intake_talon->Set(ControlMode::PercentOutput, 0); }

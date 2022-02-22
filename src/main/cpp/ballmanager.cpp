@@ -13,16 +13,18 @@ void BallManager::CheckHopperState(){
     if(color_sensor->CheckForBall()){
         position[0] = color_sensor->ClosestColor();
     }
-    if(!IrIsBall() && !color_sensor->CheckForBall() && position[0] != "None"){
-        inbetween = position[0];
+    if(!color_sensor->CheckForBall() && position[0] != "None"){
+        // inbetween = position[0];
+        position[1] = position[0];
         position[0] = "None";
+
     }
-    if(IrIsBall()){
-        if(inbetween != "None"){
-            position[1] = inbetween;
-            inbetween = "None";
-        }
-    }
+    // if(IrIsBall()){
+    //     if(inbetween != "None"){
+    //         position[1] = inbetween;
+    //         inbetween = "None";
+    //     }
+    // }
     // if(!IrIsBall()){
     //     position[1] = "None";
     // }
@@ -30,16 +32,23 @@ void BallManager::CheckHopperState(){
 
 void BallManager::MoveIndex(){
     if(!IrIsBall() && !color_sensor->CheckForBall()){
-        hopper->RunHopperMotor(0.5, 0.5);
+        hopper->RunHopperMotor(0.1, 0.25);
     }
 }
 
-void BallManager::LoadHopper(){
-    if(!IrIsBall()){
-        hopper->RunHopperMotor(0.5, 0.5);
+void BallManager::LoadHopper(double joystick_input){
+    if(position[1]=="None"){
+        // hopper->RunHopperMotor(1, 1);
+        hopper->RunHopperMotor(joystick_input, 0.5);
+
+        std::cout<<"uh2"<<std::endl;
+
     }
-    else if(IrIsBall() && !color_sensor->CheckForBall()){
-        hopper->RunHopperMotor(0, 0.5);
+    else if(position[1]!="None" && position[0] == "None"){
+        hopper->RunHopperMotor(joystick_input, 0.5);
+        std::cout<<"uh"<<std::endl;
+    }else{
+        hopper->RunHopperMotor(joystick_input, 0);
     }
 }
 
@@ -73,7 +82,7 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
         if(shooter->VelocityOutput("Top") >= MechanismConst::kreject_target - MechanismConst::kreject_range  
         && shooter->VelocityOutput("Top") <= MechanismConst::kreject_target + MechanismConst::kreject_range
         && shooter->VelocityOutput("Bottom") <= MechanismConst::kreject_target + MechanismConst::kreject_range
-        && shooter->VelocityOutput("Bottom") <= MechanismConst::kreject_target + MechanismConst::kreject_range){
+        && shooter->VelocityOutput("Bottom") >= MechanismConst::kreject_target - MechanismConst::kreject_range){
             return true;
         }
         else{

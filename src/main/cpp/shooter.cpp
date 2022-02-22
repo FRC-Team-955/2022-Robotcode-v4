@@ -12,7 +12,7 @@ float Shooter::VelocityOutput(std::string shooter_motor){
   if (shooter_motor == "Top"){
     return shooterneo_top_encoder->GetVelocity();
   }else if(shooter_motor == "Bottom"){
-    return shooterneo_bottom_encoder->GetVelocity();
+    return -shooterneo_bottom_encoder->GetVelocity();
   }
   else{
     return 0;

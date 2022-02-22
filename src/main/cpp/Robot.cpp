@@ -118,7 +118,7 @@ void Robot::TeleopInit() {
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
   // //Color Sensor
-  rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kMXP);
+  rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
   color_match = new ColorMatch();
   color_sensor= new ColorSensor(rev_color_sensor,color_match);
   // //Ir Break Beam
@@ -138,7 +138,7 @@ void Robot::TeleopInit() {
   // m_timer_elevator = new frc::Timer();
 }
 void Robot::TeleopPeriodic() {
-  std::cout<<ir_break_beam->Get()<<std::endl;
+  // std::cout<<ir_break_beam->Get()<<std::endl;
   // if(ball_manager->IrIsBall()){
   //   std::cout<<"Yes"<<std::endl;
   // } else{
@@ -147,29 +147,43 @@ void Robot::TeleopPeriodic() {
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
   // drive ->Drive();
-  elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
-
+  //elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
+  // elevator->DisplayElevatorInfo();
+  std::cout<<elevator_motor->GetSelectedSensorPosition()<<std::endl;
   if (joystick_0->GetRawButton(1)){
     elevator->ResetPosition();
   }
 
-  if(color_sensor->CheckForBall()){
-    std::cout<<color_sensor ->ClosestColor()<<std::endl;
-  }
-  if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-      intake->PistonDown();
-      //If the intake is in the down state allow the intake to run
-      if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
-        intake->RunIntake(1);
-        // m_timer_intake->Start();
-        // m_timer_intake->Reset();
-        // ball_manager->CheckHopperState();
-      }else{
-        intake->RunIntake(0);
-      }
-    }else{
-      intake->PistonUp();
-    }
+    // ball_manager->CheckHopperState();
+
+    // std::cout<<"bottom: "<<ball_manager->GetHopperState(0)<<std::endl<<"top: "<< ball_manager->GetHopperState(1)<<std::endl;
+    // std::cout<<"inbetween: "<<ball_manager->inbetween<<std::endl;
+
+  // if(joystick_0->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
+  //     if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
+  //       ball_manager->Shoot();
+  //       ball_manager->CheckHopperState();
+  //     }
+  //   }else{
+  //     std::cout<<ball_manager->IrIsBall()<<std::endl;
+  //     shooter->VelocityControl(0,0);
+  //     ball_manager->LoadHopper(joystick_1->GetRawAxis(5));
+      
+  //     if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+  //         intake->PistonDown();
+  //         //If the intake is in the down state allow the intake to run
+  //         if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+  //           intake->RunIntake(1);
+  //           // m_timer_intake->Start();
+  //           // m_timer_intake->Reset();
+  //           // ball_manager->CheckHopperState();
+  //         }else{
+  //           intake->RunIntake(0);
+  //         }
+  //     }else{
+  //       intake->PistonUp();
+  //     }
+  //   }
 
 
   // if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
@@ -213,14 +227,7 @@ void Robot::TeleopPeriodic() {
   }
   //driver control
   else{
-    drive->Drive(photon_result);
-
-    //compressor
-    if(compressor->DetectPressure()){
-      compressor->TurnOnCompressor();
-    }else{
-      compressor->TurnOffCompressor();
-    }
+    drive->Drive();
     //shooting
     if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
       if(ball_manager->Rev(MechanismConst::khigh_target,MechanismConst::khigh_target)){
@@ -229,6 +236,7 @@ void Robot::TeleopPeriodic() {
       }
     }else{
       //if not shooting
+      shooter->ShootPercentOutput(0,0);
       if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
         ball_manager->Reject();
       }else{
