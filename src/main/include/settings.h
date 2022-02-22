@@ -24,8 +24,8 @@ constexpr int kelevator_axis = 1;
 namespace SensorConst {
 constexpr int limit_switch_top_port = 4; //g
 constexpr int limit_switch_bottom_port = 1; //g
-constexpr int kvalue_for_ball = 2000; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
-constexpr int kir_break_beam_port = 0;
+constexpr int kvalue_for_ball = 1000; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
+constexpr int kir_break_beam_port = 2;
 } // namespace SensorConst
 
 namespace DriveConst {

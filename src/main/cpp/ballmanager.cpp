@@ -21,13 +21,12 @@ void BallManager::CheckHopperState(){
         position[1] = inbetween;
         inbetween = "None";
     }
-    if(IrIsBall()){
+    if(!IrIsBall()){
         position[1] = "None";
     }
 }
 
-void BallManager::MoveIndex()
-{
+void BallManager::MoveIndex(){
     if(!IrIsBall() && !color_sensor->CheckForBall()){
         hopper->RunHopperMotor(0.5, 0.5);
     }
@@ -103,7 +102,7 @@ void BallManager::Reject(){
     }
 }
 bool BallManager::IrIsBall(){
-    return ir_break_beam->Get() == 1;
+    return ir_break_beam->Get() == 0;
 }
 void BallManager::DisplayBallManagerInfo(){
     //frc::ShuffleboardTab& tabpre

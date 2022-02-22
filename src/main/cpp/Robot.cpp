@@ -114,23 +114,23 @@ void Robot::TeleopInit() {
   talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
   hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
   // //shooter
-  // shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
-  // shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
-  // shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+  shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
+  shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
+  shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
   // //Color Sensor
   rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kMXP);
   color_match = new ColorMatch();
   color_sensor= new ColorSensor(rev_color_sensor,color_match);
   // //Ir Break Beam
-  // ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
+  ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   // //BallManager
-  // // ball_manager = new BallManager(intake,hopper,shooter,color_sensor,ir_break_beam);
+  ball_manager = new BallManager(intake,hopper,shooter,color_sensor,ir_break_beam);
   // //elevator
-  // elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
-  // limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
-  // limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
+  elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
+  limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
+  limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
   // // elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
-  // elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom);
+  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom);
   // //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
   // //timer
@@ -138,13 +138,25 @@ void Robot::TeleopInit() {
   // m_timer_elevator = new frc::Timer();
 }
 void Robot::TeleopPeriodic() {
+  std::cout<<ir_break_beam->Get()<<std::endl;
+  // if(ball_manager->IrIsBall()){
+  //   std::cout<<"Yes"<<std::endl;
+  // } else{
+  //   std::cout<<"John Noyes"<<std::endl;
+  // }
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
-  drive ->Drive();
-  std::cout<<color_sensor ->ClosestColor()<<std::endl;
+  // drive ->Drive();
+  elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
 
+  if (joystick_0->GetRawButton(1)){
+    elevator->ResetPosition();
+  }
 
-if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+  if(color_sensor->CheckForBall()){
+    std::cout<<color_sensor ->ClosestColor()<<std::endl;
+  }
+  if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
       intake->PistonDown();
       //If the intake is in the down state allow the intake to run
       if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
@@ -152,6 +164,8 @@ if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const:
         // m_timer_intake->Start();
         // m_timer_intake->Reset();
         // ball_manager->CheckHopperState();
+      }else{
+        intake->RunIntake(0);
       }
     }else{
       intake->PistonUp();
@@ -179,10 +193,7 @@ if (intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const:
   // }
 
 
-  // elevator->ElevatorMove(joystick_0->GetRawAxis(Joy1Const::kelevator_axis)*0.1);
-  // if (joystick_0->GetRawButton(4)){
-  //   elevator->ResetPosition();
-  // }
+
   
   //runs the shuffle board display
   // DisplayShuffle();
@@ -287,13 +298,13 @@ void Robot::DisabledInit() {
   delete shooterneo_bottom;
   delete shooter;
   //color sensor
-  //delete rev_color_sensor;
-  //delete color_match;
-  //delete color_sensor;
-  //ir break beam
-  //BallManager
-  //delete ball_manager;
+  delete rev_color_sensor;
+  delete color_match;
+  delete color_sensor;
+  //Ir break beam
   delete ir_break_beam;
+  //BallManager
+  delete ball_manager;
   //elevator
   delete elevator_motor;
   delete limit_switch_top;
