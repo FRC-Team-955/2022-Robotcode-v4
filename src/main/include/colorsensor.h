@@ -14,9 +14,9 @@ public:
   ColorSensor(ColorSensorV3 *rev_color_sensor, ColorMatch *color_match):rev_color_sensor(rev_color_sensor),color_match(color_match) {
     // Adds the target colors to colorToMatch
     color_match->AddColorMatch(blue_target);
-    color_match->AddColorMatch(green_target);
+    // color_match->AddColorMatch(green_target);
     color_match->AddColorMatch(red_target);
-    color_match->AddColorMatch(yellow_target);
+    // color_match->AddColorMatch(yellow_target);
   }
   std::string ClosestColor();
   frc::Color GetColor();
