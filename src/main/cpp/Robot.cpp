@@ -81,6 +81,9 @@ ButtonToggle hopper_manual_toggle;
 ButtonToggle shooter_goal_toggle;
 ButtonToggle elevator_lock_toggle;
 
+SparkMaxRelativeEncoder *m_rightLeadMotor_encoder;
+SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
+
 // chris is so cool 
 // bryan ganyu simp
 // ganyu is pog
@@ -95,8 +98,26 @@ void Robot::RobotInit() {
 }
 void Robot::RobotPeriodic() {}
 
-void Robot::AutonomousInit() {}
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousInit() {
+      m_rightLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
+      m_leftLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
+      
+}
+void Robot::AutonomousPeriodic() {
+    if (ball_manager->Rev(2000, 2000) == true){
+    ball_manager -> Shoot();
+
+  if (ball_manager -> IsEmpty() == true){
+    m_rightLeadMotor->Set(.5);
+    m_leftLeadMotor->Set(.5);
+  }
+
+  if (m_rightLeadMotor_encoder->GetPosition() >= 5000 && m_leftLeadMotor_encoder->GetPosition() >= 5000){
+    m_rightLeadMotor->Set(0);
+    m_leftLeadMotor->Set(0);
+    }
+  }
+}
 
 void Robot::TeleopInit() {
   // //joysticks
