@@ -75,6 +75,8 @@ photonlib::PhotonPipelineResult camera_result;
 photonlib::PhotonPipelineResult limelight_result;
 
 ButtonToggle intake_deploy_toggle;
+ButtonToggle hopper_manual_toggle;
+ButtonToggle shooter_goal_toggle;
 ButtonToggle elevator_lock_toggle;
 
 // chris is so cool 
@@ -146,31 +148,47 @@ void Robot::TeleopPeriodic() {
   // limelight_result = limecamera.GetLatestResult();
   drive ->Drive();
   elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+
   ball_manager->CheckHopperState();
   if(joystick_0->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
-      if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
+    if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
+      //low goal
+      if(ball_manager->Rev(MechanismConst::klow_target_top,MechanismConst::klow_target_bottom)){
         ball_manager->Shoot();
         ball_manager->CheckHopperState();
       }
     }else{
-      shooter->VelocityControl(0,0);
-      ball_manager->LoadHopper(joystick_1->GetRawAxis(5));
-      
-      if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-          intake->PistonDown();
-          //If the intake is in the down state allow the intake to run
-          if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
-            intake->RunIntake(1);
-            // m_timer_intake->Start();
-            // m_timer_intake->Reset();
-            // ball_manager->CheckHopperState();
-          }else{
-            intake->RunIntake(0);
-          }
-      }else{
-        intake->PistonUp();
+      //high goal
+      if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
+        ball_manager->Shoot();
+        ball_manager->CheckHopperState();
       }
     }
+
+      
+  }else{
+    shooter->VelocityControl(0,0);
+    //hopper in manual or auto will add the run loadhopper automatically later
+    if(hopper_manual_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::khopper_manual_toggle_button))){
+      hopper->RunHopperMotor(joystick_1->GetRawAxis(Joy1Const::khopper_motor_top), joystick_1->GetRawAxis(Joy1Const::khopper_motor_bottom));
+    }else{
+      ball_manager->LoadHopper(joystick_1->GetRawAxis(5));
+    }
+    if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+        intake->PistonDown();
+        //If the intake is in the down state allow the intake to run
+        if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+          intake->RunIntake(1);
+          // m_timer_intake->Start();
+          // m_timer_intake->Reset();
+          // ball_manager->CheckHopperState();
+        }else{
+          intake->RunIntake(0);
+        }
+    }else{
+      intake->PistonUp();
+    }
+  }
 
 
   // if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
