@@ -28,7 +28,8 @@ DriveBase *drive;
 Intake *intake;
 Hopper *hopper;
 Shooter *shooter;
-ColorSensor *color_sensor;
+ColorSensor *color_sensor_top;
+ColorSensor *color_sensor_bot;
 BallManager *ball_manager;
 Elevator *elevator;
 
@@ -57,7 +58,8 @@ DigitalInput *limit_switch_top;
 DigitalInput *limit_switch_bottom;
 DoubleSolenoid *elevator_solenoid_lock;
 //Color Sensor
-ColorSensorV3 *rev_color_sensor;
+ColorSensorV3 *rev_color_sensor_top;
+ColorSensorV3 *rev_color_sensor_bot;
 ColorMatch *color_match;
 //IR BreakBeam
 DigitalInput *ir_break_beam;
@@ -118,13 +120,15 @@ void Robot::TeleopInit() {
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
   // //Color Sensor
-  rev_color_sensor = new ColorSensorV3(frc::I2C::Port::kOnboard);
+  rev_color_sensor_bot = new ColorSensorV3(frc::I2C::Port::kOnboard);
+  rev_color_sensor_top = new ColorSensorV3(frc::I2C::Port::kMXP);
   color_match = new ColorMatch();
-  color_sensor= new ColorSensor(rev_color_sensor,color_match);
+  color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match);
+  color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match);
   // //Ir Break Beam
   ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   // //BallManager
-  ball_manager = new BallManager(intake,hopper,shooter,color_sensor,ir_break_beam);
+  ball_manager = new BallManager(intake,hopper,shooter,color_sensor_top, color_sensor_bot);
   // //elevator
   elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
   limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
@@ -289,9 +293,11 @@ void Robot::DisabledInit() {
   delete shooterneo_bottom;
   delete shooter;
   //color sensor
-  delete rev_color_sensor;
+  delete rev_color_sensor_top;
+  delete rev_color_sensor_bot;
   delete color_match;
-  delete color_sensor;
+  delete color_sensor_top;
+  delete color_sensor_bot;
   //Ir break beam
   delete ir_break_beam;
   //BallManager

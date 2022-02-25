@@ -10,28 +10,22 @@ std::string BallManager::GetHopperState(int slot){
     }
 }
 void BallManager::CheckHopperState(){
-    if(color_sensor->CheckForBall()){
-        position[0] = color_sensor->ClosestColor();
-    }
-    if(!color_sensor->CheckForBall() && position[0] != "None"){
-        // inbetween = position[0];
-        position[1] = position[0];
+    if(!color_sensor_bot->CheckForBall()){
         position[0] = "None";
-
     }
-    // if(IrIsBall()){
-    //     if(inbetween != "None"){
-    //         position[1] = inbetween;
-    //         inbetween = "None";
-    //     }
-    // }
-    // if(!IrIsBall()){
-    //     position[1] = "None";
-    // }
+    if(!color_sensor_top->CheckForBall()){
+        position[1] = "None";
+    }
+    if(color_sensor_bot->CheckForBall()){
+        position[0] = color_sensor_bot->ClosestColor(); 
+    }
+    if(color_sensor_top->CheckForBall()){
+        position[1] = color_sensor_top->ClosestColor();
+    }
 }
 
 void BallManager::MoveIndex(){
-    if(!IrIsBall() && !color_sensor->CheckForBall()){
+    if(color_sensor_bot->CheckForBall() && !color_sensor_top->CheckForBall()){
         hopper->RunHopperMotor(0.1, 0.25);
     }
 }
@@ -39,16 +33,15 @@ void BallManager::MoveIndex(){
 void BallManager::LoadHopper(double joystick_input){
     if(position[1]=="None"){
         // hopper->RunHopperMotor(1, 1);
-        hopper->RunHopperMotor(joystick_input, 0.5);
+        hopper->RunHopperMotor(.25, 0.25);
 
         std::cout<<"uh2"<<std::endl;
-
     }
     else if(position[1]!="None" && position[0] == "None"){
-        hopper->RunHopperMotor(joystick_input, 0.5);
+        hopper->RunHopperMotor(0, 0.25);
         std::cout<<"uh"<<std::endl;
     }else{
-        hopper->RunHopperMotor(joystick_input, 0);
+        hopper->RunHopperMotor(0, 0);
     }
 }
 
@@ -112,9 +105,7 @@ void BallManager::Reject(){
         intake->RunIntake(-0.5);
     }
 }
-bool BallManager::IrIsBall(){
-    return ir_break_beam->Get() == 0;
-}
+
 void BallManager::DisplayBallManagerInfo(){
     //frc::ShuffleboardTab& tabpre
     // frc::ShuffleboardLayout& ball_layout = frc::Shuffleboard::GetTab("Telop").GetLayout("Ball Slots","List Layout");
@@ -179,4 +170,14 @@ void BallManager::DisplayBallManagerInfo(){
     //     frc::Shuffleboard::GetTab("Telop").Add("Top Red", false);
     //     frc::Shuffleboard::GetTab("Telop").Add("Top Blue", false);
     // }
+    
 }
+
+bool BallManager::IsEmpty(){
+        if(position[0] != "None" && position[1] != "None"){
+            return 0;
+        }
+        else{
+            return 1;
+        }
+    }
