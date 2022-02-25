@@ -101,7 +101,6 @@ void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
       m_rightLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
       m_leftLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
-      
 }
 void Robot::AutonomousPeriodic() {
     if (ball_manager->Rev(2000, 2000) == true){
