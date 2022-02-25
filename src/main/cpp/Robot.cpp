@@ -6,6 +6,7 @@
 #include <frc/Joystick.h>
 #include <frc/Timer.h>
 #include <frc/MotorSafety.h>
+#include <frc/motorcontrol/Spark.h>
 //del maybe
 #include <frc/Compressor.h>
 
@@ -31,6 +32,7 @@ Shooter *shooter;
 ColorSensor *color_sensor;
 BallManager *ball_manager;
 Elevator *elevator;
+Spark *rgb_spark;
 
 //Joysticks
 frc::Joystick *joystick_0;
@@ -135,6 +137,8 @@ void Robot::TeleopInit() {
   elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
   // //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
+  //rgb
+  rgb_spark = new Spark(0);
   // //timer
   // m_timer_intake = new frc::Timer();
   // m_timer_elevator = new frc::Timer();
@@ -142,6 +146,7 @@ void Robot::TeleopInit() {
 void Robot::TeleopPeriodic() {
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
+  rgb_spark->Set(-0.99);
   drive ->Drive();
   elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
 
