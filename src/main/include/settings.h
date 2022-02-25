@@ -7,6 +7,7 @@ constexpr int kdrive_speed_axis = 1;
 constexpr int kdrive_curvature_axis = 4;
 constexpr int kreverse_drive = 5;
 // constexpr int kball_aimbot_button = 5;
+constexpr int kshooter_goal_toggle_button = 5;
 constexpr int kshoot_trigger = 3;
 constexpr int kelevator_lock_button = 4;    
 } // namespace Joy0Const
@@ -15,6 +16,10 @@ namespace Joy1Const {
 //intake
 constexpr int kintake_toggle_button = 4;
 constexpr int kintake_motor_run_axis = 2;
+//hopper
+constexpr int khopper_manual_toggle_button = 5;
+constexpr int khopper_motor_bottom = 4;
+constexpr int khopper_motor_top = 5;
 //shooter
 constexpr int kreject_ball_button = 5;
 constexpr int kshoot_wall_trigger = 3;
@@ -53,6 +58,11 @@ constexpr double kMinOutput = -1, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
 constexpr int krange_target = 100;
+//low goal
+constexpr int klow_range= 300; //m
+constexpr int klow_target_bottom = 1000; //g
+constexpr int klow_target_top = 700; //g
+//high goal
 constexpr int khigh_range= 100; //m
 constexpr int khigh_target_bottom = 2000; //g
 constexpr int khigh_target_top = 1800; //g
