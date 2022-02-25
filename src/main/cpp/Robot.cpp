@@ -91,6 +91,7 @@ SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 // hi guys its bryan welcome back to my channel today im teaching you * minecraft *
 // Thank you for listening to my ted talk
 
+
 void Robot::RobotInit() {
   // frc::CameraServer::StartAutomaticCapture();
   // cs::CvSink cvSink = frc::CameraServer::GetVideo();
@@ -168,52 +169,59 @@ void Robot::TeleopInit() {
   // m_timer_elevator = new frc::Timer();
 }
 void Robot::TeleopPeriodic() {
+  frc::Shuffleboard::GetTab("Telop").Add("Top Color", "None").GetEntry().SetString(color_sensor_top->ClosestColor());
+  frc::Shuffleboard::GetTab("Telop").Add("Bottom Color", "None").GetEntry().SetString(color_sensor_bot->ClosestColor());
+  std::cout<<"Top: "<<color_sensor_top->ClosestColor()<<std::endl;
+  std::cout<<"Bottom: "<<color_sensor_bot->ClosestColor()<<std::endl;
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
-  rgb_spark->Set(-0.99);
-  drive ->Drive();
-  elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+  // rgb_spark->Set(-0.99);
+  // drive ->Drive();
+  // elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+  // elevator->DisplayElevatorInfo();
 
-  ball_manager->CheckHopperState();
-  if(joystick_0->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
-    if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
-      //low goal
-      if(ball_manager->Rev(MechanismConst::klow_target_top,MechanismConst::klow_target_bottom)){
-        ball_manager->Shoot();
-        ball_manager->CheckHopperState();
-      }
-    }else{
-      //high goal
-      if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
-        ball_manager->Shoot();
-        ball_manager->CheckHopperState();
-      }
-    }
+  // ball_manager->CheckHopperState();
+  // if(joystick_0->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
+  //   if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
+  //     //low goal
+  //     frc::Shuffleboard::GetTab("Telop").Add("Intake Deploy Down", "Low Goal").GetEntry().SetString("Low Goal");
 
-      
-  }else{
-    shooter->VelocityControl(0,0);
-    //hopper in manual or auto will add the run loadhopper automatically later
-    if(hopper_manual_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::khopper_manual_toggle_button))){
-      hopper->RunHopperMotor(joystick_1->GetRawAxis(Joy1Const::khopper_motor_top), joystick_1->GetRawAxis(Joy1Const::khopper_motor_bottom));
-    }else{
-      ball_manager->LoadHopper(joystick_1->GetRawAxis(5));
-    }
-    if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-        intake->PistonDown();
-        //If the intake is in the down state allow the intake to run
-        if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
-          intake->RunIntake(1);
-          // m_timer_intake->Start();
-          // m_timer_intake->Reset();
-          // ball_manager->CheckHopperState();
-        }else{
-          intake->RunIntake(0);
-        }
-    }else{
-      intake->PistonUp();
-    }
-  }
+  //     if(ball_manager->Rev(MechanismConst::klow_target_top,MechanismConst::klow_target_bottom)){
+  //       ball_manager->Shoot();
+  //       ball_manager->CheckHopperState();
+  //     }
+  //   }else{
+  //     //high goal
+  //     if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
+  //       ball_manager->Shoot();
+  //       ball_manager->CheckHopperState();
+  //     }
+  //   }
+  // }else{
+  //   shooter->VelocityControl(0,0);
+  //   //hopper in manual or auto will add the run loadhopper automatically later
+  //   if(hopper_manual_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::khopper_manual_toggle_button))){
+  //     hopper->RunHopperMotor(joystick_1->GetRawAxis(Joy1Const::khopper_motor_top), joystick_1->GetRawAxis(Joy1Const::khopper_motor_bottom));
+  //   }else{
+  //     ball_manager->LoadHopper(joystick_1->GetRawAxis(5));
+  //   }
+  //   if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+  //       frc::Shuffleboard::GetTab("Telop").Add("Intake Deploy Down", true).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry().SetBoolean(true);
+  //       intake->PistonDown();
+  //       //If the intake is in the down state allow the intake to run
+  //       if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+  //         intake->RunIntake(1);
+  //         // m_timer_intake->Start();
+  //         // m_timer_intake->Reset();
+  //         // ball_manager->CheckHopperState();
+  //       }else{
+  //         intake->RunIntake(0);
+  //       }
+  //   }else{
+  //     frc::Shuffleboard::GetTab("Telop").Add("Intake Deploy Down", false).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry().SetBoolean(false);
+  //     intake->PistonUp();
+  //   }
+  // }
 
 
   // if(joystick_1->GetRawAxis(Joy1Const::kshoot_wall_trigger)>0.3){
@@ -236,9 +244,6 @@ void Robot::TeleopPeriodic() {
   //   }
   // }
 
-
-
-  
   //runs the shuffle board display
   // DisplayShuffle();
   // compressor.EnableDigital();

@@ -70,8 +70,8 @@ constexpr int kreject_range= 100;
 constexpr int kreject_target = 1000;
 //elevator
 constexpr int kelevator_motor_port = 12; //g
-constexpr int kelevator_pnumatic_port_forward = 0;
-constexpr int kelevator_pnumatic_port_reverse = 0;
+constexpr int kelevator_pnumatic_port_forward = 4;
+constexpr int kelevator_pnumatic_port_reverse = 5;
 constexpr int climb_amperage = 20;
 constexpr int elevator_slow_multiplier = 0.5;
 //compressor
