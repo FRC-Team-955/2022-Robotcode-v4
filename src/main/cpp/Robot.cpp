@@ -95,7 +95,7 @@ frc::ShuffleboardTab &tab_pre = frc::Shuffleboard::GetTab("Pre");
 frc::ShuffleboardTab &tab_auto = frc::Shuffleboard::GetTab("Auto");  
 frc::ShuffleboardTab &tab_telop = frc::Shuffleboard::GetTab("Telop");
 frc::ShuffleboardTab &tab_endgame = frc::Shuffleboard::GetTab("End Game");
-nt::NetworkTableEntry elevator_position = tab_endgame.Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0)).GetEntry();
+
 // chris is so cool 
 // bryan ganyu simp
 // ganyu is pog
@@ -213,7 +213,6 @@ void Robot::TeleopPeriodic() {
   drive ->Drive();
   // frc::Shuffleboard::Update();
   // elevator->UpdateElevatorInfo();
-  elevator_position.SetDouble(elevator_motor->GetSelectedSensorPosition(0));
 
   if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
     low_goal_mode = true;

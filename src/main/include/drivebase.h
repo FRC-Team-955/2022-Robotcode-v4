@@ -6,6 +6,7 @@
 #include <frc/Joystick.h>
 #include <frc/drive/DifferentialDrive.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include <button_toggle.h>
 #include "balldetect.h"
@@ -36,6 +37,10 @@ private:
   ButtonToggle *reverse_drive_toggle;
   frc::Joystick *joystick_0;
 
+  double drive;
+  double drive_old = 0;
+  double turn;
+  double turn_old = 0;
 
   bool is_quick_turn = false;
   int ReverseDrive = 1;

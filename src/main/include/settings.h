@@ -41,6 +41,7 @@ constexpr int kright_lead_neo_number = 2; //g
 constexpr int kright_follow_neo_number = 3; //g
 constexpr float kturn_div = 20; //For Ball Align
 constexpr float Kp = -0.1, KpDistance = -0.1, min_command = -0.05;//For Limelight Align
+constexpr float krate_limit = 3/5;
 } // namespace DriveConst
 
 namespace MechanismConst {
