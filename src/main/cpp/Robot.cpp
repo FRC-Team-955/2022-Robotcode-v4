@@ -100,8 +100,11 @@ int AutoState = 0;
 // Thank you for listening to my ted talk
 
 void Robot::RobotInit() {
-  m_position_Chooser = new frc::SendableChooser<std::string>;
-  m_team_color_Chooser = new frc::SendableChooser<std::string>;
+  // const char *colour[4] = { "Blue", "Red",
+  //                            "Orange", "Yellow" };
+  // SmartDashboard::SetDefaultStringArray("Team Color", colour);
+  // m_position_Chooser = new frc::SendableChooser<std::string>;
+  // m_team_color_Chooser = new frc::SendableChooser<std::string>;
   // frc::CameraServer::StartAutomaticCapture();
   // cs::CvSink cvSink = frc::CameraServer::GetVideo();
   // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
@@ -111,10 +114,10 @@ void Robot::RobotInit() {
   // m_position_Chooser->AddOption("Right","Right");
   // m_position_Chooser->AddOption("Middle","Middle");
   // frc::Shuffleboard::GetTab("Pre").Add("Robot Position", m_position_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-  m_team_color_Chooser->AddOption("Blue", "Blue");
-  m_team_color_Chooser->AddOption("Red", "Red");
-  frc::Shuffleboard::GetTab("Pre").Add("Team Color", *m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-  Shuffleboard::SelectTab("Pre");
+  // m_team_color_Chooser->AddOption("Blue", "Blue");
+  // m_team_color_Chooser->AddOption("Red", "Red");
+  // frc::Shuffleboard::GetTab("Pre").Add("Team Color", *m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  // Shuffleboard::SelectTab("Pre");
 }
 void Robot::RobotPeriodic() {}
 
@@ -154,13 +157,13 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
-  
   Delete();
   Build();
-    m_timer_intake->Start();
+  m_timer_intake->Start();
   m_timer_elevator->Start();
 }
 void Robot::TeleopPeriodic() {
+  
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
   // rgb_spark->Set(-0.99);
@@ -263,11 +266,10 @@ void Robot::DisabledPeriodic() {}
 void Robot::TestInit() {}
 void Robot::TestPeriodic() {}
 void Robot::Build(){
-  
   //joysticks
   joystick_0 = new frc::Joystick(0);
   joystick_1 = new frc::Joystick(1);
-  // //drivebase
+  //drivebase
   m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
@@ -276,7 +278,10 @@ void Robot::Build(){
   // differential_drive->SetSafetyEnabled(false);
   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
   // xyalign = new XYalign(drive, joystick_0);
-  // //Intake
+  //auto
+  m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
+  m_rightLeadMotor_encoder = new SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
+  //Intake
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
   intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
   intake = new Intake(intake_talon,intake_double_solonoid);
@@ -304,18 +309,13 @@ void Robot::Build(){
   limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
   elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
   elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
-  // //compressor
+  //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
   //rgb
   rgb_spark = new Spark(0);
   //timer
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
-  // DisplayShuffle();
-
-  //auto
-  m_rightLeadMotor_encoder = new SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
-  m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
 }
 void Robot::Delete(){
   //Choosers
@@ -333,6 +333,9 @@ void Robot::Delete(){
   delete reverse_drive_toggle;
   delete drive;
   delete xyalign;
+  //auto
+  delete m_leftLeadMotor_encoder;
+  delete m_rightLeadMotor_encoder;
   //intake
   delete intake_talon;
   delete intake_double_solonoid;
@@ -368,7 +371,6 @@ void Robot::Delete(){
   //timer
   delete m_timer_intake;
   delete m_timer_elevator;
-  delete rgb_spark;
 }
 #ifndef RUNNING_FRC_TESTS
 int main() {
