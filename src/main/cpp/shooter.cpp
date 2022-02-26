@@ -19,8 +19,8 @@ float Shooter::VelocityOutput(std::string shooter_motor){
   }
 }
 void Shooter::DisplayShooterInfo(){
-  frc::Shuffleboard::GetTab("Telop").Add("Shooter Top Amp",shooterneo_top->GetOutputCurrent());
-  frc::Shuffleboard::GetTab("Telop").Add("Shooter Top Velocity",shooterneo_top_encoder->GetVelocity());
-  frc::Shuffleboard::GetTab("Telop").Add("Shooter Bottom Amp",shooterneo_bottom->GetOutputCurrent());
-  frc::Shuffleboard::GetTab("Telop").Add("Shooter Bottom Velocity",shooterneo_bottom_encoder->GetVelocity());
+  frc::SmartDashboard::PutNumber("Shooter Top Amp", shooterneo_top->GetOutputCurrent());
+  frc::SmartDashboard::PutNumber("Shooter Top Velocity", shooterneo_top_encoder->GetVelocity());
+  frc::SmartDashboard::PutNumber("Shooter Bottom Amp", shooterneo_bottom->GetOutputCurrent());
+  frc::SmartDashboard::PutNumber("Shooter Bottom Velocity", shooterneo_bottom_encoder->GetVelocity());
 }
