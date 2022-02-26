@@ -1,8 +1,8 @@
 #pragma once
 #include <frc/shuffleboard/Shuffleboard.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 namespace Joy0Const {
-constexpr int kquick_turn_button = 2;
 constexpr int kdrive_speed_axis = 1;
 constexpr int kdrive_curvature_axis = 4;
 constexpr int kreverse_drive = 5;

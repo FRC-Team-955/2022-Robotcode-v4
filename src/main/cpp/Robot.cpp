@@ -2,8 +2,7 @@
 #include "iostream"
 
 //Not our classes?
-#include <frc/shuffleboard/ShuffleboardTab.h>
-#include <frc/shuffleboard/ShuffleboardContainer.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
 #include <cameraserver/CameraServer.h>
 #include <frc/Joystick.h>
@@ -69,7 +68,7 @@ ColorSensorV3 *rev_color_sensor_bot;
 ColorMatch *color_match;
 //IR BreakBeam
 DigitalInput *ir_break_beam;
-// Compressor compressor{13, frc::PneumaticsModuleType::REVPH};
+//Compressor
 Compressor *compressor;
 //Timers
 frc::Timer *m_timer_intake;
@@ -88,14 +87,9 @@ ButtonToggle elevator_lock_toggle;
 SparkMaxRelativeEncoder *m_rightLeadMotor_encoder;
 SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 
-frc::SendableChooser<std::string> m_position_Chooser;
-frc::SendableChooser<std::string> m_team_color_Chooser;
+frc::SendableChooser<std::string> *m_position_Chooser;
+frc::SendableChooser<std::string> *m_team_color_Chooser;
 int AutoState = 0;
-frc::ShuffleboardTab &tab_pre = frc::Shuffleboard::GetTab("Pre");  
-frc::ShuffleboardTab &tab_auto = frc::Shuffleboard::GetTab("Auto");  
-frc::ShuffleboardTab &tab_telop = frc::Shuffleboard::GetTab("Telop");
-frc::ShuffleboardTab &tab_endgame = frc::Shuffleboard::GetTab("End Game");
-nt::NetworkTableEntry elevator_position = tab_endgame.Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0)).GetEntry();
 // chris is so cool 
 // bryan ganyu simp
 // ganyu is pog
@@ -104,18 +98,20 @@ nt::NetworkTableEntry elevator_position = tab_endgame.Add("Elevator Position", e
 // Thank you for listening to my ted talk
 
 void Robot::RobotInit() {
+  m_position_Chooser = new frc::SendableChooser<std::string>;
+  m_team_color_Chooser = new frc::SendableChooser<std::string>;
   // frc::CameraServer::StartAutomaticCapture();
   // cs::CvSink cvSink = frc::CameraServer::GetVideo();
   // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
 
   //Add the options to the Choosers
-  m_position_Chooser.AddOption("Left","Left");
-  m_position_Chooser.AddOption("Right","Right");
-  m_position_Chooser.AddOption("Middle","Middle");
-  tab_pre.Add("Robot Position", m_position_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-  m_team_color_Chooser.AddOption("Red", "Blue");
-  m_team_color_Chooser.AddOption("Red", "Red");
-  tab_pre.Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  // m_position_Chooser->AddOption("Left","Left");
+  // m_position_Chooser->AddOption("Right","Right");
+  // m_position_Chooser->AddOption("Middle","Middle");
+  // frc::Shuffleboard::GetTab("Pre").Add("Robot Position", m_position_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  m_team_color_Chooser->AddOption("Blue", "Blue");
+  m_team_color_Chooser->AddOption("Red", "Red");
+  frc::Shuffleboard::GetTab("Pre").Add("Team Color", *m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   Shuffleboard::SelectTab("Pre");
 }
 void Robot::RobotPeriodic() {}
@@ -124,7 +120,6 @@ void Robot::AutonomousInit() {
     // //Gets the values from the Shuffleboard
     // std::string auto_selection = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("NA");
     // //The team color it defaults to Red jic you forget to set color (aka hope to win 50-50)
-    // ball_manager.team_color = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("Red");
 
     m_rightLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
     m_leftLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
@@ -151,7 +146,7 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
-  // //joysticks
+  //joysticks
   joystick_0 = new frc::Joystick(0);
   joystick_1 = new frc::Joystick(1);
   // //drivebase
@@ -195,36 +190,34 @@ void Robot::TeleopInit() {
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
   //rgb
   rgb_spark = new Spark(0);
+
+  ball_manager->team_color = Shuffleboard::GetTab("Pre").Add("Team Color", "Red").GetEntry().GetString("Red");
   //timer
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
   m_timer_intake->Start();
   m_timer_elevator->Start();
-  // DisplayShuffle();
 }
 void Robot::TeleopPeriodic() {
-  // frc::Shuffleboard::GetTab("Telop").Add("Top Color", "None").GetEntry().SetString(color_sensor_top->ClosestColor());
-  // frc::Shuffleboard::GetTab("Telop").Add("Bottom Color", "None").GetEntry().SetString(color_sensor_bot->ClosestColor());
-  // std::cout<<"Top: "<<color_sensor_top->ClosestColor()<<std::endl;
-  // std::cout<<"Bottom: "<<color_sensor_bot->ClosestColor()<<std::endl;
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
   // rgb_spark->Set(-0.99);
+  std::cout<<ball_manager->team_color<<std::endl;
+  DisplayShuffle();
   drive ->Drive();
-  // frc::Shuffleboard::Update();
-  // elevator->UpdateElevatorInfo();
-  elevator_position.SetDouble(elevator_motor->GetSelectedSensorPosition(0));
 
+  //The toggle for Low Goal
   if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
     low_goal_mode = true;
   }else{
     low_goal_mode = false;
   }
+
+
   if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
     //shooting
     if(low_goal_mode){
       //low goal
-      // frc::Shuffleboard::GetTab("Telop").Add("Intake Deploy Down", "Low Goal").GetEntry().SetString("Low Goal");
       if(ball_manager->Rev(MechanismConst::klow_target_top,MechanismConst::klow_target_bottom)){
         ball_manager->Shoot();
         ball_manager->CheckHopperState();
@@ -250,27 +243,29 @@ void Robot::TeleopPeriodic() {
     //   ball_manager->LoadHopper();
     // }
     if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
+      //Reject code
       ball_manager->Reject();
+    }else if(joystick_1->GetRawButtonReleased(Joy1Const::kreject_ball_button)){
+      //When you release shut off motor
+      hopper->RunHopperMotor(0,0);
     }else{
       //if not rejecting
       if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-          // frc::Shuffleboard::GetTab("Telop").Add("Intake Deploy Down", true).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry().SetBoolean(true);
           intake->PistonDown();
           //If the intake is in the down state allow the intake to run
           if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
             intake->RunIntake(1);
-            // m_timer_intake->Start();
+            m_timer_intake->Start();
             m_timer_intake->Reset();
             ball_manager->CheckHopperState();
           }else{
             intake->RunIntake(0);
           }
       }else{
-        // frc::Shuffleboard::GetTab("Telop").Add("Intake Deploy Down", false).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry().SetBoolean(false);
         intake->PistonUp();
       }
       //if the m_intake_timer is less than 5s then run the hopper
-      std::cout<<(int)m_timer_elevator->Get()<<std::endl;
+      std::cout<<(int)m_timer_intake->Get()<<std::endl;
       if(!m_timer_intake->HasElapsed(3_s)){
         ball_manager->CheckHopperState();
         ball_manager->LoadHopper();
@@ -287,7 +282,7 @@ void Robot::TeleopPeriodic() {
       elevator->UnlockElevator();
     }
   elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
-  }  
+  }
 }
 void Robot::DisplayShuffle() {
   drive->DisplayDriveInfo();
@@ -296,8 +291,12 @@ void Robot::DisplayShuffle() {
   shooter->DisplayShooterInfo();
   ball_manager->DisplayBallManagerInfo();
   elevator->DisplayElevatorInfo();
+  frc::SmartDashboard::PutBoolean("Low Goal Mode", low_goal_mode);
 }
 void Robot::DisabledInit() {
+  //Choosers
+  delete m_position_Chooser;
+  delete m_team_color_Chooser;
   //joystick
   delete joystick_0;
   delete joystick_1;
@@ -339,7 +338,9 @@ void Robot::DisabledInit() {
   delete elevator_solenoid_lock;
   delete elevator;
   //compressor
-  delete compressor;    
+  delete compressor; 
+  //rgb
+  delete rgb_spark;
   //timer
   delete m_timer_intake;
   delete m_timer_elevator;

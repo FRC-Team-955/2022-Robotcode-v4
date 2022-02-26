@@ -43,9 +43,9 @@ void Elevator::ElevatorMove(double joystick_position) {
 
     // if the position of the elevator is now known
     if (set_up_done == true) {
-      if (elevator_motor->GetSelectedSensorPosition() > 290000 && joystick_position > 0) {
+      if (elevator_motor->GetSelectedSensorPosition() > 300000 && joystick_position > 0) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
-      } else if (elevator_motor->GetSelectedSensorPosition() > 290000 && joystick_position < 0) {
+      } else if (elevator_motor->GetSelectedSensorPosition() > 300000 && joystick_position < 0) {
         elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
       } else if ((elevator_motor->GetSelectedSensorPosition() < 10000) && joystick_position < 0) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
@@ -74,7 +74,7 @@ void Elevator::ElevatorMove(double joystick_position) {
       //     elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
       //   }
       // }
-      else if ((elevator_motor->GetSelectedSensorPosition() > 0) && (elevator_motor->GetSelectedSensorPosition() < 290000)) {
+      else if ((elevator_motor->GetSelectedSensorPosition() > 0) && (elevator_motor->GetSelectedSensorPosition() < 300000)) {
         elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
       }
       else {
@@ -105,12 +105,8 @@ bool Elevator::OffGround() {
 }
 
 void Elevator::DisplayElevatorInfo(){
-  //.SetDouble(elevator_motor->GetSelectedSensorPosition(0))
-  frc::Shuffleboard::GetTab("End Game").Add("Elevator Amp", elevator_motor->GetOutputCurrent()).GetEntry();
-  frc::Shuffleboard::GetTab("End Game").Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0)).GetEntry();
-  // frc::Shuffleboard::GetTab("End Game").Add("Elevator Pnemactic State",elevator_solenoid_lock->Get());
-}
+  frc::SmartDashboard::PutNumber("Elevator Amp", elevator_motor->GetOutputCurrent());
+  frc::SmartDashboard::PutNumber("Elevator Position", elevator_motor->GetSelectedSensorPosition(0));
+  frc::SmartDashboard::PutBoolean("Elevator Solenoid Extended", !(bool)(elevator_solenoid_lock->Get()-1));
 
-void Elevator::UpdateElevatorInfo(){
-  frc::Shuffleboard::GetTab("End Game").Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0)).GetEntry().SetDouble(elevator_motor->GetSelectedSensorPosition(0));
 }

@@ -89,15 +89,12 @@ void BallManager::Shoot(){
 }
 
 void BallManager::Reject(){
-    shooter->VelocityControl(MechanismConst::kreject_target, MechanismConst::kreject_target);
-    if(shooter->VelocityOutput("Top") >= MechanismConst::kreject_target - MechanismConst::kreject_range  
-        && shooter->VelocityOutput("Top") <= MechanismConst::kreject_target + MechanismConst::kreject_range
-        && shooter->VelocityOutput("Bottom") <= MechanismConst::kreject_target + MechanismConst::kreject_range
-        && shooter->VelocityOutput("Bottom") <= MechanismConst::kreject_target + MechanismConst::kreject_range
-        && position[1] != team_color){
-        hopper->RunHopperMotor(0.5, 0);
+    if(Rev(MechanismConst::kreject_target,MechanismConst::kreject_target)
+    && position[1] != team_color && position[1] == "None"){
+        hopper->RunHopperMotor(0.5,0);
+        CheckHopperState();
     }
-    if(position[0] != team_color){
+    if(position[0] != team_color && position[0] == "None"){
         hopper->RunHopperMotor(0, -0.5);
         intake->RunIntake(-0.5);
     }
@@ -125,13 +122,13 @@ void BallManager::DisplayBallManagerInfo(){
             bottom[i]=true;
         }
     }
-    frc::Shuffleboard::GetTab("Telop").Add("Bottom None", bottom[0]);
-    frc::Shuffleboard::GetTab("Telop").Add("Bottom Red", bottom[1]);
-    frc::Shuffleboard::GetTab("Telop").Add("Bottom Blue", bottom[2]);
+    SmartDashboard::PutBoolean("Bottom None", bottom[0]);
+    SmartDashboard::PutBoolean("Bottom Red", bottom[1]);
+    SmartDashboard::PutBoolean("Bottom Blue", bottom[2]);
 
-    frc::Shuffleboard::GetTab("Telop").Add("Top None", top[0]);
-    frc::Shuffleboard::GetTab("Telop").Add("Top Red", top[1]);
-    frc::Shuffleboard::GetTab("Telop").Add("Top Blue", top[2]);
+    SmartDashboard::PutBoolean("Top None", top[0]);
+    SmartDashboard::PutBoolean("Top Red", top[1]);
+    SmartDashboard::PutBoolean("Top Blue", top[2]);
 
     // if(GetHopperState(0)=="None"){
     //     frc::Shuffleboard::GetTab("Telop").Add("Bottom None", true);
@@ -171,10 +168,10 @@ void BallManager::DisplayBallManagerInfo(){
 }
 
 bool BallManager::IsEmpty(){
-        if(position[0] != "None" && position[1] != "None"){
-            return 0;
+        if(position[0] != "None" || position[1] != "None"){
+            return 1;
         }
         else{
-            return 1;
+            return 0;
         }
     }

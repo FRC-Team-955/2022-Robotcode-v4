@@ -7,7 +7,7 @@ void DriveBase::Drive() {
   // }else{
   //   ReverseDrive = 1;
   // }
-  differential_drive->ArcadeDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*ReverseDrive);
+  differential_drive->ArcadeDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis)*ReverseDrive, joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*ReverseDrive);
 
   // ball_aimbot = joystick_0->GetRawAxis(Joy0Const::kball_aimbot_button);
   // is_quick_turn = joystick_0->GetRawButton(Joy0Const::kquick_turn_button);
@@ -40,13 +40,15 @@ void DriveBase::Drive() {
 }
 
 void DriveBase::DisplayDriveInfo() {
-  frc::Shuffleboard::GetTab("Telop").Add("LeftLeadAmps", m_leftLeadMotor->GetOutputCurrent());
-  frc::Shuffleboard::GetTab("Telop").Add("leftFollowMotor", m_leftFollowMotor->GetOutputCurrent());
-  frc::Shuffleboard::GetTab("Telop").Add("rightLeadMotor",m_rightLeadMotor->GetOutputCurrent());
-  frc::Shuffleboard::GetTab("Telop").Add("rightFollowMotor", m_rightFollowMotor->GetOutputCurrent());
+  frc::SmartDashboard::PutNumber("LeftLeadAmps", m_leftLeadMotor->GetOutputCurrent());
+  frc::SmartDashboard::PutNumber("leftFollowMotor", m_leftFollowMotor->GetOutputCurrent());
+  frc::SmartDashboard::PutNumber("rightLeadMotor", m_rightLeadMotor->GetOutputCurrent());
+  frc::SmartDashboard::PutNumber("rightFollowMotor", m_rightFollowMotor->GetOutputCurrent());
+  frc::SmartDashboard::PutNumber("Reverse Drive", ReverseDrive);
+
   // frc::Shuffleboard::GetTab("Telop").Add("Reverse Drive", ReverseDrive).WithWidget(frc::BuiltInWidgets::kBooleanBox);
-  frc::Shuffleboard::GetTab("Telop").Add("Quick Turn", is_quick_turn).WithWidget(frc::BuiltInWidgets::kBooleanBox);
-  frc::Shuffleboard::GetTab("Telop").Add("Ball Aimbot", ball_aimbot).WithWidget(frc::BuiltInWidgets::kBooleanBox);
+  // frc::Shuffleboard::GetTab("Telop").Add("Quick Turn", is_quick_turn).WithWidget(frc::BuiltInWidgets::kBooleanBox);
+  // frc::Shuffleboard::GetTab("Telop").Add("Ball Aimbot", ball_aimbot).WithWidget(frc::BuiltInWidgets::kBooleanBox);
 }
 
 void DriveBase::DriveTank(float leftWheelInput, float rightWheelInput){
