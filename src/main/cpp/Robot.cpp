@@ -88,6 +88,7 @@ SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 
 frc::SendableChooser<std::string> m_position_Chooser;
 frc::SendableChooser<std::string> m_team_color_Chooser;
+int AutoState = 0;
 
 // chris is so cool 
 // bryan ganyu simp
@@ -127,19 +128,24 @@ void Robot::AutonomousInit() {
     m_leftLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
 }
 void Robot::AutonomousPeriodic() {
-    if (ball_manager->Rev(2000, 2000) == true){
-    ball_manager -> Shoot();
+  
+  if (AutoState == 0 && ball_manager->Rev(2000, 2000) == true){
+  ball_manager -> Shoot();
 
-  if (ball_manager -> IsEmpty() == true){
+  }
+  if (ball_manager -> IsEmpty() && AutoState == 0){
+    AutoState++;
+  } 
+  if (AutoState == 1){
     m_rightLeadMotor->Set(.5);
     m_leftLeadMotor->Set(.5);
-  }
+  } 
 
-  if (m_rightLeadMotor_encoder->GetPosition() >= 5000 && m_leftLeadMotor_encoder->GetPosition() >= 5000){
+  if (m_rightLeadMotor_encoder->GetPosition() >= 5000 && m_leftLeadMotor_encoder->GetPosition() >= 5000 && AutoState == 1){
     m_rightLeadMotor->Set(0);
     m_leftLeadMotor->Set(0);
-    }
-  }
+    AutoState++;
+  } 
 }
 
 void Robot::TeleopInit() {
@@ -238,7 +244,6 @@ void Robot::TeleopPeriodic() {
     // }else{
     //   ball_manager->LoadHopper();
     // }
-    
     if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
       ball_manager->Reject();
     }else{
