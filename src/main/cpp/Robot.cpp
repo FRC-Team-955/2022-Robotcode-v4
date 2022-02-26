@@ -93,9 +93,9 @@ SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 int AutoState = 0;
 
 void Robot::RobotInit() {
-  // frc::CameraServer::StartAutomaticCapture();
-  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
+    frc::CameraServer::StartAutomaticCapture();
+    cs::CvSink cvSink = frc::CameraServer::GetVideo();
+    cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
 }
 void Robot::RobotPeriodic() {}
 
