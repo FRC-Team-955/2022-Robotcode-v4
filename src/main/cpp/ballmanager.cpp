@@ -171,10 +171,10 @@ void BallManager::DisplayBallManagerInfo(){
 }
 
 bool BallManager::IsEmpty(){
-        if(position[0] != "None" && position[1] != "None"){
-            return 0;
+        if(position[0] == "None" && position[1] == "None"){
+            return 1;
         }
         else{
-            return 1;
+            return 0;
         }
     }

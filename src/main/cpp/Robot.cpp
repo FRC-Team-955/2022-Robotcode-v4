@@ -85,6 +85,8 @@ ButtonToggle hopper_manual_toggle;
 ButtonToggle shooter_goal_toggle;
 ButtonToggle elevator_lock_toggle;
 
+
+
 SparkMaxRelativeEncoder *m_rightLeadMotor_encoder;
 SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 
@@ -117,33 +119,53 @@ void Robot::RobotInit() {
   m_team_color_Chooser.AddOption("Red", "Red");
   tab_pre.Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   Shuffleboard::SelectTab("Pre");
+
+
+
+
 }
 void Robot::RobotPeriodic() {}
 
 void Robot::AutonomousInit() {
+    Delete();
+    Build();
+
     // //Gets the values from the Shuffleboard
     // std::string auto_selection = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("NA");
     // //The team color it defaults to Red jic you forget to set color (aka hope to win 50-50)
     // ball_manager.team_color = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("Red");
+    
+  
+    std::cout<<"before encoder init"<<std::endl;
+    
+    std::cout<<"after encoder init"<<std::endl;
+    m_leftLeadMotor_encoder->SetPosition(0);
+    m_rightLeadMotor_encoder->SetPosition(0);
 
-    m_rightLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
-    m_leftLeadMotor_encoder = new rev::SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
 }
 void Robot::AutonomousPeriodic() {
-  
-  if (AutoState == 0 && ball_manager->Rev(2000, 2000) == true){
+  //  intake->RunIntake(.5);
+  ball_manager->CheckHopperState();
+      std::cout<<"periodic 1"<<std::endl;
+  if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
+    std::cout<<"periodic 2"<<std::endl;
   ball_manager -> Shoot();
 
   }
+  std::cout<<"periodic 3"<<std::endl;
   if (ball_manager -> IsEmpty() && AutoState == 0){
+    std::cout<<"periodic 4"<<std::endl;
+    shooter->ShootPercentOutput(0,0);
     AutoState++;
   } 
+  std::cout<<"periodic 5"<<std::endl;
   if (AutoState == 1){
-    m_rightLeadMotor->Set(.5);
-    m_leftLeadMotor->Set(.5);
+  std::cout<<"periodic 6"<<std::endl;
+    m_rightLeadMotor->Set(.3);
+    m_leftLeadMotor->Set(.3);
   } 
 
-  if (m_rightLeadMotor_encoder->GetPosition() >= 5000 && m_leftLeadMotor_encoder->GetPosition() >= 5000 && AutoState == 1){
+  if (m_rightLeadMotor_encoder->GetPosition() >= 25 && m_leftLeadMotor_encoder->GetPosition() >= 25 && AutoState == 1){
     m_rightLeadMotor->Set(0);
     m_leftLeadMotor->Set(0);
     AutoState++;
@@ -151,56 +173,11 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
-  // //joysticks
-  joystick_0 = new frc::Joystick(0);
-  joystick_1 = new frc::Joystick(1);
-  // //drivebase
-  m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
-  m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
-  m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
-  m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
-  differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
-  // differential_drive->SetSafetyEnabled(false);
-  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
-  // xyalign = new XYalign(drive, joystick_0);
-  // //Intake
-  intake_talon = new TalonSRX(MechanismConst::kintake_motor);
-  intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
-  intake = new Intake(intake_talon,intake_double_solonoid);
-  // //Hopper
-  talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
-  talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
-  hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
-  // //shooter
-  shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
-  shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
-  shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
-  // //Color Sensor
-  rev_color_sensor_bot = new ColorSensorV3(frc::I2C::Port::kOnboard);
-  rev_color_sensor_top = new ColorSensorV3(frc::I2C::Port::kMXP);
-  color_match = new ColorMatch();
-  color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match);
-  color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match);
-  // //Ir Break Beam
-  ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
-  // //BallManager
-  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
-  // //elevator
-  elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
-  limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
-  limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
-  elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
-  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
-  // //compressor
-  compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
-  //rgb
-  rgb_spark = new Spark(0);
-  //timer
-  m_timer_intake = new frc::Timer();
-  m_timer_elevator = new frc::Timer();
-  m_timer_intake->Start();
+  
+  Delete();
+  Build();
+    m_timer_intake->Start();
   m_timer_elevator->Start();
-  // DisplayShuffle();
 }
 void Robot::TeleopPeriodic() {
   // frc::Shuffleboard::GetTab("Telop").Add("Top Color", "None").GetEntry().SetString(color_sensor_top->ClosestColor());
@@ -297,6 +274,67 @@ void Robot::DisplayShuffle() {
   elevator->DisplayElevatorInfo();
 }
 void Robot::DisabledInit() {
+  Delete();
+}
+void Robot::DisabledPeriodic() {}
+
+void Robot::TestInit() {}
+void Robot::TestPeriodic() {}
+void Robot::Build(){
+  //joysticks
+  joystick_0 = new frc::Joystick(0);
+  joystick_1 = new frc::Joystick(1);
+  // //drivebase
+  m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
+  m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
+  m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
+  m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
+  differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
+  // differential_drive->SetSafetyEnabled(false);
+  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
+  // xyalign = new XYalign(drive, joystick_0);
+  // //Intake
+  intake_talon = new TalonSRX(MechanismConst::kintake_motor);
+  intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
+  intake = new Intake(intake_talon,intake_double_solonoid);
+  // //Hopper
+  talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
+  talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
+  hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
+  // //shooter
+  shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
+  shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
+  shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+  // //Color Sensor
+  rev_color_sensor_bot = new ColorSensorV3(frc::I2C::Port::kOnboard);
+  rev_color_sensor_top = new ColorSensorV3(frc::I2C::Port::kMXP);
+  color_match = new ColorMatch();
+  color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match);
+  color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match);
+  // //Ir Break Beam
+  ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
+  // //BallManager
+  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
+  // //elevator
+  elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
+  limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
+  limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
+  elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
+  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
+  // //compressor
+  compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
+  //rgb
+  rgb_spark = new Spark(0);
+  //timer
+  m_timer_intake = new frc::Timer();
+  m_timer_elevator = new frc::Timer();
+  // DisplayShuffle();
+
+  //auto
+  m_rightLeadMotor_encoder = new SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
+  m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
+}
+void Robot::Delete(){
   //joystick
   delete joystick_0;
   delete joystick_1;
@@ -342,12 +380,8 @@ void Robot::DisabledInit() {
   //timer
   delete m_timer_intake;
   delete m_timer_elevator;
+  delete rgb_spark;
 }
-void Robot::DisabledPeriodic() {}
-
-void Robot::TestInit() {}
-void Robot::TestPeriodic() {}
-
 #ifndef RUNNING_FRC_TESTS
 int main() {
   return frc::StartRobot<Robot>();
