@@ -105,8 +105,12 @@ bool Elevator::OffGround() {
 }
 
 void Elevator::DisplayElevatorInfo(){
-  frc::Shuffleboard::GetTab("End Game").Add("Elevator Amp", elevator_motor->GetOutputCurrent()).GetEntry().SetDouble(elevator_motor->GetOutputCurrent());
-  frc::Shuffleboard::GetTab("End Game").Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0)).GetEntry().SetDouble(elevator_motor->GetSelectedSensorPosition(0));
+  //.SetDouble(elevator_motor->GetSelectedSensorPosition(0))
+  frc::Shuffleboard::GetTab("End Game").Add("Elevator Amp", elevator_motor->GetOutputCurrent()).GetEntry();
+  frc::Shuffleboard::GetTab("End Game").Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0)).GetEntry();
   // frc::Shuffleboard::GetTab("End Game").Add("Elevator Pnemactic State",elevator_solenoid_lock->Get());
+}
 
+void Elevator::UpdateElevatorInfo(){
+  frc::Shuffleboard::GetTab("End Game").Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0)).GetEntry().SetDouble(elevator_motor->GetSelectedSensorPosition(0));
 }

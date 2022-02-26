@@ -28,6 +28,7 @@ public:
   void UnlockElevator();
   bool OffGround();
   void DisplayElevatorInfo();
+  void UpdateElevatorInfo();
   void ResetPosition();
 
 private:

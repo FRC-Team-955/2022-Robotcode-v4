@@ -2,6 +2,8 @@
 #include "iostream"
 
 //Not our classes?
+#include <frc/shuffleboard/ShuffleboardTab.h>
+#include <frc/shuffleboard/ShuffleboardContainer.h>
 #include <frc/smartdashboard/SendableChooser.h>
 #include <cameraserver/CameraServer.h>
 #include <frc/Joystick.h>
@@ -89,7 +91,11 @@ SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 frc::SendableChooser<std::string> m_position_Chooser;
 frc::SendableChooser<std::string> m_team_color_Chooser;
 int AutoState = 0;
-
+frc::ShuffleboardTab &tab_pre = frc::Shuffleboard::GetTab("Pre");  
+frc::ShuffleboardTab &tab_auto = frc::Shuffleboard::GetTab("Auto");  
+frc::ShuffleboardTab &tab_telop = frc::Shuffleboard::GetTab("Telop");
+frc::ShuffleboardTab &tab_endgame = frc::Shuffleboard::GetTab("End Game");
+nt::NetworkTableEntry elevator_position = tab_endgame.Add("Elevator Position", elevator_motor->GetSelectedSensorPosition(0)).GetEntry();
 // chris is so cool 
 // bryan ganyu simp
 // ganyu is pog
@@ -102,18 +108,14 @@ void Robot::RobotInit() {
   // cs::CvSink cvSink = frc::CameraServer::GetVideo();
   // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
 
-  // frc::ShuffleboardTab telop = frc::Shuffleboard::GetTab("Auto");
-  // frc::Shuffleboard::GetTab("Telop");
-  // frc::Shuffleboard::GetTab("End Game");
-
   //Add the options to the Choosers
   m_position_Chooser.AddOption("Left","Left");
   m_position_Chooser.AddOption("Right","Right");
   m_position_Chooser.AddOption("Middle","Middle");
-  Shuffleboard::GetTab("Pre").Add("Robot Position", m_position_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  tab_pre.Add("Robot Position", m_position_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   m_team_color_Chooser.AddOption("Red", "Blue");
   m_team_color_Chooser.AddOption("Red", "Red");
-  Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  tab_pre.Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   Shuffleboard::SelectTab("Pre");
 }
 void Robot::RobotPeriodic() {}
@@ -198,6 +200,7 @@ void Robot::TeleopInit() {
   m_timer_elevator = new frc::Timer();
   m_timer_intake->Start();
   m_timer_elevator->Start();
+  // DisplayShuffle();
 }
 void Robot::TeleopPeriodic() {
   // frc::Shuffleboard::GetTab("Telop").Add("Top Color", "None").GetEntry().SetString(color_sensor_top->ClosestColor());
@@ -209,7 +212,9 @@ void Robot::TeleopPeriodic() {
   // rgb_spark->Set(-0.99);
   drive ->Drive();
   // frc::Shuffleboard::Update();
-  ball_manager->CheckHopperState();
+  // elevator->UpdateElevatorInfo();
+  elevator_position.SetDouble(elevator_motor->GetSelectedSensorPosition(0));
+
   if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
     low_goal_mode = true;
   }else{
@@ -267,7 +272,7 @@ void Robot::TeleopPeriodic() {
       //if the m_intake_timer is less than 5s then run the hopper
       std::cout<<(int)m_timer_elevator->Get()<<std::endl;
       if(!m_timer_intake->HasElapsed(3_s)){
-        std::cout<<"loadhopper"<<std::endl;
+        ball_manager->CheckHopperState();
         ball_manager->LoadHopper();
       }else{
         hopper->RunHopperMotor(0,0);
