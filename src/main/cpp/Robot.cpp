@@ -115,26 +115,17 @@ void Robot::RobotInit() {
   m_team_color_Chooser->AddOption("Red", "Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", *m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   Shuffleboard::SelectTab("Pre");
-
-
-
-
 }
 void Robot::RobotPeriodic() {}
 
 void Robot::AutonomousInit() {
     Delete();
     Build();
-
     // //Gets the values from the Shuffleboard
     // std::string auto_selection = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("NA");
     // //The team color it defaults to Red jic you forget to set color (aka hope to win 50-50)
     // ball_manager.team_color = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("Red");
-    
-  
-    std::cout<<"before encoder init"<<std::endl;
-    
-    std::cout<<"after encoder init"<<std::endl;
+
     m_leftLeadMotor_encoder->SetPosition(0);
     m_rightLeadMotor_encoder->SetPosition(0);
 
@@ -142,21 +133,15 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {
   //  intake->RunIntake(.5);
   ball_manager->CheckHopperState();
-      std::cout<<"periodic 1"<<std::endl;
   if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
-    std::cout<<"periodic 2"<<std::endl;
   ball_manager -> Shoot();
 
   }
-  std::cout<<"periodic 3"<<std::endl;
   if (ball_manager -> IsEmpty() && AutoState == 0){
-    std::cout<<"periodic 4"<<std::endl;
     shooter->ShootPercentOutput(0,0);
     AutoState++;
   } 
-  std::cout<<"periodic 5"<<std::endl;
   if (AutoState == 1){
-  std::cout<<"periodic 6"<<std::endl;
     m_rightLeadMotor->Set(.3);
     m_leftLeadMotor->Set(.3);
   } 
