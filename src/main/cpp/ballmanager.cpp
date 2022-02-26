@@ -10,36 +10,33 @@ std::string BallManager::GetHopperState(int slot){
     }
 }
 void BallManager::CheckHopperState(){
-    if(!color_sensor_bot->CheckForBall()){
+    if(!color_sensor_bot->CheckForBall(SensorConst::kvalue_for_ball_bottom)){
         position[0] = "None";
     }
-    if(!color_sensor_top->CheckForBall()){
+    if(!color_sensor_top->CheckForBall(SensorConst::kvalue_for_ball_top)){
         position[1] = "None";
     }
-    if(color_sensor_bot->CheckForBall()){
+    if(color_sensor_bot->CheckForBall(SensorConst::kvalue_for_ball_bottom)){
         position[0] = color_sensor_bot->ClosestColor(); 
     }
-    if(color_sensor_top->CheckForBall()){
+    if(color_sensor_top->CheckForBall(SensorConst::kvalue_for_ball_top)){
         position[1] = color_sensor_top->ClosestColor();
     }
 }
 
 void BallManager::MoveIndex(){
-    if(color_sensor_bot->CheckForBall() && !color_sensor_top->CheckForBall()){
+    if(color_sensor_bot->CheckForBall(200) && !color_sensor_top->CheckForBall(2000)){
         hopper->RunHopperMotor(0.1, 0.25);
     }
 }
 
-void BallManager::LoadHopper(double joystick_input){
+void BallManager::LoadHopper(){
     if(position[1]=="None"){
         // hopper->RunHopperMotor(1, 1);
-        hopper->RunHopperMotor(.25, 0.25);
-
-        std::cout<<"uh2"<<std::endl;
+        hopper->RunHopperMotor(.3, 0.5);
     }
     else if(position[1]!="None" && position[0] == "None"){
-        hopper->RunHopperMotor(0, 0.25);
-        std::cout<<"uh"<<std::endl;
+        hopper->RunHopperMotor(0, 0.5);
     }else{
         hopper->RunHopperMotor(0, 0);
     }
@@ -59,10 +56,10 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
     //if(position[1] == team_color)
     if (true){
         shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
-        if(shooter->VelocityOutput("Top") >= target_velocity_top - MechanismConst::krange_target && 
-            shooter->VelocityOutput("Top") <= target_velocity_top + MechanismConst::krange_target &&
-            shooter->VelocityOutput("Bottom") >= target_velocity_bottom - MechanismConst::krange_target &&
-            shooter->VelocityOutput("Bottom") <= target_velocity_bottom + MechanismConst::krange_target){
+        if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::krange_target && 
+            std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::krange_target &&
+            std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::krange_target &&
+            std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::krange_target){
             return true;
         }
         else{
@@ -88,7 +85,7 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
 }
 
 void BallManager::Shoot(){
-    hopper->RunHopperMotor(0.25, 0.25);
+    hopper->RunHopperMotor(0.5, 0.5);
 }
 
 void BallManager::Reject(){

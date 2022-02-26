@@ -5,16 +5,12 @@
 using namespace frc;
 
 void Elevator::ElevatorMove(double joystick_position) {
-  if (elevator_solenoid_lock->Get() == 0){
+  if (elevator_solenoid_lock->Get() == 1){
       elevator_motor->Set(ControlMode::PercentOutput, 0);
-
   } else {
     joystick_position = -joystick_position;
-    std::cout<<"bottom: "<<limit_switch_bottom->Get()<<std::endl;
     //std::cout<<"top: "<<limit_switch_top->Get()<<std::endl;
     std::cout<<"elevator position: "<<elevator_motor->GetSelectedSensorPosition()<<std::endl;
-
-    std::cout<<"set up done"<<set_up_done<<std::endl;
     // If elevator is still in the setup phase which is below the bottom limit
     // switch
     if (set_up_done == false) {
@@ -90,15 +86,15 @@ void Elevator::ElevatorMove(double joystick_position) {
 void Elevator::ResetPosition(){
   elevator_motor->SetSelectedSensorPosition(0);
 }
-// void Elevator::LockElevator() {
-//   solenoid0.Set(1);
-//   elevator_motor->Set(ControlMode::PercentOutput, 0);
-// }
+void Elevator::LockElevator() {
+  elevator_solenoid_lock->Set(frc::DoubleSolenoid::Value::kForward);
+  elevator_motor->Set(ControlMode::PercentOutput, 0);
+}
 
-// void Elevator::UnlockElevator() {
-//   solenoid0.Set(0);
-//   elevator_motor->Set(ControlMode::PercentOutput, 0);
-// }
+void Elevator::UnlockElevator() {
+  elevator_solenoid_lock->Set(frc::DoubleSolenoid::Value::kReverse);
+  elevator_motor->Set(ControlMode::PercentOutput, 0);
+}
 
 bool Elevator::OffGround() {
   if (elevator_motor->GetOutputCurrent() >= MechanismConst::climb_amperage) {

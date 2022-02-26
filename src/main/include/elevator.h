@@ -24,8 +24,8 @@ public:
     // triggerThresholdCurrent, triggerThresholdTime)
   }
   void ElevatorMove(double joystick_position);
-  // void LockElevator();
-  // void UnlockElevator();
+  void LockElevator();
+  void UnlockElevator();
   bool OffGround();
   void DisplayElevatorInfo();
   void ResetPosition();

@@ -21,7 +21,7 @@ public:
   void CheckHopperState();
   bool IsFull();
   bool IsEmpty();
-  void LoadHopper(double joystick_input);
+  void LoadHopper();
   void Reject();
   void Shoot();
   void DisplayBallManagerInfo();

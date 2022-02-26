@@ -18,7 +18,7 @@ std::string ColorSensor::ClosestColor() {
 }
 // Just returns a frc::Color value
 frc::Color ColorSensor::GetColor() { return rev_color_sensor->GetColor(); }
-bool ColorSensor::CheckForBall() {
+bool ColorSensor::CheckForBall(int kvalue_for_ball) {
   // GetProximity return a int from 0(far) to 2047(close)
-  return (rev_color_sensor->GetProximity() > SensorConst::kvalue_for_ball);
+  return (rev_color_sensor->GetProximity() > kvalue_for_ball);
 }

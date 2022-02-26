@@ -21,7 +21,7 @@ public:
   std::string ClosestColor();
   frc::Color GetColor();
 
-  bool CheckForBall();
+  bool CheckForBall(int kvalue_for_ball);
 
 private:
   ColorSensorV3 *rev_color_sensor;
