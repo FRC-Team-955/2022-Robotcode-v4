@@ -17,5 +17,5 @@ void Intake::RunIntake(float intake_percent) {
 void Intake::StopIntake() { intake_talon->Set(ControlMode::PercentOutput, 0); }
 void Intake::DisplayIntakeInfo(){
   frc::SmartDashboard::PutNumber("Intake Motor Amps", intake_talon->GetOutputCurrent());
-  frc::SmartDashboard::PutBoolean("Intake Solenoid Amps", double_solenoid->Get());
+  frc::SmartDashboard::PutBoolean("Intake Solenoid Extension", (bool)(double_solenoid->Get()-1));
 }

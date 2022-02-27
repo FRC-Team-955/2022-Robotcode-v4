@@ -5,7 +5,7 @@
 namespace Joy0Const {
 constexpr int kdrive_speed_axis = 1;
 constexpr int kdrive_curvature_axis = 4;
-constexpr int kreverse_drive = 5;
+constexpr int kreverse_drive = 6;
 //shooter
 constexpr int kshoot_wall_trigger = 3;
 constexpr int kshooter_goal_toggle_button = 7;
@@ -25,11 +25,14 @@ constexpr int kreject_ball_button = 6;
 //elevator
 constexpr int kelevator_lock_button = 8;
 constexpr int kelevator_axis = 1;
+//compressor
+constexpr int kcompressor_toggle_button = 7;
+
 }
 namespace SensorConst {
 constexpr int limit_switch_top_port = 4; //g
 constexpr int limit_switch_bottom_port = 1; //g
-constexpr unsigned int kvalue_for_ball_top = 1500; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
+constexpr unsigned int kvalue_for_ball_top = 1700; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
 constexpr unsigned int kvalue_for_ball_bottom = 200; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
 constexpr int kir_break_beam_port = 2;
 } // namespace SensorConst

@@ -20,7 +20,7 @@
 #include "shooter.h"
 #include "colorsensor.h"
 #include "ballmanager.h"
-#include "elevator.h"
+// #include "elevator.h"
 
 #include "settings.h"
 
@@ -34,7 +34,7 @@ Shooter *shooter;
 ColorSensor *color_sensor_top;
 ColorSensor *color_sensor_bot;
 BallManager *ball_manager;
-Elevator *elevator;
+// Elevator *elevator;
 Spark *rgb_spark;
 
 //Joysticks
@@ -58,10 +58,10 @@ CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
 bool low_goal_mode = false;
 //Elevator
-TalonFX *elevator_motor;
-DigitalInput *limit_switch_top;
-DigitalInput *limit_switch_bottom;
-DoubleSolenoid *elevator_solenoid_lock;
+// TalonFX *elevator_motor;
+// DigitalInput *limit_switch_top;
+// DigitalInput *limit_switch_bottom;
+// DoubleSolenoid *elevator_solenoid_lock;
 //Color Sensor
 ColorSensorV3 *rev_color_sensor_top;
 ColorSensorV3 *rev_color_sensor_bot;
@@ -83,14 +83,16 @@ ButtonToggle intake_deploy_toggle;
 ButtonToggle hopper_manual_toggle;
 ButtonToggle shooter_goal_toggle;
 ButtonToggle elevator_lock_toggle;
-
+ButtonToggle compressor_toggle;
 
 
 SparkMaxRelativeEncoder *m_rightLeadMotor_encoder;
 SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 
-frc::SendableChooser<std::string> *m_position_Chooser;
-frc::SendableChooser<std::string> *m_team_color_Chooser;
+// frc::SendableChooser<std::string> *m_position_Chooser;
+// frc::SendableChooser<std::string> *m_team_color_Chooser;
+frc::SendableChooser<std::string> m_position_Chooser;
+frc::SendableChooser<std::string> m_team_color_Chooser;
 int AutoState = 0;
 // chris is so cool 
 // bryan ganyu simp
@@ -100,20 +102,27 @@ int AutoState = 0;
 // Thank you for listening to my ted talk
 
 void Robot::RobotInit() {
-  // const char *colour[4] = { "Blue", "Red",
-  //                            "Orange", "Yellow" };
-  // SmartDashboard::SetDefaultStringArray("Team Color", colour);
-  // m_position_Chooser = new frc::SendableChooser<std::string>;
+  
+  // m_position_Chooser = new frc::SendableChooser<std::string>();
   // m_team_color_Chooser = new frc::SendableChooser<std::string>;
-  // frc::CameraServer::StartAutomaticCapture();
-  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
+  // std::string team_color[2] = {"Red","Blue"};
+  // SmartDashboard::PutStringArray("Team Color", team_color);
+  // m_position_Chooser.SetDefaultOption()
+  m_team_color_Chooser.SetDefaultOption("Blue","Blue");
+  m_team_color_Chooser.AddOption("Red","Red");
+
+  frc::SmartDashboard::PutData("Team Color Chooser", &m_team_color_Chooser);
+  SmartDashboard::UpdateValues();
+
+  frc::CameraServer::StartAutomaticCapture();
+  cs::CvSink cvSink = frc::CameraServer::GetVideo();
+  cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
 
   //Add the options to the Choosers
   // m_position_Chooser->AddOption("Left","Left");
   // m_position_Chooser->AddOption("Right","Right");
   // m_position_Chooser->AddOption("Middle","Middle");
-  // frc::Shuffleboard::GetTab("Pre").Add("Robot Position", m_position_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  // frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   // m_team_color_Chooser->AddOption("Blue", "Blue");
   // m_team_color_Chooser->AddOption("Red", "Red");
   // frc::Shuffleboard::GetTab("Pre").Add("Team Color", *m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
@@ -127,7 +136,7 @@ void Robot::AutonomousInit() {
     // //Gets the values from the Shuffleboard
     // std::string auto_selection = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("NA");
     // //The team color it defaults to Red jic you forget to set color (aka hope to win 50-50)
-    // ball_manager.team_color = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("Red");
+    // ball_manager->team_color = Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).GetEntry().GetString("Uh");
 
     m_leftLeadMotor_encoder->SetPosition(0);
     m_rightLeadMotor_encoder->SetPosition(0);
@@ -157,17 +166,29 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
+  SmartDashboard::UpdateValues();
   Delete();
   Build();
+  std::cout<<"chooser: "<<m_team_color_Chooser.GetSelected()<<std::endl;
+  ball_manager->team_color = m_team_color_Chooser.GetSelected();
+
   m_timer_intake->Start();
   m_timer_elevator->Start();
 }
 void Robot::TeleopPeriodic() {
-  
+  std::cout<<"Red: "<<rev_color_sensor_top->GetColor().red<<std::endl;
+  std::cout<<"Green: "<<rev_color_sensor_top->GetColor().green<<std::endl;
+  std::cout<<"Blue: "<<rev_color_sensor_top->GetColor().blue<<std::endl;
+
+  //compressor
+  if (compressor_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
+    compressor->EnableDigital();
+  }else{
+    compressor->Disable();
+  }
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
-  // rgb_spark->Set(-0.99);
-  std::cout<<ball_manager->team_color<<std::endl;
+  rgb_spark->Set(-0.57);
   DisplayShuffle();
   drive ->Drive();
 
@@ -177,7 +198,6 @@ void Robot::TeleopPeriodic() {
   }else{
     low_goal_mode = false;
   }
-
 
   if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
     //shooting
@@ -201,12 +221,6 @@ void Robot::TeleopPeriodic() {
   }else{
     //if not shooting
     shooter->VelocityControl(0,0);
-    // //hopper in manual or auto will add the run loadhopper automatically later
-    // if(hopper_manual_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::khopper_manual_toggle_button))){
-    //   hopper->RunHopperMotor(joystick_1->GetRawAxis(Joy1Const::khopper_top_axis), joystick_1->GetRawAxis(Joy1Const::khopper_bottom_axis));
-    // }else{
-    //   ball_manager->LoadHopper();
-    // }
     if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
       //Reject code
       ball_manager->Reject();
@@ -230,8 +244,10 @@ void Robot::TeleopPeriodic() {
         intake->PistonUp();
       }
       //if the m_intake_timer is less than 5s then run the hopper
-      std::cout<<(int)m_timer_intake->Get()<<std::endl;
-      if(!m_timer_intake->HasElapsed(3_s)){
+      //hopper in manual or auto will add the run loadhopper automatically later
+      if(joystick_1->GetRawButton(Joy1Const::khopper_manual_toggle_button)){
+      hopper->RunHopperMotor(joystick_1->GetRawAxis(Joy1Const::khopper_top_axis), joystick_1->GetRawAxis(Joy1Const::khopper_bottom_axis));
+      }else if(!m_timer_intake->HasElapsed(3_s)){
         ball_manager->CheckHopperState();
         ball_manager->LoadHopper();
       }else{
@@ -240,14 +256,14 @@ void Robot::TeleopPeriodic() {
     }
   }
   //check if its around time to climb //GetMatchTime()
-  if(m_timer_elevator->Get()>5_s){
-    if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
-      elevator->LockElevator();
-    }else{
-      elevator->UnlockElevator();
-    }
-  elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
-  }
+  // if(m_timer_elevator->Get()>90_s){
+  //   if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
+  //     elevator->LockElevator();
+  //   }else{
+  //     elevator->UnlockElevator();
+  //   }
+  // elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+  // }
 }
 void Robot::DisplayShuffle() {
   drive->DisplayDriveInfo();
@@ -255,8 +271,9 @@ void Robot::DisplayShuffle() {
   hopper->DiplayHopperInfo();
   shooter->DisplayShooterInfo();
   ball_manager->DisplayBallManagerInfo();
-  elevator->DisplayElevatorInfo();
+  // elevator->DisplayElevatorInfo();
   frc::SmartDashboard::PutBoolean("Low Goal Mode", low_goal_mode);
+  frc::SmartDashboard::PutString("Team Color", ball_manager->team_color);
 }
 void Robot::DisabledInit() {
   Delete();
@@ -304,23 +321,20 @@ void Robot::Build(){
   // //BallManager
   ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
   // //elevator
-  elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
-  limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
-  limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
-  elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
-  elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
+  // elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
+  // limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
+  // limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
+  // elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
+  // elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
   //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
   //rgb
-  rgb_spark = new Spark(0);
+  rgb_spark = new Spark(1);
   //timer
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
 }
 void Robot::Delete(){
-  //Choosers
-  delete m_position_Chooser;
-  delete m_team_color_Chooser;
   //joystick
   delete joystick_0;
   delete joystick_1;
@@ -359,11 +373,11 @@ void Robot::Delete(){
   //BallManager
   delete ball_manager;
   //elevator
-  delete elevator_motor;
-  delete limit_switch_top;
-  delete limit_switch_bottom;
-  delete elevator_solenoid_lock;
-  delete elevator;
+  // delete elevator_motor;
+  // delete limit_switch_top;
+  // delete limit_switch_bottom;
+  // delete elevator_solenoid_lock;
+  // delete elevator;
   //compressor
   delete compressor; 
   //rgb

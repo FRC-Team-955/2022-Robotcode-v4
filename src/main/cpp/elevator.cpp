@@ -9,8 +9,6 @@ void Elevator::ElevatorMove(double joystick_position) {
       elevator_motor->Set(ControlMode::PercentOutput, 0);
   } else {
     joystick_position = -joystick_position;
-    //std::cout<<"top: "<<limit_switch_top->Get()<<std::endl;
-    std::cout<<"elevator position: "<<elevator_motor->GetSelectedSensorPosition()<<std::endl;
     // If elevator is still in the setup phase which is below the bottom limit
     // switch
     if (set_up_done == false) {

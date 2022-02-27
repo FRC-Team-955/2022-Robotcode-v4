@@ -43,7 +43,7 @@ private:
   double turn_old = 0;
 
   bool is_quick_turn = false;
-  int ReverseDrive = 1;
+  int ReverseDrive = -1;
   bool ball_aimbot = false;
 };
 #endif

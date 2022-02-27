@@ -97,6 +97,7 @@ void BallManager::Reject(){
     if(position[0] != team_color && position[0] == "None"){
         hopper->RunHopperMotor(0, -0.5);
         intake->RunIntake(-0.5);
+        CheckHopperState();
     }
 }
 
@@ -111,15 +112,14 @@ void BallManager::DisplayBallManagerInfo(){
     std::string color_state[3] ={"None","Red","Blue"};
     bool top[3] = {false};
     bool bottom[3] = {false};
-
     for(int i = 0; i<3; i++){
         if(GetHopperState(0) == color_state[i]){
-            top[i]=true;
+            bottom[i]=true;
         }
     }
     for(int i = 0; i<3; i++){
         if(GetHopperState(1) == color_state[i]){
-            bottom[i]=true;
+            top[i]=true;
         }
     }
     SmartDashboard::PutBoolean("Bottom None", bottom[0]);

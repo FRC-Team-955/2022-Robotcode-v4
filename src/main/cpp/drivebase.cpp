@@ -2,20 +2,20 @@
 
 // void DriveBase::Drive(photonlib::PhotonPipelineResult result) {
 void DriveBase::Drive() {
-  if (reverse_drive_toggle->GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kreverse_drive))){
-    ReverseDrive = -1;
-  }else{
+  if (joystick_0->GetRawButton(Joy0Const::kreverse_drive)){
     ReverseDrive = 1;
+  }else{
+    ReverseDrive = -1;
   }
-  differential_drive->ArcadeDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis)*ReverseDrive, joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*ReverseDrive);
+  differential_drive->ArcadeDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis)*ReverseDrive, joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*0.5);
 
   // drive = joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis);
-  // turn = joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis);
-  // //drive = (drive + drive_old + drive_old + drive_old)/4;
-  // //turn = (turn + turn_old + turn_old + turn_old)/4;
+  // turn = -joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)/2;
+  // drive = (drive + drive_old + drive_old + drive_old)/4;
+  // turn = (turn + turn_old + turn_old + turn_old)/4;
   // differential_drive->ArcadeDrive(drive*ReverseDrive, turn*ReverseDrive);
-  //drive_old = drive;
-  //turn_old = turn;
+  // drive_old = drive;
+  // turn_old = turn;
   // ball_aimbot = joystick_0->GetRawAxis(Joy0Const::kball_aimbot_button);
   // is_quick_turn = joystick_0->GetRawButton(Joy0Const::kquick_turn_button);
 
@@ -51,11 +51,7 @@ void DriveBase::DisplayDriveInfo() {
   frc::SmartDashboard::PutNumber("leftFollowMotor", m_leftFollowMotor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("rightLeadMotor", m_rightLeadMotor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("rightFollowMotor", m_rightFollowMotor->GetOutputCurrent());
-  frc::SmartDashboard::PutNumber("Reverse Drive", ReverseDrive);
-
-  // frc::Shuffleboard::GetTab("Telop").Add("Reverse Drive", ReverseDrive).WithWidget(frc::BuiltInWidgets::kBooleanBox);
-  // frc::Shuffleboard::GetTab("Telop").Add("Quick Turn", is_quick_turn).WithWidget(frc::BuiltInWidgets::kBooleanBox);
-  // frc::Shuffleboard::GetTab("Telop").Add("Ball Aimbot", ball_aimbot).WithWidget(frc::BuiltInWidgets::kBooleanBox);
+  frc::SmartDashboard::PutNumber("Reverse Drive", 2);
 }
 
 void DriveBase::DriveTank(float leftWheelInput, float rightWheelInput){
