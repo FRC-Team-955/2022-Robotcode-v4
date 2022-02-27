@@ -13,7 +13,6 @@
 #include <frc/Compressor.h>
 
 //our classes
-#include "xy_align.h"
 #include "drivebase.h"
 #include "intake.h"
 #include "hopper.h"
@@ -26,7 +25,6 @@
 
 using namespace rev;
 
-XYalign *xyalign;
 DriveBase *drive;
 Intake *intake;
 Hopper *hopper;
@@ -74,17 +72,10 @@ Compressor *compressor;
 frc::Timer *m_timer_intake;
 frc::Timer *m_timer_elevator;
 
-photonlib::PhotonCamera camera{"BallDetect"};
-photonlib::PhotonCamera limecamera{"gloworm"};
-photonlib::PhotonPipelineResult camera_result;
-photonlib::PhotonPipelineResult limelight_result;
-
 ButtonToggle intake_deploy_toggle;
 ButtonToggle hopper_manual_toggle;
 ButtonToggle shooter_goal_toggle;
 ButtonToggle elevator_lock_toggle;
-
-
 
 SparkMaxRelativeEncoder *m_rightLeadMotor_encoder;
 SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
@@ -332,7 +323,6 @@ void Robot::Delete(){
   delete differential_drive;
   delete reverse_drive_toggle;
   delete drive;
-  delete xyalign;
   //auto
   delete m_leftLeadMotor_encoder;
   delete m_rightLeadMotor_encoder;
