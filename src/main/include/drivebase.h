@@ -9,7 +9,6 @@
 #include <math.h>
 
 #include <button_toggle.h>
-#include "balldetect.h"
 #include "settings.h"
 
 using namespace rev;
