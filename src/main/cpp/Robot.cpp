@@ -352,15 +352,15 @@ void Robot::Build(){
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
   intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
   intake = new Intake(intake_talon,intake_double_solonoid);
-  // //Hopper
+  //Hopper
   talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
   talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
   hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
-  // //shooter
+  //shooter
   shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
-  // //Color Sensor
+  //Color Sensor
   red_target_bot = new frc::Color(0.539917, 0.339233, 0.120972);
   blue_target_bot= new frc::Color(0.158325, 0.406372, 0.435181);
   red_target_top= new frc::Color(0.666, 0.333, 0.001);
@@ -370,9 +370,9 @@ void Robot::Build(){
   color_match = new ColorMatch();
   color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match,red_target_bot, blue_target_bot);
   color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match, red_target_top, blue_target_top);
-  // //Ir Break Beam
+  //Ir Break Beam
   ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
-  // //BallManager
+  //BallManager
   ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
   //elevator
   elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
@@ -388,61 +388,7 @@ void Robot::Build(){
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
 }
-// void Robot::Delete(){
-//   //joystick
-//   delete joystick_0;
-//   delete joystick_1;
-//   //drive base
-//   delete m_leftLeadMotor;
-//   delete m_rightLeadMotor;
-//   delete m_leftFollowMotor;
-//   delete m_rightFollowMotor;
-//   delete differential_drive;
-//   delete reverse_drive_toggle;
-//   delete drive;
-//   //auto
-//   delete m_leftLeadMotor_encoder;
-//   delete m_rightLeadMotor_encoder;
-//   //intake
-//   delete intake_talon;
-//   delete intake_double_solonoid;
-//   delete intake;
-//   //hopper
-//   delete talon_hopper_top;
-//   delete talon_hopper_bottom;
-//   delete hopper;
-//   //shooter
-//   delete shooterneo_top;
-//   delete shooterneo_bottom;
-//   delete shooter;
-//   //color sensor
-//   delete red_target_bot;
-//   delete blue_target_bot;
-//   delete red_target_top;
-//   delete blue_target_top;
-//   delete rev_color_sensor_top;
-//   delete rev_color_sensor_bot;
-//   delete color_match;
-//   delete color_sensor_top;
-//   delete color_sensor_bot;
-//   //Ir break beam
-//   delete ir_break_beam;
-//   //BallManager
-//   delete ball_manager;
-//   //elevator
-//   // delete elevator_motor;
-//   // delete limit_switch_top;
-//   // delete limit_switch_bottom;
-//   // delete elevator_solenoid_lock;
-//   // delete elevator;
-//   //compressor
-//   delete compressor; 
-//   //rgb
-//   delete rgb_spark;
-//   //timer
-//   delete m_timer_intake;
-//   delete m_timer_elevator;
-// }
+
 #ifndef RUNNING_FRC_TESTS
 int main() {
   return frc::StartRobot<Robot>();
