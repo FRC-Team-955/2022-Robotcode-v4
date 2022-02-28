@@ -17,9 +17,8 @@ namespace Joy1Const {
 constexpr int kintake_toggle_button = 5;
 constexpr int kintake_motor_run_axis = 2;
 //hopper
-constexpr int khopper_manual_toggle_button = 7;
-constexpr int khopper_bottom_axis = 4;
-constexpr int khopper_top_axis = 5;
+constexpr int khopper_manual_button = 1;
+constexpr int khopper_manual_axis = 5;
 //shooter
 constexpr int kreject_ball_button = 6;
 //elevator

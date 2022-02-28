@@ -33,7 +33,6 @@ ColorSensor *color_sensor_top;
 ColorSensor *color_sensor_bot;
 BallManager *ball_manager;
 // Elevator *elevator;
-Spark *rgb_spark;
 
 //Joysticks
 frc::Joystick *joystick_0;
@@ -51,6 +50,7 @@ DoubleSolenoid *intake_double_solonoid;
 //Hopper
 TalonSRX *talon_hopper_top;
 TalonSRX *talon_hopper_bottom;
+bool hopper_init = false;
 //Shooter
 CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
@@ -61,6 +61,10 @@ bool low_goal_mode = false;
 // DigitalInput *limit_switch_bottom;
 // DoubleSolenoid *elevator_solenoid_lock;
 //Color Sensor
+frc::Color *red_target_bot;
+frc::Color *blue_target_bot;
+frc::Color *red_target_top;
+frc::Color *blue_target_top;
 ColorSensorV3 *rev_color_sensor_top;
 ColorSensorV3 *rev_color_sensor_bot;
 ColorMatch *color_match;
@@ -71,6 +75,8 @@ Compressor *compressor;
 //Timers
 frc::Timer *m_timer_intake;
 frc::Timer *m_timer_elevator;
+//RGB
+// Spark *rgb_spark;
 
 ButtonToggle intake_deploy_toggle;
 ButtonToggle hopper_manual_toggle;
@@ -82,9 +88,7 @@ ButtonToggle compressor_toggle;
 SparkMaxRelativeEncoder *m_rightLeadMotor_encoder;
 SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 
-// frc::SendableChooser<std::string> *m_position_Chooser;
-// frc::SendableChooser<std::string> *m_team_color_Chooser;
-frc::SendableChooser<std::string> m_position_Chooser;
+frc::SendableChooser<std::string> m_auto_Chooser;
 frc::SendableChooser<std::string> m_team_color_Chooser;
 int AutoState = 0;
 // chris is so cool 
@@ -101,11 +105,16 @@ void Robot::RobotInit() {
   // std::string team_color[2] = {"Red","Blue"};
   // SmartDashboard::PutStringArray("Team Color", team_color);
   // m_position_Chooser.SetDefaultOption()
+  m_auto_Chooser.SetDefaultOption("Ganyu AA","Main");
+  m_auto_Chooser.AddOption("Ganyu Run","Taxi");
+  m_auto_Chooser.AddOption("Ganyu Sleep","Nothing");
+  frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
   m_team_color_Chooser.AddOption("Red","Red");
+  frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
 
-  frc::SmartDashboard::PutData("Team Color Chooser", &m_team_color_Chooser);
-  SmartDashboard::UpdateValues();
+  // frc::SmartDashboard::PutData("Team Color Chooser", &m_team_color_Chooser);
+  // SmartDashboard::UpdateValues();
 
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
@@ -124,158 +133,6 @@ void Robot::RobotInit() {
 void Robot::RobotPeriodic() {}
 
 void Robot::AutonomousInit() {
-    Delete();
-    Build();
-    // //Gets the values from the Shuffleboard
-    // std::string auto_selection = Shuffleboard::GetTab("Pre").Add("Robot Position", "NA").GetEntry().GetString("NA");
-    // //The team color it defaults to Red jic you forget to set color (aka hope to win 50-50)
-    // ball_manager->team_color = Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).GetEntry().GetString("Uh");
-
-    m_leftLeadMotor_encoder->SetPosition(0);
-    m_rightLeadMotor_encoder->SetPosition(0);
-
-}
-void Robot::AutonomousPeriodic() {
-  //  intake->RunIntake(.5);
-  ball_manager->CheckHopperState();
-  if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
-  ball_manager -> Shoot();
-
-  }
-  if (ball_manager -> IsEmpty() && AutoState == 0){
-    shooter->ShootPercentOutput(0,0);
-    AutoState++;
-  } 
-  if (AutoState == 1){
-    m_rightLeadMotor->Set(.3);
-    m_leftLeadMotor->Set(.3);
-  } 
-
-  if (m_rightLeadMotor_encoder->GetPosition() >= 25 && m_leftLeadMotor_encoder->GetPosition() >= 25 && AutoState == 1){
-    m_rightLeadMotor->Set(0);
-    m_leftLeadMotor->Set(0);
-    AutoState++;
-  } 
-}
-
-void Robot::TeleopInit() {
-  SmartDashboard::UpdateValues();
-  Delete();
-  Build();
-  std::cout<<"chooser: "<<m_team_color_Chooser.GetSelected()<<std::endl;
-  ball_manager->team_color = m_team_color_Chooser.GetSelected();
-
-  m_timer_intake->Start();
-  m_timer_elevator->Start();
-}
-void Robot::TeleopPeriodic() {
-  std::cout<<"Red: "<<rev_color_sensor_top->GetColor().red<<std::endl;
-  std::cout<<"Green: "<<rev_color_sensor_top->GetColor().green<<std::endl;
-  std::cout<<"Blue: "<<rev_color_sensor_top->GetColor().blue<<std::endl;
-
-  //compressor
-  if (compressor_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
-    compressor->EnableDigital();
-  }else{
-    compressor->Disable();
-  }
-  // camera_result = camera.GetLatestResult();
-  // limelight_result = limecamera.GetLatestResult();
-  rgb_spark->Set(-0.57);
-  DisplayShuffle();
-  drive ->Drive();
-
-  //The toggle for Low Goal
-  if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
-    low_goal_mode = true;
-  }else{
-    low_goal_mode = false;
-  }
-
-  if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
-    //shooting
-    if(low_goal_mode){
-      //low goal
-      if(ball_manager->Rev(MechanismConst::klow_target_top,MechanismConst::klow_target_bottom)){
-        ball_manager->Shoot();
-        ball_manager->CheckHopperState();
-      }else{
-        hopper->RunHopperMotor(0,0);
-      }
-    }else{
-      //high goal
-      if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
-        ball_manager->Shoot();
-        ball_manager->CheckHopperState();
-      }else{
-        hopper->RunHopperMotor(0,0);
-      }
-    }
-  }else{
-    //if not shooting
-    shooter->VelocityControl(0,0);
-    if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
-      //Reject code
-      ball_manager->Reject();
-    }else if(joystick_1->GetRawButtonReleased(Joy1Const::kreject_ball_button)){
-      //When you release shut off motor
-      hopper->RunHopperMotor(0,0);
-    }else{
-      //if not rejecting
-      if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-          intake->PistonDown();
-          //If the intake is in the down state allow the intake to run
-          if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
-            intake->RunIntake(1);
-            m_timer_intake->Start();
-            m_timer_intake->Reset();
-            ball_manager->CheckHopperState();
-          }else{
-            intake->RunIntake(0);
-          }
-      }else{
-        intake->PistonUp();
-      }
-      //if the m_intake_timer is less than 5s then run the hopper
-      //hopper in manual or auto will add the run loadhopper automatically later
-      if(joystick_1->GetRawButton(Joy1Const::khopper_manual_toggle_button)){
-      hopper->RunHopperMotor(joystick_1->GetRawAxis(Joy1Const::khopper_top_axis), joystick_1->GetRawAxis(Joy1Const::khopper_bottom_axis));
-      }else if(!m_timer_intake->HasElapsed(3_s)){
-        ball_manager->CheckHopperState();
-        ball_manager->LoadHopper();
-      }else{
-        hopper->RunHopperMotor(0,0);
-      }
-    }
-  }
-  //check if its around time to climb //GetMatchTime()
-  // if(m_timer_elevator->Get()>90_s){
-  //   if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
-  //     elevator->LockElevator();
-  //   }else{
-  //     elevator->UnlockElevator();
-  //   }
-  // elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
-  // }
-}
-void Robot::DisplayShuffle() {
-  drive->DisplayDriveInfo();
-  intake->DisplayIntakeInfo();
-  hopper->DiplayHopperInfo();
-  shooter->DisplayShooterInfo();
-  ball_manager->DisplayBallManagerInfo();
-  // elevator->DisplayElevatorInfo();
-  frc::SmartDashboard::PutBoolean("Low Goal Mode", low_goal_mode);
-  frc::SmartDashboard::PutString("Team Color", ball_manager->team_color);
-}
-void Robot::DisabledInit() {
-  Delete();
-}
-void Robot::DisabledPeriodic() {}
-
-void Robot::TestInit() {}
-void Robot::TestPeriodic() {}
-void Robot::Build(){
   //joysticks
   joystick_0 = new frc::Joystick(0);
   joystick_1 = new frc::Joystick(1);
@@ -285,7 +142,7 @@ void Robot::Build(){
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
-  // differential_drive->SetSafetyEnabled(false);
+  differential_drive->SetSafetyEnabled(false);
   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
   // xyalign = new XYalign(drive, joystick_0);
   //auto
@@ -304,11 +161,15 @@ void Robot::Build(){
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
   // //Color Sensor
+  red_target_bot = new frc::Color(0.539917, 0.339233, 0.120972);
+  blue_target_bot= new frc::Color(0.158325, 0.406372, 0.435181);
+  red_target_top= new frc::Color(0.666, 0.333, 0.001);
+  blue_target_top= new frc::Color(0.250122, 0.500122, 0.250122);
   rev_color_sensor_bot = new ColorSensorV3(frc::I2C::Port::kOnboard);
   rev_color_sensor_top = new ColorSensorV3(frc::I2C::Port::kMXP);
   color_match = new ColorMatch();
-  color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match);
-  color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match);
+  color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match,red_target_bot, blue_target_bot);
+  color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match, red_target_top, blue_target_top);
   // //Ir Break Beam
   ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   // //BallManager
@@ -321,13 +182,263 @@ void Robot::Build(){
   // elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
   //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
-  //rgb
-  rgb_spark = new Spark(1);
   //timer
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
+  //rgb
+  // rgb_spark = new Spark(1);
+    // Delete();
+    // Build();
+    // //Gets the values from the Shuffleboard
+    // std::string auto_selection = Shuffleboard::GetTab("Pre").Add("Robot Position", m_auto_Chooser).GetEntry().GetString("NA");
+    // //The team color it defaults to Red jic you forget to set color (aka hope to win 50-50)
+    // ball_manager->team_color = Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).GetEntry().GetString("Uh");
+
+
+  m_leftLeadMotor_encoder->SetPosition(0);
+  m_rightLeadMotor_encoder->SetPosition(0);
 }
-void Robot::Delete(){
+void Robot::AutonomousPeriodic() {
+  //  intake->RunIntake(.5);
+  ball_manager->CheckHopperState();
+  if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
+  ball_manager -> Shoot();
+  }
+  if (ball_manager -> IsEmpty() && AutoState == 0){
+    shooter->ShootPercentOutput(0,0);
+    hopper->RunHopperMotor(0,0);
+    AutoState++;
+  } 
+  if (AutoState == 1){
+    m_rightLeadMotor->Set(.3);
+    m_leftLeadMotor->Set(.3);
+  } 
+
+  if (m_rightLeadMotor_encoder->GetPosition() >= 25 && m_leftLeadMotor_encoder->GetPosition() >= 25 && AutoState == 1){
+    m_rightLeadMotor->Set(0);
+    m_leftLeadMotor->Set(0);
+    AutoState++;
+  } 
+}
+
+void Robot::TeleopInit() {
+    //joystick
+  delete joystick_0;
+  delete joystick_1;
+  //drive base
+  delete m_leftLeadMotor;
+  delete m_rightLeadMotor;
+  delete m_leftFollowMotor;
+  delete m_rightFollowMotor;
+  delete differential_drive;
+  delete reverse_drive_toggle;
+  delete drive;
+  //auto
+  delete m_leftLeadMotor_encoder;
+  delete m_rightLeadMotor_encoder;
+  //intake
+  delete intake_talon;
+  delete intake_double_solonoid;
+  delete intake;
+  //hopper
+  delete talon_hopper_top;
+  delete talon_hopper_bottom;
+  delete hopper;
+  //shooter
+  delete shooterneo_top;
+  delete shooterneo_bottom;
+  delete shooter;
+  //color sensor
+  delete red_target_bot;
+  delete blue_target_bot;
+  delete red_target_top;
+  delete blue_target_top;
+  delete rev_color_sensor_top;
+  delete rev_color_sensor_bot;
+  delete color_match;
+  delete color_sensor_top;
+  delete color_sensor_bot;
+  //Ir break beam
+  delete ir_break_beam;
+  //BallManager
+  delete ball_manager;
+  //elevator
+  // delete elevator_motor;
+  // delete limit_switch_top;
+  // delete limit_switch_bottom;
+  // delete elevator_solenoid_lock;
+  // delete elevator;
+  //compressor
+  delete compressor; 
+  //rgb
+  // delete rgb_spark;
+  //timer
+  delete m_timer_intake;
+  delete m_timer_elevator;
+  //joysticks
+  joystick_0 = new frc::Joystick(0);
+  joystick_1 = new frc::Joystick(1);
+  //drivebase
+  m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
+  m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
+  m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
+  m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
+  differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
+  differential_drive->SetSafetyEnabled(false);
+  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
+  // xyalign = new XYalign(drive, joystick_0);
+  //auto
+  m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
+  m_rightLeadMotor_encoder = new SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
+  //Intake
+  intake_talon = new TalonSRX(MechanismConst::kintake_motor);
+  intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
+  intake = new Intake(intake_talon,intake_double_solonoid);
+  // //Hopper
+  talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
+  talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
+  hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
+  // //shooter
+  shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
+  shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
+  shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+  // //Color Sensor
+  red_target_bot = new frc::Color(0.539917, 0.339233, 0.120972);
+  blue_target_bot= new frc::Color(0.158325, 0.406372, 0.435181);
+  red_target_top= new frc::Color(0.666, 0.333, 0.001);
+  blue_target_top= new frc::Color(0.250122, 0.500122, 0.250122);
+  rev_color_sensor_bot = new ColorSensorV3(frc::I2C::Port::kOnboard);
+  rev_color_sensor_top = new ColorSensorV3(frc::I2C::Port::kMXP);
+  color_match = new ColorMatch();
+  color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match,red_target_bot, blue_target_bot);
+  color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match, red_target_top, blue_target_top);
+  // //Ir Break Beam
+  ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
+  // //BallManager
+  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
+  // //elevator
+  // elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
+  // limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
+  // limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
+  // elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
+  // elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
+  //compressor
+  compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
+  //timer
+  m_timer_intake = new frc::Timer();
+  m_timer_elevator = new frc::Timer();
+  //rgb
+  // rgb_spark = new Spark(1);
+  // SmartDashboard::UpdateValues();
+  // Delete();
+  // // Build();
+  ball_manager->team_color = m_team_color_Chooser.GetSelected();
+
+  m_timer_intake->Start();
+  m_timer_elevator->Start();
+}
+void Robot::TeleopPeriodic() {
+  // rgb_spark->Set(-0.57);
+  // DisplayShuffle();
+  drive ->Drive();
+  // compressor
+  // if (compressor_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
+  //   compressor->EnableDigital();
+  // }else{
+  //   compressor->Disable();
+  // }
+  // // camera_result = camera.GetLatestResult();
+  // // limelight_result = limecamera.GetLatestResult();
+
+  // //The toggle for Low Goal
+  // if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
+  //   low_goal_mode = true;
+  // }else{
+  //   low_goal_mode = false;
+  // }
+
+  // if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
+  //   //shooting
+  //   if(low_goal_mode){
+  //     //low goal
+  //     if(ball_manager->Rev(MechanismConst::klow_target_top,MechanismConst::klow_target_bottom)){
+  //       ball_manager->Shoot();
+  //       ball_manager->CheckHopperState();
+  //     }else{
+  //       hopper->RunHopperMotor(0,0);
+  //     }
+  //   }else{
+  //     //high goal
+  //     if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
+  //       ball_manager->Shoot();
+  //       ball_manager->CheckHopperState();
+  //     }else{
+  //       hopper->RunHopperMotor(0,0);
+  //     }
+  //   }
+  // }else{
+  //   //if not shooting
+  //   shooter->VelocityControl(0,0);
+  //   if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
+  //     //Reject code
+  //     ball_manager->Reject();
+  //   }else if(joystick_1->GetRawButtonReleased(Joy1Const::kreject_ball_button)){
+  //     //When you release shut off motor
+  //     hopper->RunHopperMotor(0,0);
+  //   }else{
+  //     //if not rejecting
+  //     if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+  //         intake->PistonDown();
+  //         //If the intake is in the down state allow the intake to run
+  //         if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+  //           intake->RunIntake(1);
+  //           hopper_init = true;
+  //           m_timer_intake->Start();
+  //           m_timer_intake->Reset();
+  //           ball_manager->CheckHopperState();
+  //         }else{
+  //           intake->RunIntake(0);
+  //         }
+  //     }else{
+  //       intake->PistonUp();
+  //     }
+  //     //if the m_intake_timer is less than 5s then run the hopper
+  //     //hopper in manual or auto will add the run loadhopper automatically later
+  //     if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
+  //       hopper->RunHopperMotor(joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
+  //       frc::SmartDashboard::PutBoolean("Manual Hopper", true);
+  //     }else if(!m_timer_intake->HasElapsed(3_s)){
+  //       frc::SmartDashboard::PutBoolean("Manual Hopper", false);
+  //       if (hopper_init){
+  //         ball_manager->CheckHopperState();
+  //         ball_manager->LoadHopper();
+  //       }
+  //     }else{
+  //       hopper->RunHopperMotor(0,0);
+  //     }
+  //   }
+  // }
+  // //check if its around time to climb //GetMatchTime()
+  // // if(m_timer_elevator->Get()>90_s){
+  // //   if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
+  // //     elevator->LockElevator();
+  // //   }else{
+  // //     elevator->UnlockElevator();
+  // //   }
+  // // elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+  // // }
+}
+void Robot::DisplayShuffle() {
+  drive->DisplayDriveInfo();
+  intake->DisplayIntakeInfo();
+  hopper->DiplayHopperInfo();
+  shooter->DisplayShooterInfo();
+  ball_manager->DisplayBallManagerInfo();
+  // elevator->DisplayElevatorInfo();
+  frc::SmartDashboard::PutBoolean("Low Goal Mode", low_goal_mode);
+  frc::SmartDashboard::PutString("Team Color", ball_manager->team_color);
+}
+void Robot::DisabledInit() {
   //joystick
   delete joystick_0;
   delete joystick_1;
@@ -355,6 +466,10 @@ void Robot::Delete(){
   delete shooterneo_bottom;
   delete shooter;
   //color sensor
+  delete red_target_bot;
+  delete blue_target_bot;
+  delete red_target_top;
+  delete blue_target_top;
   delete rev_color_sensor_top;
   delete rev_color_sensor_bot;
   delete color_match;
@@ -373,11 +488,127 @@ void Robot::Delete(){
   //compressor
   delete compressor; 
   //rgb
-  delete rgb_spark;
+  // delete rgb_spark;
   //timer
   delete m_timer_intake;
   delete m_timer_elevator;
+  //Delete();
 }
+void Robot::DisabledPeriodic() {}
+
+void Robot::TestInit() {}
+void Robot::TestPeriodic() {}
+// void Robot::Build(){
+//   //joysticks
+//   joystick_0 = new frc::Joystick(0);
+//   joystick_1 = new frc::Joystick(1);
+//   //drivebase
+//   m_leftLeadMotor = new CANSparkMax(DriveConst::kleft_lead_neo_number, CANSparkMax::MotorType::kBrushless);
+//   m_rightLeadMotor = new CANSparkMax(DriveConst::kright_lead_neo_number, CANSparkMax::MotorType::kBrushless);
+//   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
+//   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
+//   differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
+//   // differential_drive->SetSafetyEnabled(false);
+//   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
+//   // xyalign = new XYalign(drive, joystick_0);
+//   //auto
+//   m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
+//   m_rightLeadMotor_encoder = new SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
+//   //Intake
+//   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
+//   intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);
+//   intake = new Intake(intake_talon,intake_double_solonoid);
+//   // //Hopper
+//   talon_hopper_top = new TalonSRX(MechanismConst::khopper_motor_top_port);
+//   talon_hopper_bottom = new TalonSRX(MechanismConst::khopper_motor_bottom_port);
+//   hopper = new Hopper(talon_hopper_top,talon_hopper_bottom);
+//   // //shooter
+//   shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
+//   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
+//   shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+//   // //Color Sensor
+//   red_target_bot = new frc::Color(0.539917, 0.339233, 0.120972);
+//   blue_target_bot= new frc::Color(0.158325, 0.406372, 0.435181);
+//   red_target_top= new frc::Color(0.666, 0.333, 0.001);
+//   blue_target_top= new frc::Color(0.250122, 0.500122, 0.250122);
+//   rev_color_sensor_bot = new ColorSensorV3(frc::I2C::Port::kOnboard);
+//   rev_color_sensor_top = new ColorSensorV3(frc::I2C::Port::kMXP);
+//   color_match = new ColorMatch();
+//   color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match,red_target_bot, blue_target_bot);
+//   color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match, red_target_top, blue_target_top);
+//   // //Ir Break Beam
+//   ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
+//   // //BallManager
+//   ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
+//   // //elevator
+//   // elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
+//   // limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
+//   // limit_switch_bottom = new DigitalInput(SensorConst::limit_switch_bottom_port);
+//   // elevator_solenoid_lock = new DoubleSolenoid(13, PneumaticsModuleType::REVPH, MechanismConst::kelevator_pnumatic_port_forward, MechanismConst::kelevator_pnumatic_port_reverse);
+//   // elevator = new Elevator(elevator_motor,limit_switch_top,limit_switch_bottom,elevator_solenoid_lock);
+//   //compressor
+//   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
+//   //rgb
+//   rgb_spark = new Spark(1);
+//   //timer
+//   m_timer_intake = new frc::Timer();
+//   m_timer_elevator = new frc::Timer();
+// }
+// void Robot::Delete(){
+//   //joystick
+//   delete joystick_0;
+//   delete joystick_1;
+//   //drive base
+//   delete m_leftLeadMotor;
+//   delete m_rightLeadMotor;
+//   delete m_leftFollowMotor;
+//   delete m_rightFollowMotor;
+//   delete differential_drive;
+//   delete reverse_drive_toggle;
+//   delete drive;
+//   //auto
+//   delete m_leftLeadMotor_encoder;
+//   delete m_rightLeadMotor_encoder;
+//   //intake
+//   delete intake_talon;
+//   delete intake_double_solonoid;
+//   delete intake;
+//   //hopper
+//   delete talon_hopper_top;
+//   delete talon_hopper_bottom;
+//   delete hopper;
+//   //shooter
+//   delete shooterneo_top;
+//   delete shooterneo_bottom;
+//   delete shooter;
+//   //color sensor
+//   delete red_target_bot;
+//   delete blue_target_bot;
+//   delete red_target_top;
+//   delete blue_target_top;
+//   delete rev_color_sensor_top;
+//   delete rev_color_sensor_bot;
+//   delete color_match;
+//   delete color_sensor_top;
+//   delete color_sensor_bot;
+//   //Ir break beam
+//   delete ir_break_beam;
+//   //BallManager
+//   delete ball_manager;
+//   //elevator
+//   // delete elevator_motor;
+//   // delete limit_switch_top;
+//   // delete limit_switch_bottom;
+//   // delete elevator_solenoid_lock;
+//   // delete elevator;
+//   //compressor
+//   delete compressor; 
+//   //rgb
+//   delete rgb_spark;
+//   //timer
+//   delete m_timer_intake;
+//   delete m_timer_elevator;
+// }
 #ifndef RUNNING_FRC_TESTS
 int main() {
   return frc::StartRobot<Robot>();
