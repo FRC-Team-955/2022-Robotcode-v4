@@ -19,7 +19,7 @@ class Robot : public frc::TimedRobot {
 
   void DisplayShuffle();
   // void Delete();
-  // void Build();
+  void Build();
 
   void DisabledInit() override;
   void DisabledPeriodic() override;
