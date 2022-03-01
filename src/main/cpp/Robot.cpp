@@ -107,7 +107,7 @@ void Robot::RobotInit() {
   // SmartDashboard::PutStringArray("Team Color", team_color);
   // m_position_Chooser.SetDefaultOption()
   m_auto_Chooser.SetDefaultOption("Ganyu N","Wall");
-  m_auto_Chooser.AddOption("Ganyu N2","Wall2Ball");
+  m_auto_Chooser.AddOption("Ganyu C2","Wall2Ball");
   m_auto_Chooser.AddOption("Ganyu Side","Side");
   m_auto_Chooser.AddOption("Ganyu Run","Taxi");
   m_auto_Chooser.AddOption("Ganyu Sleep","Nothing");
@@ -139,7 +139,7 @@ void Robot::AutonomousInit() {
 }
 void Robot::AutonomousPeriodic() {
   //  intake->RunIntake(.5);
-  if(WallAuto){
+  if(ganyu_auto_selection == "Wall"){
 ball_manager->CheckHopperState();
   if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
   ball_manager -> Shoot();
@@ -158,7 +158,7 @@ ball_manager->CheckHopperState();
     m_leftLeadMotor->Set(0);
     AutoState++;
   } 
-  }else if(SideAuto){
+  }else if(ganyu_auto_selection == "Side"){
     ball_manager->CheckHopperState();
   if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
   ball_manager -> Shoot();
@@ -178,7 +178,7 @@ ball_manager->CheckHopperState();
     m_leftLeadMotor->Set(0);
     AutoState++;
   } 
-  } else if(2BallAuto){
+  } else if(ganyu_auto_selection == "Wall2Ball"){
     ball_manager->CheckHopperState();
   if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
   ball_manager -> Shoot();
@@ -213,7 +213,23 @@ ball_manager->CheckHopperState();
     AutoState++;
   } 
   }
-
+  if(ganyu_auto_selection == "Taxi"){
+ball_manager->CheckHopperState();
+  
+  if ( AutoState == 0){
+    shooter->ShootPercentOutput(0,0);
+    hopper->RunHopperMotor(0,0);
+    AutoState++;
+  } 
+  if (AutoState == 1){
+    m_rightLeadMotor->Set(.3);
+    m_leftLeadMotor->Set(.3);
+  } 
+  if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
+    m_rightLeadMotor->Set(0);
+    m_leftLeadMotor->Set(0);
+    AutoState++;
+  } 
   
 }
 
