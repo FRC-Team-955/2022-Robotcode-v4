@@ -47,7 +47,7 @@ void DriveBase::Drive() {
 }
 
 void DriveBase::DisplayDriveInfo() {
-  frc::SmartDashboard::PutNumber("Reverse Drive", 1000);
+  frc::SmartDashboard::PutNumber("Reverse Drive", ReverseDrive);
   frc::SmartDashboard::PutNumber("LeftLeadAmps", m_leftLeadMotor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("leftFollowMotor", m_leftFollowMotor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("rightLeadMotor", m_rightLeadMotor->GetOutputCurrent());
