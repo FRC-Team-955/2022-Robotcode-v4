@@ -90,6 +90,7 @@ SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 
 frc::SendableChooser<std::string> m_auto_Chooser;
 frc::SendableChooser<std::string> m_team_color_Chooser;
+std::string ganyu_auto_selection = "Sleep";
 int AutoState = 0;
 // chris is so cool 
 // bryan ganyu simp
@@ -105,7 +106,9 @@ void Robot::RobotInit() {
   // std::string team_color[2] = {"Red","Blue"};
   // SmartDashboard::PutStringArray("Team Color", team_color);
   // m_position_Chooser.SetDefaultOption()
-  m_auto_Chooser.SetDefaultOption("Ganyu AA","Main");
+  m_auto_Chooser.SetDefaultOption("Ganyu N","Wall");
+  m_auto_Chooser.AddOption("Ganyu N2","Wall2Ball");
+  m_auto_Chooser.AddOption("Ganyu Side","Side");
   m_auto_Chooser.AddOption("Ganyu Run","Taxi");
   m_auto_Chooser.AddOption("Ganyu Sleep","Nothing");
   frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
@@ -119,16 +122,7 @@ void Robot::RobotInit() {
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
-
-  //Add the options to the Choosers
-  // m_position_Chooser->AddOption("Left","Left");
-  // m_position_Chooser->AddOption("Right","Right");
-  // m_position_Chooser->AddOption("Middle","Middle");
-  // frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-  // m_team_color_Chooser->AddOption("Blue", "Blue");
-  // m_team_color_Chooser->AddOption("Red", "Red");
-  // frc::Shuffleboard::GetTab("Pre").Add("Team Color", *m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-  // Shuffleboard::SelectTab("Pre");
+  
 }
 void Robot::RobotPeriodic() {}
 
@@ -140,6 +134,8 @@ void Robot::AutonomousInit() {
     // ball_manager->team_color = Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).GetEntry().GetString("Uh");
   m_leftLeadMotor_encoder->SetPosition(0);
   m_rightLeadMotor_encoder->SetPosition(0);
+  ganyu_auto_selection = m_auto_Chooser.GetSelected();
+  ball_manager->team_color = m_team_color_Chooser.GetSelected();
 }
 void Robot::AutonomousPeriodic() {
   //  intake->RunIntake(.5);
@@ -156,8 +152,7 @@ void Robot::AutonomousPeriodic() {
     m_rightLeadMotor->Set(.3);
     m_leftLeadMotor->Set(.3);
   } 
-
-  if (m_rightLeadMotor_encoder->GetPosition() >= 25 && m_leftLeadMotor_encoder->GetPosition() >= 25 && AutoState == 1){
+  if (m_rightLeadMotor_encoder->GetPosition() >= 26 && m_leftLeadMotor_encoder->GetPosition() >= 26 && AutoState == 1){
     m_rightLeadMotor->Set(0);
     m_leftLeadMotor->Set(0);
     AutoState++;
@@ -166,20 +161,21 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
   Build();
-  ball_manager->team_color = m_team_color_Chooser.GetSelected();
 
   m_timer_intake->Start();
   m_timer_elevator->Start();
 }
 void Robot::TeleopPeriodic() {
   // rgb_spark->Set(-0.57);
-  // DisplayShuffle();
+  DisplayShuffle();
   drive ->Drive();
   //compressor
   if (compressor_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
     compressor->EnableDigital();
+    frc::SmartDashboard::PutBoolean("Compressor", true);
   }else{
     compressor->Disable();
+    frc::SmartDashboard::PutBoolean("Compressor", false);
   }
   // camera_result = camera.GetLatestResult();
   // limelight_result = limecamera.GetLatestResult();
@@ -254,12 +250,12 @@ void Robot::TeleopPeriodic() {
   }
   //check if its around time to climb //GetMatchTime()
   // if(m_timer_elevator->Get()>90_s){
-  //   if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
-  //     elevator->LockElevator();
-  //   }else{
-  //     elevator->UnlockElevator();
-  //   }
-  // elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+    if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
+      elevator->LockElevator();
+    }else{
+      elevator->UnlockElevator();
+    }
+  elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
   // }
 }
 void Robot::DisplayShuffle() {
@@ -268,7 +264,7 @@ void Robot::DisplayShuffle() {
   hopper->DiplayHopperInfo();
   shooter->DisplayShooterInfo();
   ball_manager->DisplayBallManagerInfo();
-  // elevator->DisplayElevatorInfo();
+  elevator->DisplayElevatorInfo();
   frc::SmartDashboard::PutBoolean("Low Goal Mode", low_goal_mode);
   frc::SmartDashboard::PutString("Team Color", ball_manager->team_color);
 }

@@ -47,11 +47,11 @@ void DriveBase::Drive() {
 }
 
 void DriveBase::DisplayDriveInfo() {
+  frc::SmartDashboard::PutNumber("Reverse Drive", 1000);
   frc::SmartDashboard::PutNumber("LeftLeadAmps", m_leftLeadMotor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("leftFollowMotor", m_leftFollowMotor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("rightLeadMotor", m_rightLeadMotor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("rightFollowMotor", m_rightFollowMotor->GetOutputCurrent());
-  frc::SmartDashboard::PutNumber("Reverse Drive", 2);
 }
 
 void DriveBase::DriveTank(float leftWheelInput, float rightWheelInput){
