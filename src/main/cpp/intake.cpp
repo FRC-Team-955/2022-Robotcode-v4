@@ -16,6 +16,6 @@ void Intake::RunIntake(float intake_percent) {
 }
 void Intake::StopIntake() { intake_talon->Set(ControlMode::PercentOutput, 0); }
 void Intake::DisplayIntakeInfo(){
-  frc::Shuffleboard::GetTab("Telop").Add("IntakeMotorAmps", intake_talon->GetOutputCurrent());
-  frc::Shuffleboard::GetTab("Telop").Add("Sol1", double_solenoid->Get()).WithWidget(frc::BuiltInWidgets::kBooleanBox);
+  frc::SmartDashboard::PutNumber("Intake Motor Amps", intake_talon->GetOutputCurrent());
+  frc::SmartDashboard::PutBoolean("Intake Solenoid Extension", (bool)(double_solenoid->Get()-1));
 }

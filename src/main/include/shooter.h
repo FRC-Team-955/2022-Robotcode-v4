@@ -32,6 +32,12 @@ public:
     m_pidController_bottom->SetFF(MechanismConst::bottom_kFF);
     m_pidController_bottom->SetOutputRange(MechanismConst::bottom_kMinOutput,MechanismConst::bottom_kMaxOutput);
   };
+  ~Shooter() {
+    delete m_pidController_top;
+    delete m_pidController_bottom;
+    delete shooterneo_top_encoder;
+    delete shooterneo_bottom_encoder;
+  }
   //Takes in the two percent output of the motors and sets them to that output
   void ShootPercentOutput(double top_percent, double bottom_percent);
   //Takes in the two velocities of the motors and sets them to the velocities
