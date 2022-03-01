@@ -33,12 +33,6 @@ void Elevator::ElevatorMove(double joystick_position) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
       }
     }
-    //316000 //top
-    //290000 //slow down
-
-    //50000
-    //0
-
     // if the position of the elevator is now known
     if (set_up_done == true) {
       if (elevator_motor->GetSelectedSensorPosition() > 305000 && joystick_position > 0) {
@@ -49,30 +43,7 @@ void Elevator::ElevatorMove(double joystick_position) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
       } else if ((elevator_motor->GetSelectedSensorPosition() < 0) && joystick_position > 0) {
         elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
-      }
-      // } else if (elevator_motor->GetSelectedSensorPosition() > 290000) {
-      //   //going up slow down
-      //   if (joystick_position > 0) {
-      //     elevator_motor->Set(ControlMode::PercentOutput, joystick_position * MechanismConst::elevator_slow_multiplier);
-      //   } else {
-      //     elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
-      //   }
-      // } else if (elevator_motor->GetSelectedSensorPosition() < 1000 && OffGround()) {
-      //   if (joystick_position < 0) {
-      //     elevator_motor->Set(ControlMode::PercentOutput, joystick_position * MechanismConst::elevator_slow_multiplier);
-      //   } else {
-      //     elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
-      //   }
-      // } else if (elevator_motor->GetSelectedSensorPosition() < -4000) {
-      //   if (joystick_position < 0) {
-      //     elevator_motor->Set(ControlMode::PercentOutput,
-      //                         joystick_position *
-      //                             MechanismConst::elevator_slow_multiplier);
-      //   } else {
-      //     elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
-      //   }
-      // }
-      else if ((elevator_motor->GetSelectedSensorPosition() > 0) && (elevator_motor->GetSelectedSensorPosition() < 305000)) {
+      }else if ((elevator_motor->GetSelectedSensorPosition() > 0) && (elevator_motor->GetSelectedSensorPosition() < 305000)) {
         elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
       }
       else {
@@ -101,7 +72,6 @@ bool Elevator::OffGround() {
     return false;
   }
 }
-
 void Elevator::DisplayElevatorInfo(){
   frc::SmartDashboard::PutNumber("Elevator Amp", elevator_motor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("Elevator Position", elevator_motor->GetSelectedSensorPosition(0));

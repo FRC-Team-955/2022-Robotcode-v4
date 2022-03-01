@@ -101,12 +101,6 @@ int AutoState = 0;
 // Thank you for listening to my ted talk
 
 void Robot::RobotInit() {
-  
-  // m_position_Chooser = new frc::SendableChooser<std::string>();
-  // m_team_color_Chooser = new frc::SendableChooser<std::string>;
-  // std::string team_color[2] = {"Red","Blue"};
-  // SmartDashboard::PutStringArray("Team Color", team_color);
-  // m_position_Chooser.SetDefaultOption()
   m_auto_Chooser.SetDefaultOption("Ganyu Wall","Wall");
   m_auto_Chooser.AddOption("Ganyu Wall2","Wall2Ball");
   m_auto_Chooser.AddOption("Ganyu Side2","Side2Ball");
@@ -119,9 +113,6 @@ void Robot::RobotInit() {
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
 
-  // frc::SmartDashboard::PutData("Team Color Chooser", &m_team_color_Chooser);
-  // SmartDashboard::UpdateValues();
-
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
@@ -132,10 +123,7 @@ void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
   Build();
   AutoState = 0;
-    // //Gets the values from the Shuffleboard
-    // std::string auto_selection = Shuffleboard::GetTab("Pre").Add("Robot Position", m_auto_Chooser).GetEntry().GetString("NA");
-    // //The team color it defaults to Red jic you forget to set color (aka hope to win 50-50)
-    // ball_manager->team_color = Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).GetEntry().GetString("Uh");
+
   m_leftLeadMotor_encoder->SetPosition(0);
   m_rightLeadMotor_encoder->SetPosition(0);
   ganyu_auto_selection = m_auto_Chooser.GetSelected();
