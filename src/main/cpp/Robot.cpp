@@ -73,6 +73,7 @@ DigitalInput *ir_break_beam;
 //Compressor
 Compressor *compressor;
 //Timers
+frc::Timer *m_timer_auto;
 frc::Timer *m_timer_intake;
 frc::Timer *m_timer_elevator;
 //RGB
@@ -106,10 +107,11 @@ void Robot::RobotInit() {
   // std::string team_color[2] = {"Red","Blue"};
   // SmartDashboard::PutStringArray("Team Color", team_color);
   // m_position_Chooser.SetDefaultOption()
-  m_auto_Chooser.SetDefaultOption("Ganyu N","Wall");
-  m_auto_Chooser.AddOption("Ganyu C2","Wall2Ball");
+  m_auto_Chooser.SetDefaultOption("Ganyu Wall","Wall");
+  m_auto_Chooser.AddOption("Ganyu Wall2","Wall2Ball");
   m_auto_Chooser.AddOption("Ganyu Side","Side");
-  m_auto_Chooser.AddOption("Ganyu Run","Taxi");
+  m_auto_Chooser.AddOption("Ganyu Taxi","Taxi");
+  m_auto_Chooser.AddOption("Ganyu Wait Taxi","Wait Taxi");
   m_auto_Chooser.AddOption("Ganyu Sleep","Nothing");
   frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
@@ -128,6 +130,7 @@ void Robot::RobotPeriodic() {}
 
 void Robot::AutonomousInit() {
   Build();
+  AutoState = 0;
     // //Gets the values from the Shuffleboard
     // std::string auto_selection = Shuffleboard::GetTab("Pre").Add("Robot Position", m_auto_Chooser).GetEntry().GetString("NA");
     // //The team color it defaults to Red jic you forget to set color (aka hope to win 50-50)
@@ -139,98 +142,134 @@ void Robot::AutonomousInit() {
 }
 void Robot::AutonomousPeriodic() {
   //  intake->RunIntake(.5);
+  std::cout<<AutoState<<std::endl;
   if(ganyu_auto_selection == "Wall"){
-ball_manager->CheckHopperState();
-  if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
-  ball_manager -> Shoot();
-  }
-  if (ball_manager -> IsEmpty() && AutoState == 0){
-    shooter->ShootPercentOutput(0,0);
-    hopper->RunHopperMotor(0,0);
-    AutoState++;
-  } 
-  if (AutoState == 1){
-    m_rightLeadMotor->Set(.3);
-    m_leftLeadMotor->Set(.3);
-  } 
-  if (m_rightLeadMotor_encoder->GetPosition() >= 26 && m_leftLeadMotor_encoder->GetPosition() >= 26 && AutoState == 1){
-    m_rightLeadMotor->Set(0);
-    m_leftLeadMotor->Set(0);
-    AutoState++;
-  } 
+    ball_manager->CheckHopperState();
+    if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
+      ball_manager -> Shoot();
+    }
+    if (ball_manager -> IsEmpty() && AutoState == 0){
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+      AutoState++;
+    } 
+    if (AutoState == 1){
+      m_rightLeadMotor->Set(.3);
+      m_leftLeadMotor->Set(.3);
+    } 
+    if (m_rightLeadMotor_encoder->GetPosition() >= 26 && m_leftLeadMotor_encoder->GetPosition() >= 26 && AutoState == 1){
+      m_rightLeadMotor->Set(0);
+      m_leftLeadMotor->Set(0);
+      AutoState++;
+    }
   }else if(ganyu_auto_selection == "Side"){
     ball_manager->CheckHopperState();
-  if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
-  ball_manager -> Shoot();
-  }
-  if (ball_manager -> IsEmpty() && AutoState == 0){
-    shooter->ShootPercentOutput(0,0);
-    hopper->RunHopperMotor(0,0);
-    AutoState++;
-  } 
-  if (AutoState == 1){
-    m_rightLeadMotor->Set(.3);
-    m_leftLeadMotor->Set(.3);
-  } 
-
-  if (m_rightLeadMotor_encoder->GetPosition() >= 25 && m_leftLeadMotor_encoder->GetPosition() >= 25 && AutoState == 1){
-    m_rightLeadMotor->Set(0);
-    m_leftLeadMotor->Set(0);
-    AutoState++;
-  } 
-  } else if(ganyu_auto_selection == "Wall2Ball"){
+    if ((AutoState == 0) && ball_manager->Rev(2600,2200)){
+      ball_manager -> Shoot();
+    }
+    if (ball_manager -> IsEmpty() && AutoState == 0){
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+      AutoState++;
+    } 
+    if (AutoState == 1){
+      m_rightLeadMotor->Set(.3);
+      m_leftLeadMotor->Set(.3);
+    } 
+    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
+      m_rightLeadMotor->Set(0);
+      m_leftLeadMotor->Set(0);
+      AutoState++;
+    } 
+  }else if(ganyu_auto_selection == "Wall2Ball"){
+    ball_manager->LoadHopper();
+    intake->PistonDown();
     ball_manager->CheckHopperState();
-  if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
-  ball_manager -> Shoot();
-  }
-  if (ball_manager -> IsEmpty() && AutoState == 0){
-    shooter->ShootPercentOutput(0,0);
-    hopper->RunHopperMotor(0,0);
-    AutoState++;
-  } 
-  if (AutoState == 1){
-    m_rightLeadMotor->Set(.3);
-    m_leftLeadMotor->Set(.3);
-  } 
-
-  if (m_rightLeadMotor_encoder->GetPosition() >= 12 && m_leftLeadMotor_encoder->GetPosition() >= 12 && AutoState == 1){
-    m_rightLeadMotor->Set(0);
-    m_leftLeadMotor->Set(0);
-    intake->RunIntake(1);
-    AutoState++;
-  } 
-  if(AutoState==2 && !ball_manager -> IsEmpty()){
-    intake->RunIntake(0);
-    AutoState++;
-
-  } 
-  if(AutoState == 3 && ball_manager->Rev(2200,2100)){
-  ball_manager -> Shoot();
-  }
-  if (ball_manager -> IsEmpty() && AutoState == 4){
-    shooter->ShootPercentOutput(0,0);
-    hopper->RunHopperMotor(0,0);
-    AutoState++;
-  } 
+    if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
+      ball_manager -> Shoot();
+    }
+    if (ball_manager -> IsEmpty() && AutoState == 0){
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+      AutoState++;
+    } 
+    if (AutoState == 1){
+      m_rightLeadMotor->Set(.3);
+      m_leftLeadMotor->Set(.3);
+    } 
+    if (m_rightLeadMotor_encoder->GetPosition() >= 22 && m_leftLeadMotor_encoder->GetPosition() >= 22 && AutoState == 1){
+      m_rightLeadMotor->Set(0);
+      m_leftLeadMotor->Set(0);
+      intake->RunIntake(1);
+      AutoState++;
+    } 
+    if(AutoState==2 && !ball_manager -> IsEmpty()){
+      intake->RunIntake(0);
+      AutoState++;
+    } if (AutoState == 3){
+      m_rightLeadMotor->Set(-0.3);
+      m_leftLeadMotor->Set(-0.3);
+    } 
+    if (m_rightLeadMotor_encoder->GetPosition() <= 5 && m_leftLeadMotor_encoder->GetPosition() <= 5 && AutoState == 3){
+      m_rightLeadMotor->Set(0);
+      m_leftLeadMotor->Set(0);
+      intake->RunIntake(1);
+      AutoState++;
+    } 
+    if (AutoState == 4){
+      intake->StopIntake();
+      AutoState++;
+    }
+    if(AutoState == 5 && ball_manager->Rev(2200,2100)){
+      ball_manager -> Shoot();
+    }
+    if (m_timer_auto->GetMatchTime()<5_s){     
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+    }
+    // if (ball_manager -> IsEmpty() && AutoState == 4){
+    //   shooter->ShootPercentOutput(0,0);
+    //   hopper->RunHopperMotor(0,0);
+    //   AutoState++;
+    // } 
   }
   if(ganyu_auto_selection == "Taxi"){
-ball_manager->CheckHopperState();
-  
-  if ( AutoState == 0){
-    shooter->ShootPercentOutput(0,0);
-    hopper->RunHopperMotor(0,0);
-    AutoState++;
-  } 
-  if (AutoState == 1){
-    m_rightLeadMotor->Set(.3);
-    m_leftLeadMotor->Set(.3);
-  } 
-  if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
-    m_rightLeadMotor->Set(0);
-    m_leftLeadMotor->Set(0);
-    AutoState++;
-  } 
-  
+    ball_manager->CheckHopperState();
+    if ( AutoState == 0){
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+      AutoState++;
+    } 
+    if (AutoState == 1){
+      m_rightLeadMotor->Set(.3);
+      m_leftLeadMotor->Set(.3);
+    } 
+    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
+      m_rightLeadMotor->Set(0);
+      m_leftLeadMotor->Set(0);
+      AutoState++;
+    } 
+  }
+  if(ganyu_auto_selection == "Wait Taxi"){
+    ball_manager->CheckHopperState();
+    if (m_timer_auto->GetMatchTime()<5_s && AutoState == 0){
+      AutoState++;
+    }
+    if ( AutoState == 1){
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+      AutoState++;
+    } 
+    if (AutoState == 2){
+      m_rightLeadMotor->Set(.3);
+      m_leftLeadMotor->Set(.3);
+    } 
+    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 2){
+      m_rightLeadMotor->Set(0);
+      m_leftLeadMotor->Set(0);
+      AutoState++;
+    } 
+  }
 }
 
 void Robot::TeleopInit() {
@@ -458,6 +497,7 @@ void Robot::Build(){
   //rgb
   // rgb_spark = new Spark(1);
   //timer
+  m_timer_auto = new frc::Timer();
   m_timer_intake = new frc::Timer();
   m_timer_elevator = new frc::Timer();
 }
