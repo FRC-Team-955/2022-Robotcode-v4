@@ -143,7 +143,8 @@ void Robot::AutonomousInit() {
 }
 void Robot::AutonomousPeriodic() {
   //  intake->RunIntake(.5);
-  ball_manager->CheckHopperState();
+  if(WallAuto){
+ball_manager->CheckHopperState();
   if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
   ball_manager -> Shoot();
   }
@@ -162,6 +163,63 @@ void Robot::AutonomousPeriodic() {
     m_leftLeadMotor->Set(0);
     AutoState++;
   } 
+  }else if(SideAuto){
+    ball_manager->CheckHopperState();
+  if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
+  ball_manager -> Shoot();
+  }
+  if (ball_manager -> IsEmpty() && AutoState == 0){
+    shooter->ShootPercentOutput(0,0);
+    hopper->RunHopperMotor(0,0);
+    AutoState++;
+  } 
+  if (AutoState == 1){
+    m_rightLeadMotor->Set(.3);
+    m_leftLeadMotor->Set(.3);
+  } 
+
+  if (m_rightLeadMotor_encoder->GetPosition() >= 25 && m_leftLeadMotor_encoder->GetPosition() >= 25 && AutoState == 1){
+    m_rightLeadMotor->Set(0);
+    m_leftLeadMotor->Set(0);
+    AutoState++;
+  } 
+  } else if(2BallAuto){
+    ball_manager->CheckHopperState();
+  if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
+  ball_manager -> Shoot();
+  }
+  if (ball_manager -> IsEmpty() && AutoState == 0){
+    shooter->ShootPercentOutput(0,0);
+    hopper->RunHopperMotor(0,0);
+    AutoState++;
+  } 
+  if (AutoState == 1){
+    m_rightLeadMotor->Set(.3);
+    m_leftLeadMotor->Set(.3);
+  } 
+
+  if (m_rightLeadMotor_encoder->GetPosition() >= 12 && m_leftLeadMotor_encoder->GetPosition() >= 12 && AutoState == 1){
+    m_rightLeadMotor->Set(0);
+    m_leftLeadMotor->Set(0);
+    intake->RunIntake(1);
+    AutoState++;
+  } 
+  if(AutoState==2 && !ball_manager -> IsEmpty()){
+    intake->RunIntake(0);
+    AutoState++;
+
+  } 
+  if(AutoState == 3 && ball_manager->Rev(2200,2100)){
+  ball_manager -> Shoot();
+  }
+  if (ball_manager -> IsEmpty() && AutoState == 4){
+    shooter->ShootPercentOutput(0,0);
+    hopper->RunHopperMotor(0,0);
+    AutoState++;
+  } 
+  }
+
+  
 }
 
 void Robot::TeleopInit() {
