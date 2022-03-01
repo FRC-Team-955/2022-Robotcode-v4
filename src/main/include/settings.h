@@ -69,8 +69,7 @@ constexpr int klow_target_top = 1300; //g
 constexpr int khigh_target_bottom = 2100; //g
 constexpr int khigh_target_top = 2000; //g
 //reject
-constexpr int kreject_range= 100;
-constexpr int kreject_target = 1000;
+constexpr int kreject_target = 1200;
 //elevator
 constexpr int kelevator_motor_port = 12; //g
 constexpr int kelevator_pnumatic_port_forward = 4;

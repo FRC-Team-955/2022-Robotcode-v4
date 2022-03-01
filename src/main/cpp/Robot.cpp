@@ -161,12 +161,13 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
   Build();
-
+  ball_manager->team_color = m_team_color_Chooser.GetSelected();
   m_timer_intake->Start();
   m_timer_elevator->Start();
 }
 void Robot::TeleopPeriodic() {
   // rgb_spark->Set(-0.57);
+  ball_manager->CheckHopperState();
   DisplayShuffle();
   drive ->Drive();
   //compressor
@@ -211,9 +212,11 @@ void Robot::TeleopPeriodic() {
     shooter->VelocityControl(0,0);
     if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
       //Reject code
+      intake->PistonDown();
       ball_manager->Reject();
     }else if(joystick_1->GetRawButtonReleased(Joy1Const::kreject_ball_button)){
       //When you release shut off motor
+      intake->PistonUp();
       hopper->RunHopperMotor(0,0);
     }else{
       //if not rejecting
