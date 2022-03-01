@@ -68,6 +68,9 @@ constexpr int klow_target_top = 1300; //g
 //high goal
 constexpr int khigh_target_bottom = 2100; //g
 constexpr int khigh_target_top = 2000; //g
+//side goal
+constexpr int kside_target_bottom = 2200; //g
+constexpr int kside_target_top = 2600; //g
 //reject
 constexpr int kreject_target = 1200;
 //elevator

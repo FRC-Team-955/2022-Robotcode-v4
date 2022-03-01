@@ -109,6 +109,7 @@ void Robot::RobotInit() {
   // m_position_Chooser.SetDefaultOption()
   m_auto_Chooser.SetDefaultOption("Ganyu Wall","Wall");
   m_auto_Chooser.AddOption("Ganyu Wall2","Wall2Ball");
+  m_auto_Chooser.AddOption("Ganyu Side2","Side2Ball");
   m_auto_Chooser.AddOption("Ganyu Side","Side");
   m_auto_Chooser.AddOption("Ganyu Taxi","Taxi");
   m_auto_Chooser.AddOption("Ganyu Wait Taxi","Wait Taxi");
@@ -145,7 +146,7 @@ void Robot::AutonomousPeriodic() {
   std::cout<<AutoState<<std::endl;
   if(ganyu_auto_selection == "Wall"){
     ball_manager->CheckHopperState();
-    if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
+    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
       ball_manager -> Shoot();
     }
     if (ball_manager -> IsEmpty() && AutoState == 0){
@@ -164,7 +165,7 @@ void Robot::AutonomousPeriodic() {
     }
   }else if(ganyu_auto_selection == "Side"){
     ball_manager->CheckHopperState();
-    if ((AutoState == 0) && ball_manager->Rev(2600,2200)){
+    if ((AutoState == 0) && ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
       ball_manager -> Shoot();
     }
     if (ball_manager -> IsEmpty() && AutoState == 0){
@@ -185,7 +186,7 @@ void Robot::AutonomousPeriodic() {
     ball_manager->LoadHopper();
     intake->PistonDown();
     ball_manager->CheckHopperState();
-    if ((AutoState == 0) && ball_manager->Rev(2200,2100)){
+    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
       ball_manager -> Shoot();
     }
     if (ball_manager -> IsEmpty() && AutoState == 0){
@@ -220,18 +221,59 @@ void Robot::AutonomousPeriodic() {
       intake->StopIntake();
       AutoState++;
     }
-    if(AutoState == 5 && ball_manager->Rev(2200,2100)){
+    if(AutoState == 5 && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
       ball_manager -> Shoot();
     }
     if (m_timer_auto->GetMatchTime()<5_s){     
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
     }
-    // if (ball_manager -> IsEmpty() && AutoState == 4){
-    //   shooter->ShootPercentOutput(0,0);
-    //   hopper->RunHopperMotor(0,0);
-    //   AutoState++;
-    // } 
+  }else if(ganyu_auto_selection == "Side2Ball"){
+    ball_manager->LoadHopper();
+    intake->PistonDown();
+    ball_manager->CheckHopperState();
+    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: kside_target_top,MechanismConst:: kside_target_bottom)){
+      ball_manager -> Shoot();
+    }
+    if (ball_manager -> IsEmpty() && AutoState == 0){
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+      AutoState++;
+    } 
+    if (AutoState == 1){
+      m_rightLeadMotor->Set(.3);
+      m_leftLeadMotor->Set(.3);
+    } 
+    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
+      m_rightLeadMotor->Set(0);
+      m_leftLeadMotor->Set(0);
+      intake->RunIntake(1);
+      AutoState++;
+    } 
+    if(AutoState==2 && !ball_manager -> IsEmpty()){
+      intake->RunIntake(0);
+      AutoState++;
+    } if (AutoState == 3){
+      m_rightLeadMotor->Set(-0.3);
+      m_leftLeadMotor->Set(-0.3);
+    } 
+    if (m_rightLeadMotor_encoder->GetPosition() <= 3 && m_leftLeadMotor_encoder->GetPosition() <= 3 && AutoState == 3){
+      m_rightLeadMotor->Set(0);
+      m_leftLeadMotor->Set(0);
+      intake->RunIntake(1);
+      AutoState++;
+    } 
+    if (AutoState == 4){
+      intake->StopIntake();
+      AutoState++;
+    }
+    if(AutoState == 5 && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
+      ball_manager -> Shoot();
+    }
+    if (m_timer_auto->GetMatchTime()<5_s){     
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+    }
   }
   if(ganyu_auto_selection == "Taxi"){
     ball_manager->CheckHopperState();
