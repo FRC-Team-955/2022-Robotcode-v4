@@ -5,7 +5,7 @@
 using namespace frc;
 
 void Elevator::ElevatorMove(double joystick_position) {
-
+  //is amperage limit switch
   if (elevator_motor->GetOutputCurrent() > 50) hit_top_limit = true;
 
   if (elevator_solenoid_lock->Get() == 1){
