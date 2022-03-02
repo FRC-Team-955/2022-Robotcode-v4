@@ -9,7 +9,6 @@
 #include <frc/Timer.h>
 #include <frc/MotorSafety.h>
 #include <frc/motorcontrol/Spark.h>
-//del maybe
 #include <frc/Compressor.h>
 
 //our classes
@@ -125,7 +124,6 @@ void Robot::RobotInit() {
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
-  
 }
 void Robot::RobotPeriodic() {}
 
@@ -142,8 +140,6 @@ void Robot::AutonomousInit() {
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
 }
 void Robot::AutonomousPeriodic() {
-  //  intake->RunIntake(.5);
-  std::cout<<AutoState<<std::endl;
   if(ganyu_auto_selection == "Wall"){
     ball_manager->CheckHopperState();
     if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
@@ -322,8 +318,8 @@ void Robot::TeleopInit() {
 }
 void Robot::TeleopPeriodic() {
   // rgb_spark->Set(-0.57);
-  ball_manager->CheckHopperState();
   DisplayShuffle();
+  ball_manager->CheckHopperState();
   drive ->Drive();
   //compressor
   if (compressor_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
@@ -407,14 +403,14 @@ void Robot::TeleopPeriodic() {
     }
   }
   //check if its around time to climb //GetMatchTime()
-  // if(m_timer_elevator->Get()>90_s){
+  if(m_timer_elevator->Get()<60_s){
     if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
       elevator->LockElevator();
     }else{
       elevator->UnlockElevator();
     }
   elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
-  // }
+  }
 }
 void Robot::DisplayShuffle() {
   drive->DisplayDriveInfo();
