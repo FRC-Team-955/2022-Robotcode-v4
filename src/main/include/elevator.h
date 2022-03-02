@@ -32,6 +32,8 @@ public:
 
 private:
   bool set_up_done = false;
+  double motor_output_current;
+  bool hit_top_limit = false;
   TalonFX *elevator_motor;
   DigitalInput *limit_switch_top;
   DigitalInput *limit_switch_bottom;

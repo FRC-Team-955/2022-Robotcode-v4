@@ -5,6 +5,9 @@
 using namespace frc;
 
 void Elevator::ElevatorMove(double joystick_position) {
+
+  if (elevator_motor->GetOutputCurrent() > 50) hit_top_limit = true;
+
   if (elevator_solenoid_lock->Get() == 1){
       elevator_motor->Set(ControlMode::PercentOutput, 0);
   } else {
@@ -43,12 +46,13 @@ void Elevator::ElevatorMove(double joystick_position) {
     if (set_up_done == true) {
       if (elevator_motor->GetSelectedSensorPosition() > 305000 && joystick_position > 0) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
-      } else if (elevator_motor->GetSelectedSensorPosition() > 305000 && joystick_position < 0) {
+      } else if ((elevator_motor->GetSelectedSensorPosition() > 305000 && joystick_position < 0) && !hit_top_limit) {
         elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
       } else if ((elevator_motor->GetSelectedSensorPosition() < 20000) && joystick_position < 0) {
         elevator_motor->Set(ControlMode::PercentOutput, 0);
       } else if ((elevator_motor->GetSelectedSensorPosition() < 0) && joystick_position > 0) {
         elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
+        if (hit_top_limit == true) hit_top_limit = false;
       }
       // } else if (elevator_motor->GetSelectedSensorPosition() > 290000) {
       //   //going up slow down
