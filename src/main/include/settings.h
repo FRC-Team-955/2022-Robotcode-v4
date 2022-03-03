@@ -55,13 +55,13 @@ constexpr int kintake_reversal_amps = 50;
 //hopper
 constexpr int khopper_motor_top_port = 9; //g
 constexpr int khopper_motor_bottom_port = 11; //g
-//shooter
+//shooters
 constexpr double top_kP = 0.00008, top_kI = 0, top_kD = 0.015035, top_kFF = 0.000186, top_kMinOutput=0,top_kMaxOutput = 1;
 constexpr double bottom_kP = 0.00009, bottom_kI = 0, bottom_kD = 0.015035, bottom_kFF = 0.000185, bottom_kMinOutput=-1, bottom_kMaxOutput = 0;
 constexpr double kMinOutput = -1, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
-constexpr int krange_target = 100;
+constexpr int krange_target = 200;
 //low goal
 constexpr int klow_target_bottom = 1200; //g
 constexpr int klow_target_top = 1300; //g

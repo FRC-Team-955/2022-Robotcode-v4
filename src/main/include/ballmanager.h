@@ -17,7 +17,6 @@ public:
   intake(intake), hopper(hopper),shooter(shooter), color_sensor_bot(color_sensor_bot), color_sensor_top(color_sensor_top){};
   std::string GetHopperState(int position);
   bool Rev(double target_velocity_top, double target_velocity_bottom);
-  void MoveIndex();
   void CheckHopperState();
   bool IsFull();
   bool IsEmpty();

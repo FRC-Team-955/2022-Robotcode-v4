@@ -140,6 +140,11 @@ void Robot::AutonomousInit() {
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
 }
 void Robot::AutonomousPeriodic() {
+  //&& AutoState == 0
+  if (m_timer_auto->GetMatchTime()<5_s && (ganyu_auto_selection.find("Wait")!= std::string::npos)){
+    std::cout<<"hi"<<std::endl;
+    AutoState++;
+  }
   if(ganyu_auto_selection == "Wall"){
     ball_manager->CheckHopperState();
     if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
@@ -329,9 +334,6 @@ void Robot::TeleopPeriodic() {
     compressor->Disable();
     frc::SmartDashboard::PutBoolean("Compressor", false);
   }
-  // camera_result = camera.GetLatestResult();
-  // limelight_result = limecamera.GetLatestResult();
-
   //The toggle for Low Goal
   if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
     low_goal_mode = true;
@@ -340,6 +342,10 @@ void Robot::TeleopPeriodic() {
   }
 
   if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
+    // if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
+    //   hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
+    //   frc::SmartDashboard::PutBoolean("Manual Hopper", true);
+    // }
     //shooting
     if(low_goal_mode){
       //low goal

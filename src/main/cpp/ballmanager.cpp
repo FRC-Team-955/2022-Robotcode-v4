@@ -24,15 +24,8 @@ void BallManager::CheckHopperState(){
     }
 }
 
-void BallManager::MoveIndex(){
-    if(color_sensor_bot->CheckForBall(200) && !color_sensor_top->CheckForBall(2000)){
-        hopper->RunHopperMotor(0.1, 0.25);
-    }
-}
-
 void BallManager::LoadHopper(){
     if(position[1]=="None"){
-        // hopper->RunHopperMotor(1, 1);
         hopper->RunHopperMotor(.31, 0.5);
     }
     else if(position[1]!="None" && position[0] == "None"){
@@ -72,11 +65,12 @@ void BallManager::Shoot(){
 void BallManager::Reject(){
     if(Rev(MechanismConst::kreject_target,MechanismConst::kreject_target)
     && (position[1] != team_color || position[1] == "None")){
-        std::cout<<"HI\n";
+        std::cout<<"should reject high ball\n";
         hopper->RunHopperMotor(0.5,0);
         CheckHopperState();
     }
     if(position[0] != team_color || position[0] == "None"){
+        std::cout<<"should reject low ball\n";
         hopper->RunHopperMotor(0, -0.5);
         intake->RunIntake(-0.5);
         CheckHopperState();
@@ -84,13 +78,6 @@ void BallManager::Reject(){
 }
 
 void BallManager::DisplayBallManagerInfo(){
-    //frc::ShuffleboardTab& tabpre
-    // frc::ShuffleboardLayout& ball_layout = frc::Shuffleboard::GetTab("Telop").GetLayout("Ball Slots","List Layout");
-    // frc::ShuffleboardLayout& ball_top = frc::Shuffleboard::GetTab("Telop").GetLayout("Top Ball","Grid");
-    // frc::ShuffleboardLayout& ball_bottom = frc::Shuffleboard::GetTab("Telop").GetLayout("Bottom Ball","Grid");
-    // ball_layout.WithSize(4,2);
-    // ball_layout.Add("Top Ball", ball_top);
-
     std::string color_state[3] ={"None","Red","Blue"};
     bool top[3] = {false};
     bool bottom[3] = {false};

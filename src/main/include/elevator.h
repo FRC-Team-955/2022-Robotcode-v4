@@ -31,7 +31,6 @@ public:
   void ResetPosition();
 
 private:
-  bool set_up_done = false;
   double motor_output_current;
   bool hit_top_limit = false;
   TalonFX *elevator_motor;
