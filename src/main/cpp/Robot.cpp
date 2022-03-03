@@ -158,10 +158,12 @@ void Robot::AutonomousPeriodic() {
     if (m_timer_auto->GetMatchTime()<5_s && AutoState == 0){
       AutoState++;
     }
-    if ((AutoState == 1) && ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-      ball_manager -> Shoot();
+    if ((AutoState == 1)){
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
     }
-    if (ball_manager -> IsEmpty() && AutoState == 0){
+    if (ball_manager -> IsEmpty() && AutoState == 1){
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
       AutoState++;
