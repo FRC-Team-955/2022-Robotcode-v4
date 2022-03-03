@@ -61,7 +61,7 @@ constexpr double bottom_kP = 0.00009, bottom_kI = 0, bottom_kD = 0.015035, botto
 constexpr double kMinOutput = -1, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
-constexpr int krange_target = 100;
+constexpr int krange_target = 200;
 //low goal
 constexpr int klow_target_bottom = 1200; //g
 constexpr int klow_target_top = 1300; //g

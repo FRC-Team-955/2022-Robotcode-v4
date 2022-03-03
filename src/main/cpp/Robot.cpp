@@ -130,8 +130,8 @@ void Robot::AutonomousInit() {
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
 }
 void Robot::AutonomousPeriodic() {
-  //  intake->RunIntake(.5);
-  std::cout<<AutoState<<std::endl;
+  DisplayShuffle();
+  ball_manager->CheckHopperState();
   if(ganyu_auto_selection == "Wall"){
     ball_manager->CheckHopperState();
     if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
