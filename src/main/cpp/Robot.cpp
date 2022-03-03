@@ -132,6 +132,12 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {
   DisplayShuffle();
   ball_manager->CheckHopperState();
+  if (m_timer_auto->GetMatchTime()<5_s && (ganyu_auto_selection.find("Wait")!= std::string::npos)){
+    std::cout<<"hi"<<std::endl;
+    // AutoState++;
+  }else{
+    std::cout<<"not yet"<<std::endl;
+  }
   if(ganyu_auto_selection == "Wall"){
     ball_manager->CheckHopperState();
     if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
