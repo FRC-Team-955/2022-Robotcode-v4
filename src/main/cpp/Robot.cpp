@@ -102,7 +102,7 @@ int AutoState = 0;
 void Robot::RobotInit() {
   m_auto_Chooser.SetDefaultOption("Ganyu Wall","Wall");
   m_auto_Chooser.AddOption("Ganyu Wall2","Wall2Ball");
-  m_auto_Chooser.AddOption("Ganyu Side2","Side2Ball");
+  m_auto_Chooser.AddOption("Ganyu Side2*","Side2*Ball");
   m_auto_Chooser.AddOption("Ganyu Side","Side");
   m_auto_Chooser.AddOption("Ganyu Wait Side","Wait Side");
   m_auto_Chooser.AddOption("Ganyu Taxi","Taxi");
@@ -240,7 +240,7 @@ void Robot::AutonomousPeriodic() {
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
     }
-  }else if(ganyu_auto_selection == "Side2Ball"){
+  }else if(ganyu_auto_selection == "Side2*Ball"){
     ball_manager->LoadHopper();
     intake->PistonDown();
     if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: kside_target_top,MechanismConst:: kside_target_bottom)){
@@ -260,27 +260,34 @@ void Robot::AutonomousPeriodic() {
       m_leftLeadMotor->Set(0);
       intake->RunIntake(1);
       AutoState++;
-    } 
-    if(AutoState==2 && !ball_manager -> IsEmpty()){
+    }
+    if(AutoState == 2 && !ball_manager -> IsEmpty()){
       intake->RunIntake(0);
       AutoState++;
-    } if (AutoState == 3){
-      m_rightLeadMotor->Set(-0.3);
-      m_leftLeadMotor->Set(-0.3);
     } 
-    if (m_rightLeadMotor_encoder->GetPosition() <= 3 && m_leftLeadMotor_encoder->GetPosition() <= 3 && AutoState == 3){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      intake->RunIntake(1);
-      AutoState++;
-    } 
-    if (AutoState == 4){
-      intake->StopIntake();
-      AutoState++;
-    }
-    if(AutoState == 5 && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
-      ball_manager -> Shoot();
-    }
+    // if (AutoState == 3){
+    //   m_rightLeadMotor->Set(-0.3);
+    //   m_leftLeadMotor->Set(-0.3);
+    // } 
+    // if (m_rightLeadMotor_encoder->GetPosition() <= 1 && m_leftLeadMotor_encoder->GetPosition() <= 1 && AutoState == 3){
+    //   m_rightLeadMotor->Set(0);
+    //   m_leftLeadMotor->Set(0);
+    //   AutoState++;
+    // }
+    // // if (m_rightLeadMotor_encoder->GetPosition() <= -2 && AutoState == 3){
+    // //   m_rightLeadMotor->Set(0);
+    // // }  
+    // // if (m_leftLeadMotor_encoder->GetPosition() <= -5 && AutoState == 3){
+    // //   m_leftLeadMotor->Set(0);
+    // //   AutoState++;
+    // // }  
+    // if (AutoState == 4){
+    //   intake->StopIntake();
+    //   AutoState++;
+    // }
+    // if(AutoState == 5 && ball_manager->Rev(MechanismConst:: kside_target_top,MechanismConst:: kside_target_bottom)){
+    //   ball_manager -> Shoot();
+    // }
     if (m_timer_auto->GetMatchTime()<5_s){     
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
@@ -342,8 +349,6 @@ void Robot::TeleopPeriodic() {
     compressor->Disable();
     frc::SmartDashboard::PutBoolean("Compressor", false);
   }
-  // camera_result = camera.GetLatestResult();
-  // limelight_result = limecamera.GetLatestResult();
 
   //The toggle for Low Goal
   if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
@@ -388,8 +393,8 @@ void Robot::TeleopPeriodic() {
           intake->PistonDown();
           //If the intake is in the down state allow the intake to run
           if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
-            intake->RunIntake(1);
             hopper_init = true;
+            intake->RunIntake(1);
             m_timer_intake->Start();
             m_timer_intake->Reset();
             ball_manager->CheckHopperState();
@@ -416,13 +421,17 @@ void Robot::TeleopPeriodic() {
     }
   }
   //check if its around time to climb //GetMatchTime()
-  // if(m_timer_elevator->Get()>90_s){
+  // if(m_timer_elevator->GetMatchTime()<30_s){
+  if(joystick_1->GetRawButton(Joy1Const::kelevator_allow)){
     if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
       elevator->LockElevator();
     }else{
       elevator->UnlockElevator();
     }
-  elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+    elevator->ElevatorMove(joystick_1->GetRawAxis(Joy1Const::kelevator_axis));
+  }else{
+    elevator_motor->Set(ControlMode::PercentOutput, 0);
+  }
   // }
 }
 void Robot::DisplayShuffle() {

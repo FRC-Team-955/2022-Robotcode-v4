@@ -32,7 +32,6 @@ void BallManager::MoveIndex(){
 
 void BallManager::LoadHopper(){
     if(position[1]=="None"){
-        // hopper->RunHopperMotor(1, 1);
         hopper->RunHopperMotor(.31, 0.5);
     }
     else if(position[1]!="None" && position[0] == "None"){
@@ -41,7 +40,6 @@ void BallManager::LoadHopper(){
         hopper->RunHopperMotor(0, 0);
     }
 }
-
 bool BallManager::IsFull(){
     if(position[1] != "None" && position[0] != "None"){
         return !false;
@@ -70,27 +68,26 @@ void BallManager::Shoot(){
 }
 
 void BallManager::Reject(){
+    // if(position[1] != team_color){
+    //     if(Rev(MechanismConst::kreject_target,MechanismConst::kreject_target)){
+    //         hopper->RunHopperMotor(0.5,0);
+    //     }
+    // }
+    // if(position[0] != team_color){
+    //     hopper->RunHopperMotor(0, -0.5);
+    //     intake->RunIntake(-0.5);
+    // }
     if(Rev(MechanismConst::kreject_target,MechanismConst::kreject_target)
     && (position[1] != team_color || position[1] == "None")){
-        std::cout<<"HI\n";
         hopper->RunHopperMotor(0.5,0);
-        CheckHopperState();
     }
     if(position[0] != team_color || position[0] == "None"){
         hopper->RunHopperMotor(0, -0.5);
         intake->RunIntake(-0.5);
-        CheckHopperState();
     }
 }
 
 void BallManager::DisplayBallManagerInfo(){
-    //frc::ShuffleboardTab& tabpre
-    // frc::ShuffleboardLayout& ball_layout = frc::Shuffleboard::GetTab("Telop").GetLayout("Ball Slots","List Layout");
-    // frc::ShuffleboardLayout& ball_top = frc::Shuffleboard::GetTab("Telop").GetLayout("Top Ball","Grid");
-    // frc::ShuffleboardLayout& ball_bottom = frc::Shuffleboard::GetTab("Telop").GetLayout("Bottom Ball","Grid");
-    // ball_layout.WithSize(4,2);
-    // ball_layout.Add("Top Ball", ball_top);
-
     std::string color_state[3] ={"None","Red","Blue"};
     bool top[3] = {false};
     bool bottom[3] = {false};
@@ -111,42 +108,6 @@ void BallManager::DisplayBallManagerInfo(){
     SmartDashboard::PutBoolean("Top None", top[0]);
     SmartDashboard::PutBoolean("Top Red", top[1]);
     SmartDashboard::PutBoolean("Top Blue", top[2]);
-
-    // if(GetHopperState(0)=="None"){
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom None", true);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom Red", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom Blue", false);
-    // }else if (GetHopperState(0)=="Red"){
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom None", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom Red", true);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom Blue", false);
-    // }else if (GetHopperState(0)=="Blue"){
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom None", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom Red", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom Blue", true);
-    // }else{
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom None", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom Red", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Bottom Blue", false);
-    // }
-    // if(GetHopperState(1)=="None"){
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top None", true);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top Red", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top Blue", false);
-    // }else if (GetHopperState(1)=="Red"){
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top None", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top Red", true);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top Blue", false);
-    // }else if (GetHopperState(1)=="Blue"){
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top None", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top Red", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top Blue", true);
-    // }else{
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top None", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top Red", false);
-    //     frc::Shuffleboard::GetTab("Telop").Add("Top Blue", false);
-    // }
-    
 }
 
 bool BallManager::IsEmpty(){

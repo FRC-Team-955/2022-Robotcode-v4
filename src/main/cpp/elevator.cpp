@@ -36,38 +36,41 @@ void Elevator::ElevatorMove(double joystick_position) {
     //316000 //top
     //290000 //slow down
 
-    //50000
-    //0
   if (limit_switch_bottom->Get() == 0) {
-    elevator_motor->SetSelectedSensorPosition(0);
+    ResetPosition();
   }
   if (elevator_solenoid_lock->Get() == 1){
       elevator_motor->Set(ControlMode::PercentOutput, 0);
   }else{
-    if ((elevator_motor->GetSelectedSensorPosition() <= 0) && joystick_position > 0) {
+    if ((elevator_motor->GetSelectedSensorPosition() <= 5000) && joystick_position > 0) {
       elevator_motor->Set(ControlMode::PercentOutput, 0);
     }else{
       elevator_motor->Set(ControlMode::PercentOutput, -joystick_position);
     }
-    //289000
-    // if the position of the elevator is now known
-    // if (elevator_motor->GetSelectedSensorPosition() > 289000 && joystick_position > 0) {
-    //   elevator_motor->Set(ControlMode::PercentOutput, 0);
-    // } else if ((elevator_motor->GetSelectedSensorPosition() > 289000 && joystick_position < 0) && !hit_top_limit) {
-    //   elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
-    // } else if ((elevator_motor->GetSelectedSensorPosition() < 20000) && joystick_position < 0) {
-    //   elevator_motor->Set(ControlMode::PercentOutput, 0);
-    // } else if ((elevator_motor->GetSelectedSensorPosition() <= 0) && joystick_position > 0) {
-    //   elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
-    //   if (hit_top_limit == true) hit_top_limit = false;
-    // }
-    // else if ((elevator_motor->GetSelectedSensorPosition() > 0) && (elevator_motor->GetSelectedSensorPosition() < 305000)) {
-    //   elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
-    // }
-    // else {
-    //   elevator_motor->Set(ControlMode::PercentOutput, 0);
-    // }
   }
+  // if (elevator_solenoid_lock->Get() == 1){
+  //       elevator_motor->Set(ControlMode::PercentOutput, 0);
+  // }else{
+  //   //if solenoid not out
+  //   if ((elevator_motor->GetSelectedSensorPosition() <= 5000) && joystick_position > 0) {
+  //     elevator_motor->Set(ControlMode::PercentOutput, 0);
+  //   }else{
+  //     //if not at bottom and moving downwards
+  //     if (joystick_position < 0 && elevator_motor->GetOutputCurrent() > 50) {
+  //       hit_top_limit = true;
+  //     }
+  //     if (joystick_position > 0){
+  //       hit_top_limit = false;
+  //     }
+  //     if (joystick_position < 0 && (hit_top_limit || elevator_motor->GetSelectedSensorPosition() > 300000)){
+  //       //if top limit it hit or encoder is too big, and moving upwards
+  //       elevator_motor->Set(ControlMode::PercentOutput, 0);
+  //     }else{
+  //       elevator_motor->Set(ControlMode::PercentOutput, -joystick_position);
+  //     }
+  //   }
+  // }
+
 }
 void Elevator::ResetPosition(){
   elevator_motor->SetSelectedSensorPosition(0);

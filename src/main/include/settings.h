@@ -23,6 +23,7 @@ constexpr int khopper_manual_axis = 5;
 constexpr int kreject_ball_button = 6;
 //elevator
 constexpr int kelevator_lock_button = 8;
+constexpr int kelevator_allow = 3;
 constexpr int kelevator_axis = 1;
 //compressor
 constexpr int kcompressor_toggle_button = 7;

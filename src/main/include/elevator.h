@@ -18,7 +18,7 @@ public:
   elevator_solenoid_lock(elevator_solenoid_lock){
     elevator_motor->SetNeutralMode(NeutralMode::Brake);
     elevator_motor->SetSelectedSensorPosition(0);
-    elevator_motor->TalonFX::ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 40, 0.1));
+    elevator_motor->TalonFX::ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 40, 0));
     // line above sets current limit. SupplyCurrentLimitConfiguration goes as
     // follow: CupplyCurrentLimitConfiguration(enable, current limit,
     // triggerThresholdCurrent, triggerThresholdTime)
@@ -31,7 +31,7 @@ public:
   void ResetPosition();
 
 private:
-  // bool hit_top_limit = false;a
+  bool hit_top_limit = false;
   TalonFX *elevator_motor;
   DigitalInput *limit_switch_top;
   DigitalInput *limit_switch_bottom;
