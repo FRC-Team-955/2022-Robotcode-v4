@@ -265,6 +265,10 @@ void Robot::AutonomousPeriodic() {
       intake->RunIntake(0);
       AutoState++;
     } 
+    if (AutoState == 3){     
+      shooter->ShootPercentOutput(0,0);
+      hopper->RunHopperMotor(0,0);
+    }
     // if (AutoState == 3){
     //   m_rightLeadMotor->Set(-0.3);
     //   m_leftLeadMotor->Set(-0.3);
