@@ -100,9 +100,9 @@ int AutoState = 0;
 // Thank you for listening to my ted talk
 
 void Robot::RobotInit() {
-  m_auto_Chooser.SetDefaultOption("Ganyu Wall","Wall");
   m_auto_Chooser.AddOption("Ganyu Wall2","Wall2Ball");
   m_auto_Chooser.AddOption("Ganyu Side2*","Side2*Ball");
+  m_auto_Chooser.SetDefaultOption("Ganyu Wall","Wall");
   m_auto_Chooser.AddOption("Ganyu Side","Side");
   m_auto_Chooser.AddOption("Ganyu Wait Side","Wait Side");
   m_auto_Chooser.AddOption("Ganyu Taxi","Taxi");
@@ -207,8 +207,8 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     } 
     if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
+      m_rightLeadMotor->Set(0.2);
+      m_leftLeadMotor->Set(0.2);
     } 
     if (m_rightLeadMotor_encoder->GetPosition() >= 23 && m_leftLeadMotor_encoder->GetPosition() >= 23 && AutoState == 1){
       m_rightLeadMotor->Set(0);
@@ -252,8 +252,8 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     } 
     if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
+      m_rightLeadMotor->Set(0.2);
+      m_leftLeadMotor->Set(0.2);
     } 
     if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
       m_rightLeadMotor->Set(0);
