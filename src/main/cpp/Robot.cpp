@@ -102,7 +102,6 @@ int AutoState = 0;
 void Robot::RobotInit() {
   m_auto_Chooser.SetDefaultOption("Ganyu Wall","Wall");
   m_auto_Chooser.AddOption("Ganyu Wall2","Wall2Ball");
-  m_auto_Chooser.AddOption("Ganyu Wall2Far","Wall2BallFar");
   m_auto_Chooser.AddOption("Ganyu Side2*","Side2*Ball");
   m_auto_Chooser.AddOption("Ganyu Side","Side");
   m_auto_Chooser.AddOption("Ganyu Wait Side","Wait Side");
@@ -211,52 +210,7 @@ void Robot::AutonomousPeriodic() {
       m_rightLeadMotor->Set(0.3);
       m_leftLeadMotor->Set(0.3);
     } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 27 && m_leftLeadMotor_encoder->GetPosition() >= 27 && AutoState == 1){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      intake->RunIntake(1);
-      AutoState++;
-    } 
-    if(AutoState==2 && !ball_manager -> IsEmpty()){
-      intake->RunIntake(0);
-      AutoState++;
-    } if (AutoState == 3){
-      m_rightLeadMotor->Set(-0.3);
-      m_leftLeadMotor->Set(-0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() <= 5 && m_leftLeadMotor_encoder->GetPosition() <= 5 && AutoState == 3){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      intake->RunIntake(1);
-      AutoState++;
-    } 
-    if (AutoState == 4){
-      intake->StopIntake();
-      AutoState++;
-    }
-    if(AutoState == 5 && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
-      ball_manager -> Shoot();
-    }
-    if (m_timer_auto->GetMatchTime()<5_s){     
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-    }
-  }else if(ganyu_auto_selection == "Wall2BallFar"){
-    ball_manager->LoadHopper();
-    intake->PistonDown();
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
-      ball_manager -> Shoot();
-    }
-    if (ball_manager -> IsEmpty() && AutoState == 0){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 1){
-      m_rightLeadMotor->Set(0.2);
-      m_leftLeadMotor->Set(0.2);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 30 && m_leftLeadMotor_encoder->GetPosition() >= 30 && AutoState == 1){
+    if (m_rightLeadMotor_encoder->GetPosition() >= 23 && m_leftLeadMotor_encoder->GetPosition() >= 23 && AutoState == 1){
       m_rightLeadMotor->Set(0);
       m_leftLeadMotor->Set(0);
       intake->RunIntake(1);
