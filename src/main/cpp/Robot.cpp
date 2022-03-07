@@ -161,6 +161,7 @@ void Robot::AutonomousInit() {
 }
 void Robot::AutonomousPeriodic() {
   intake->PistonDown();
+  ball_manager->CheckHopperState();
   if(auto_state == 0){
     if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
       ball_manager -> Shoot();
