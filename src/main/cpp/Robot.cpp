@@ -11,6 +11,14 @@
 #include <frc/motorcontrol/Spark.h>
 #include <frc/Compressor.h>
 
+#include <frc/Filesystem.h>
+#include <frc/trajectory/TrajectoryUtil.h>
+#include <wpi/fs.h>
+#include <frc/controller/RamseteController.h>
+#include <frc/kinematics/DifferentialDriveOdometry.h>
+#include <frc/kinematics/DifferentialDriveKinematics.h>
+#include <AHRS.h>
+
 //our classes
 #include "drivebase.h"
 #include "intake.h"
@@ -91,7 +99,6 @@ SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 frc::SendableChooser<std::string> m_auto_Chooser;
 frc::SendableChooser<std::string> m_team_color_Chooser;
 std::string ganyu_auto_selection = "Sleep";
-int AutoState = 0;
 // chris is so cool 
 // bryan ganyu simp
 // ganyu is pog
@@ -99,16 +106,25 @@ int AutoState = 0;
 // hi guys its bryan welcome back to my channel today im teaching you * minecraft *
 // Thank you for listening to my ted talk
 
+//auto
+frc::Trajectory *trajectory;
+frc::RamseteController *auto_controller;
+frc::Timer *auto_timer;
+Trajectory::State goal;
+ChassisSpeeds adjustedSpeeds;
+frc::DifferentialDriveOdometry *m_odometry;
+frc::Pose2d pose;
+frc::DifferentialDriveKinematics *kinematics;
+rev::SparkMaxPIDController *drive_pid_left;
+rev::SparkMaxRelativeEncoder *drive_encoder_left;
+rev::SparkMaxPIDController *drive_pid_right;
+rev::SparkMaxRelativeEncoder *drive_encoder_right;
+AHRS *navx;
+int auto_state = 0;
+
+units::meter_t track_width = units::meter_t(0.6);
+
 void Robot::RobotInit() {
-  m_auto_Chooser.SetDefaultOption("Ganyu Wall","Wall");
-  m_auto_Chooser.AddOption("Ganyu Wall2","Wall2Ball");
-  m_auto_Chooser.AddOption("Ganyu Side2*","Side2*Ball");
-  m_auto_Chooser.AddOption("Ganyu Side","Side");
-  m_auto_Chooser.AddOption("Ganyu Wait Side","Wait Side");
-  m_auto_Chooser.AddOption("Ganyu Taxi","Taxi");
-  m_auto_Chooser.AddOption("Ganyu Wait Taxi","Wait Taxi");
-  m_auto_Chooser.AddOption("Ganyu Sleep","Nothing");
-  frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
@@ -116,221 +132,112 @@ void Robot::RobotInit() {
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
+
+  //auto
+  navx = new AHRS(SPI::Port::kMXP);
 }
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
   Build();
-  AutoState = 0;
-  m_leftLeadMotor_encoder->SetPosition(0);
-  m_rightLeadMotor_encoder->SetPosition(0);
-  ganyu_auto_selection = m_auto_Chooser.GetSelected();
-  ball_manager->team_color = m_team_color_Chooser.GetSelected();
+  auto_controller = new RamseteController();
+  auto_timer = new Timer();
+  frc::Rotation2d gyroAngle{units::degree_t(-navx->GetAngle()*(3.141592/180.0))};
+  m_odometry = new DifferentialDriveOdometry(gyroAngle,Pose2d{9.871497057194068_m, 5.634024121231873_m, 0.7123575980943289_rad}); //need to update
+  kinematics = new DifferentialDriveKinematics(track_width);
+  drive_pid_left = new SparkMaxPIDController(m_leftFollowMotor->GetPIDController());
+  drive_pid_right = new SparkMaxPIDController(m_rightFollowMotor->GetPIDController());
+  drive_encoder_left = new SparkMaxRelativeEncoder(m_leftFollowMotor->GetEncoder());
+  drive_encoder_right = new SparkMaxRelativeEncoder(m_rightFollowMotor->GetEncoder());
+
+  drive_pid_left->SetP(0);
+  drive_pid_left->SetI(0);
+  drive_pid_left->SetD(0);
+  drive_pid_left->SetFF(0);
+
+  drive_pid_right->SetP(0);
+  drive_pid_right->SetI(0);
+  drive_pid_right->SetD(0);
+  drive_pid_right->SetFF(0);
 }
 void Robot::AutonomousPeriodic() {
-  DisplayShuffle();
-  ball_manager->CheckHopperState();
-  //rip DRY code :(
-  // if (m_timer_auto->GetMatchTime()<5_s && (ganyu_auto_selection.find("Wait")!= std::string::npos)){
-  //   std::cout<<"hi"<<std::endl;
-  //   // AutoState++;
-  // }else{
-  //   std::cout<<"not yet"<<std::endl;
-  // }
-  if(ganyu_auto_selection == "Wall"){
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
+  intake->PistonDown();
+  if(auto_state == 0){
+    if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
       ball_manager -> Shoot();
     }
-    if (ball_manager -> IsEmpty() && AutoState == 0){
+    if (ball_manager -> IsEmpty()){
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 26 && m_leftLeadMotor_encoder->GetPosition() >= 26 && AutoState == 1){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      AutoState++;
-    }
-  }else if(ganyu_auto_selection == "Wait Side"){
-    if (m_timer_auto->GetMatchTime()<5_s && AutoState == 0){
-      AutoState++;
-    }
-    if ((AutoState == 1)){
-      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-        ball_manager -> Shoot();
-      }
-    }
-    if (ball_manager -> IsEmpty() && AutoState == 1){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 2){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 2){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      AutoState++;
-    } 
-  }else if(ganyu_auto_selection == "Side"){
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-      ball_manager -> Shoot();
-    }
-    if (ball_manager -> IsEmpty() && AutoState == 0){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      AutoState++;
-    } 
-  }else if(ganyu_auto_selection == "Wall2Ball"){
-    ball_manager->LoadHopper();
-    intake->PistonDown();
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
-      ball_manager -> Shoot();
-    }
-    if (ball_manager -> IsEmpty() && AutoState == 0){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 23 && m_leftLeadMotor_encoder->GetPosition() >= 23 && AutoState == 1){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      intake->RunIntake(1);
-      AutoState++;
-    } 
-    if(AutoState==2 && !ball_manager -> IsEmpty()){
-      intake->RunIntake(0);
-      AutoState++;
-    } if (AutoState == 3){
-      m_rightLeadMotor->Set(-0.3);
-      m_leftLeadMotor->Set(-0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() <= 5 && m_leftLeadMotor_encoder->GetPosition() <= 5 && AutoState == 3){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      intake->RunIntake(1);
-      AutoState++;
-    } 
-    if (AutoState == 4){
-      intake->StopIntake();
-      AutoState++;
-    }
-    if(AutoState == 5 && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
-      ball_manager -> Shoot();
-    }
-    if (m_timer_auto->GetMatchTime()<5_s){     
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-    }
-  }else if(ganyu_auto_selection == "Side2*Ball"){
-    ball_manager->LoadHopper();
-    intake->PistonDown();
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: kside_target_top,MechanismConst:: kside_target_bottom)){
-      ball_manager -> Shoot();
-    }
-    if (ball_manager -> IsEmpty() && AutoState == 0){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      intake->RunIntake(1);
-      AutoState++;
-    }
-    if(AutoState == 2 && !ball_manager -> IsEmpty()){
-      intake->RunIntake(0);
-      AutoState++;
-    } 
-    if (AutoState == 3){     
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-    }
-    // if (AutoState == 3){
-    //   m_rightLeadMotor->Set(-0.3);
-    //   m_leftLeadMotor->Set(-0.3);
-    // } 
-    // if (m_rightLeadMotor_encoder->GetPosition() <= 1 && m_leftLeadMotor_encoder->GetPosition() <= 1 && AutoState == 3){
-    //   m_rightLeadMotor->Set(0);
-    //   m_leftLeadMotor->Set(0);
-    //   AutoState++;
-    // }
-    // // if (m_rightLeadMotor_encoder->GetPosition() <= -2 && AutoState == 3){
-    // //   m_rightLeadMotor->Set(0);
-    // // }  
-    // // if (m_leftLeadMotor_encoder->GetPosition() <= -5 && AutoState == 3){
-    // //   m_leftLeadMotor->Set(0);
-    // //   AutoState++;
-    // // }  
-    // if (AutoState == 4){
-    //   intake->StopIntake();
-    //   AutoState++;
-    // }
-    // if(AutoState == 5 && ball_manager->Rev(MechanismConst:: kside_target_top,MechanismConst:: kside_target_bottom)){
-    //   ball_manager -> Shoot();
-    // }
-    if (m_timer_auto->GetMatchTime()<5_s){     
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-    }
-  }
-  if(ganyu_auto_selection == "Taxi"){
-    if ( AutoState == 0){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 1){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      AutoState++;
+      auto_state++;
     } 
   }
-  if(ganyu_auto_selection == "Wait Taxi"){
-    if (m_timer_auto->GetMatchTime()<5_s && AutoState == 0){
-      AutoState++;
+  if(auto_state == 1){
+    auto_timer->Reset();
+    auto_timer->Start();
+    fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
+    deployDirectory = deployDirectory / "paths" / "Out.wpilib.json";
+    trajectory = new Trajectory(frc::TrajectoryUtil::FromPathweaverJson(deployDirectory.string()));
+    auto_state++;
+  }
+  if(auto_state == 2){
+    intake->RunIntake(1);
+    frc::Rotation2d gyroAngle{units::degree_t(-navx->GetAngle()*(3.141592/180.0))};
+    pose = m_odometry->Update(gyroAngle, units::meter_t(drive_encoder_left->GetPosition()), units::meter_t(drive_encoder_right->GetPosition()));
+    goal = trajectory->Sample(auto_timer->Get());
+    adjustedSpeeds = auto_controller->Calculate(pose, goal);
+    auto [left, right] = kinematics->ToWheelSpeeds(adjustedSpeeds);
+    drive_pid_left->SetReference(double(left), rev::ControlType::kVelocity);
+    drive_pid_right->SetReference(double(right), rev::ControlType::kVelocity);
+    if(auto_timer->Get() < trajectory->TotalTime()){
+      auto_state++;
     }
-    if ( AutoState == 1){
+  }
+  if(auto_state == 3){
+    intake->RunIntake(1);
+    auto_timer->Reset();
+    auto_timer->Start();
+    fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
+    deployDirectory = deployDirectory / "paths" / "Back.wpilib.json";
+    delete trajectory;
+    trajectory = new Trajectory(frc::TrajectoryUtil::FromPathweaverJson(deployDirectory.string()));
+    if(!ball_manager -> IsEmpty()){
+      auto_state++;
+    }
+  }
+  if(auto_state == 3){
+    frc::Rotation2d gyroAngle{units::degree_t(-(navx->GetAngle()+180)*(3.141592/180.0))};
+    pose = m_odometry->Update(gyroAngle, units::meter_t(drive_encoder_left->GetPosition()), units::meter_t(drive_encoder_right->GetPosition()));
+    goal = trajectory->Sample(auto_timer->Get());
+    adjustedSpeeds = auto_controller->Calculate(pose, goal);
+    auto [left, right] = kinematics->ToWheelSpeeds(adjustedSpeeds);
+    drive_pid_left->SetReference(double(-left), rev::ControlType::kVelocity);
+    drive_pid_right->SetReference(double(-right), rev::ControlType::kVelocity);
+    if(auto_timer->Get() < trajectory->TotalTime()){
+      auto_state++;
+    }
+  }
+  if(auto_state == 4){
+    if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+      ball_manager -> Shoot();
+    }
+    if (ball_manager -> IsEmpty()){
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
-      AutoState++;
+      auto_state++;
     } 
-    if (AutoState == 2){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 2){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      AutoState++;
-    } 
+  }
+  if(auto_state == 5){
+    //turn off all motors (not implemented yet)
+    delete navx;
+    delete trajectory;
+    delete auto_controller;
+    delete auto_timer;
+    delete m_odometry;
+    delete kinematics;
+    delete drive_pid_left;
+    delete drive_pid_right;
+    delete drive_encoder_left;
+    delete drive_encoder_right;
   }
 }
 
