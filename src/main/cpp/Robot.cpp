@@ -27,6 +27,8 @@
 #include "colorsensor.h"
 #include "ballmanager.h"
 #include "elevator.h"
+#include "navx.h"
+#include "auto.h"
 
 #include "settings.h"
 
@@ -107,22 +109,8 @@ std::string ganyu_auto_selection = "Sleep";
 // Thank you for listening to my ted talk
 
 //auto
-frc::Trajectory *trajectory;
-frc::RamseteController *auto_controller;
-frc::Timer *auto_timer;
-Trajectory::State goal;
-ChassisSpeeds adjustedSpeeds;
-frc::DifferentialDriveOdometry *m_odometry;
-frc::Pose2d pose;
-frc::DifferentialDriveKinematics *kinematics;
-rev::SparkMaxPIDController *drive_pid_left;
-rev::SparkMaxRelativeEncoder *drive_encoder_left;
-rev::SparkMaxPIDController *drive_pid_right;
-rev::SparkMaxRelativeEncoder *drive_encoder_right;
-AHRS *navx;
+Auto *trajectory_auto;
 int auto_state = 0;
-
-units::meter_t track_width = units::meter_t(0.6);
 
 void Robot::RobotInit() {
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
@@ -134,30 +122,12 @@ void Robot::RobotInit() {
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
 
   //auto
-  navx = new AHRS(SPI::Port::kMXP);
+  trajectory_auto = new Auto();
 }
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
   Build();
-  auto_controller = new RamseteController();
-  auto_timer = new Timer();
-  frc::Rotation2d gyroAngle{units::degree_t(-navx->GetAngle()*(3.141592/180.0))};
-  m_odometry = new DifferentialDriveOdometry(gyroAngle,Pose2d{9.871497057194068_m, 5.634024121231873_m, 0.7123575980943289_rad}); //need to update
-  kinematics = new DifferentialDriveKinematics(track_width);
-  drive_pid_left = new SparkMaxPIDController(m_leftFollowMotor->GetPIDController());
-  drive_pid_right = new SparkMaxPIDController(m_rightFollowMotor->GetPIDController());
-  drive_encoder_left = new SparkMaxRelativeEncoder(m_leftFollowMotor->GetEncoder());
-  drive_encoder_right = new SparkMaxRelativeEncoder(m_rightFollowMotor->GetEncoder());
-
-  drive_pid_left->SetP(0);
-  drive_pid_left->SetI(0);
-  drive_pid_left->SetD(0);
-  drive_pid_left->SetFF(0);
-
-  drive_pid_right->SetP(0);
-  drive_pid_right->SetI(0);
-  drive_pid_right->SetD(0);
-  drive_pid_right->SetFF(0);
+  trajectory_auto->Initilize(m_leftLeadMotor, m_rightLeadMotor);
 }
 void Robot::AutonomousPeriodic() {
   intake->PistonDown();
@@ -173,47 +143,23 @@ void Robot::AutonomousPeriodic() {
     } 
   }
   if(auto_state == 1){
-    auto_timer->Reset();
-    auto_timer->Start();
-    fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
-    deployDirectory = deployDirectory / "paths" / "Out.wpilib.json";
-    trajectory = new Trajectory(frc::TrajectoryUtil::FromPathweaverJson(deployDirectory.string()));
+    trajectory_auto->LoadTrajectory("Out.wpilib.json");
     auto_state++;
   }
   if(auto_state == 2){
     intake->RunIntake(1);
-    frc::Rotation2d gyroAngle{units::degree_t(-navx->GetAngle()*(3.141592/180.0))};
-    pose = m_odometry->Update(gyroAngle, units::meter_t(drive_encoder_left->GetPosition()), units::meter_t(drive_encoder_right->GetPosition()));
-    goal = trajectory->Sample(auto_timer->Get());
-    adjustedSpeeds = auto_controller->Calculate(pose, goal);
-    auto [left, right] = kinematics->ToWheelSpeeds(adjustedSpeeds);
-    drive_pid_left->SetReference(double(left), rev::ControlType::kVelocity);
-    drive_pid_right->SetReference(double(right), rev::ControlType::kVelocity);
-    if(auto_timer->Get() < trajectory->TotalTime()){
+    if(trajectory_auto->FollowTrajectory()){
       auto_state++;
     }
   }
   if(auto_state == 3){
-    intake->RunIntake(1);
-    auto_timer->Reset();
-    auto_timer->Start();
-    fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
-    deployDirectory = deployDirectory / "paths" / "Back.wpilib.json";
-    delete trajectory;
-    trajectory = new Trajectory(frc::TrajectoryUtil::FromPathweaverJson(deployDirectory.string()));
+    trajectory_auto->LoadTrajectory("Back.wpilib.json");
     if(!ball_manager -> IsEmpty()){
       auto_state++;
     }
   }
   if(auto_state == 3){
-    frc::Rotation2d gyroAngle{units::degree_t(-(navx->GetAngle()+180)*(3.141592/180.0))};
-    pose = m_odometry->Update(gyroAngle, units::meter_t(drive_encoder_left->GetPosition()), units::meter_t(drive_encoder_right->GetPosition()));
-    goal = trajectory->Sample(auto_timer->Get());
-    adjustedSpeeds = auto_controller->Calculate(pose, goal);
-    auto [left, right] = kinematics->ToWheelSpeeds(adjustedSpeeds);
-    drive_pid_left->SetReference(double(-left), rev::ControlType::kVelocity);
-    drive_pid_right->SetReference(double(-right), rev::ControlType::kVelocity);
-    if(auto_timer->Get() < trajectory->TotalTime()){
+    if(trajectory_auto->FollowTrajectory()){
       auto_state++;
     }
   }
@@ -229,16 +175,7 @@ void Robot::AutonomousPeriodic() {
   }
   if(auto_state == 5){
     //turn off all motors (not implemented yet)
-    delete navx;
-    delete trajectory;
-    delete auto_controller;
-    delete auto_timer;
-    delete m_odometry;
-    delete kinematics;
-    delete drive_pid_left;
-    delete drive_pid_right;
-    delete drive_encoder_left;
-    delete drive_encoder_right;
+    delete trajectory_auto;
   }
 }
 
