@@ -115,6 +115,7 @@ int auto_state = 0;
 void Robot::RobotInit() {
   m_auto_Chooser.SetDefaultOption("3 Ball Right","3BR");
   m_auto_Chooser.AddOption("4 Ball Right","4BR");
+  m_auto_Chooser.AddOption("3 Ball Left","3BL");
   frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
   m_team_color_Chooser.AddOption("Red","Red");
@@ -196,6 +197,7 @@ void Robot::AutonomousPeriodic() {
   }
   if(ganyu_auto_selection == "4BR"){
     intake->PistonDown();
+    ball_manager->CheckHopperState();
     if(auto_state == 0){
       //init out to 2nd ball
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
@@ -264,6 +266,56 @@ void Robot::AutonomousPeriodic() {
     }
     if(auto_state == 9){
       //shoot ball 3/4
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
+  }
+  if(ganyu_auto_selection == "3BL"){
+    intake->PistonDown();
+    ball_manager->CheckHopperState();
+    if(auto_state == 0){
+      //shoot preload
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
+    if(auto_state == 1){
+      // load out
+      trajectory_auto->LoadTrajectory("OutLeft.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state == 2){
+      // drive to terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 3){
+      // load back
+      trajectory_auto->LoadTrajectory("BackLeft.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state == 4){
+      // drive to shooter
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 5){
+      // shoot
       if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
         ball_manager -> Shoot();
       }
