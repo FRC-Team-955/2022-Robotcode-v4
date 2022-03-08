@@ -1,6 +1,8 @@
 #pragma once
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <units/acceleration.h>
+#include <units/velocity.h>
 
 namespace Joy0Const {
 constexpr int kdrive_speed_axis = 1;

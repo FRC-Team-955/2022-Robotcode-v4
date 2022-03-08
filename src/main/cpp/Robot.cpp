@@ -113,6 +113,9 @@ Auto *trajectory_auto;
 int auto_state = 0;
 
 void Robot::RobotInit() {
+  m_auto_Chooser.SetDefaultOption("3 Ball Right","3BR");
+  m_auto_Chooser.AddOption("4 Ball Right","4BR");
+  frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
@@ -120,6 +123,11 @@ void Robot::RobotInit() {
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
+
+  m_leftLeadMotor_encoder->SetPosition(0);
+  m_rightLeadMotor_encoder->SetPosition(0);
+
+  ganyu_auto_selection = m_auto_Chooser.GetSelected();
 
   //auto
   trajectory_auto = new Auto();
@@ -130,52 +138,141 @@ void Robot::AutonomousInit() {
   trajectory_auto->Initilize(m_leftLeadMotor, m_rightLeadMotor);
 }
 void Robot::AutonomousPeriodic() {
-  intake->PistonDown();
-  ball_manager->CheckHopperState();
-  if(auto_state == 0){
-    if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-      ball_manager -> Shoot();
+  if(ganyu_auto_selection == "3BR"){
+    intake->PistonDown();
+    ball_manager->CheckHopperState();
+    if(auto_state == 0){
+      //shoot preload
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
     }
-    if (ball_manager -> IsEmpty()){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      auto_state++;
-    } 
-  }
-  if(auto_state == 1){
-    trajectory_auto->LoadTrajectory("Out.wpilib.json");
-    auto_state++;
-  }
-  if(auto_state == 2){
-    intake->RunIntake(1);
-    if(trajectory_auto->FollowTrajectory()){
+    if(auto_state == 1){
+      //init out path
+      trajectory_auto->LoadTrajectory("Out.wpilib.json");
       auto_state++;
     }
-  }
-  if(auto_state == 3){
-    trajectory_auto->LoadTrajectory("Back.wpilib.json");
-    if(!ball_manager -> IsEmpty()){
-      auto_state++;
+    if(auto_state == 2){
+      //drive to 2nd ball and terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 3){
+      //init back path
+      trajectory_auto->LoadTrajectory("Back.wpilib.json");
+      if(!ball_manager -> IsEmpty()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 3){
+      //drive to goal
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 4){
+      //shoot
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
+    if(auto_state == 5){
+      //turn off all motors (not implemented yet)
+      delete trajectory_auto;
     }
   }
-  if(auto_state == 3){
-    if(trajectory_auto->FollowTrajectory()){
+  if(ganyu_auto_selection == "4BR"){
+    intake->PistonDown();
+    if(auto_state == 0){
+      //init out to 2nd ball
+      trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
       auto_state++;
     }
-  }
-  if(auto_state == 4){
-    if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-      ball_manager -> Shoot();
+    if(auto_state == 1){
+      //drive to 2nd ball
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
     }
-    if (ball_manager -> IsEmpty()){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
+    if(auto_state == 2){
+      //init back to goal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+    }
+    if(auto_state == 3){
+      //drive back to goal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("Back4-1.wpilib.json");
       auto_state++;
-    } 
-  }
-  if(auto_state == 5){
-    //turn off all motors (not implemented yet)
-    delete trajectory_auto;
+    }
+    if(auto_state == 4){
+      //shoot ball 1/2
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
+    if(auto_state == 5){
+      //init out to terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("Out4-2.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state == 6){
+      //drive to terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 7){
+      //load / init drive to goal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(ball_manager->IsFull()){
+        trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
+        auto_state++;
+      }
+    }
+    if(auto_state == 8){
+      //drive to goal
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 9){
+      //shoot ball 3/4
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
   }
 }
 

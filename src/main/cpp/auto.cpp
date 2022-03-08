@@ -47,14 +47,14 @@ void Auto::LoadTrajectory(std::string name) {
 }
 
 double Auto::ConvertToRPM(units::velocity::meters_per_second_t value) {
-  return value * ((60 * AutoConst::kgear_ratio) /
-                  (3.141592 * AutoConst::kwheel_diameter_meters));
+  return double(value * ((60 * AutoConst::kgear_ratio) /
+                  (3.141592 * AutoConst::kwheel_diameter_meters)));
 }
 
 units::meter_t Auto::ConvertToMeters(double value) {
   // there are 42 tics per rotation in neo motors
-  return value * ((42 * 3.141592 * AutoConst::kwheel_diameter_meters) /
-                  AutoConst::kgear_ratio);
+  return units::meter_t(value * ((42 * 3.141592 * AutoConst::kwheel_diameter_meters) /
+                  AutoConst::kgear_ratio));
 }
 
 /**
@@ -75,8 +75,7 @@ bool Auto::FollowTrajectory() {
 
   // sets wheels speeds
   drive_pid_left->SetReference(ConvertToRPM(left), rev::ControlType::kVelocity);
-  drive_pid_right->SetReference(ConvertToRPM(left),
-                                rev::ControlType::kVelocity);
+  drive_pid_right->SetReference(ConvertToRPM(right), rev::ControlType::kVelocity);
 
   if (auto_timer->Get() > trajectory->TotalTime()) {
     delete trajectory;
