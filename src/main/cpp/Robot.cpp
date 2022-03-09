@@ -29,6 +29,7 @@
 #include "elevator.h"
 #include "navx.h"
 #include "auto.h"
+#include "limelight.h"
 
 #include "settings.h"
 
@@ -53,6 +54,7 @@ CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
 frc::DifferentialDrive *differential_drive;
 ButtonToggle *reverse_drive_toggle;
+Limelight *limelight;
 //Intake
 TalonSRX *intake_talon;
 DoubleSolenoid *intake_double_solonoid;
@@ -453,6 +455,7 @@ void Robot::DisabledInit() {
   delete m_rightFollowMotor;
   delete differential_drive;
   delete reverse_drive_toggle;
+  delete limelight;
   delete drive;
   //auto
   delete m_leftLeadMotor_encoder;
@@ -512,8 +515,9 @@ void Robot::Build(){
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
+  limelight = new Limelight();
   // differential_drive->SetSafetyEnabled(false);
-  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
+  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0, limelight);
   // xyalign = new XYalign(drive, joystick_0);
   //auto
   m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
@@ -543,7 +547,7 @@ void Robot::Build(){
   //Ir Break Beam
   ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   //BallManager
-  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
+  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top, limelight);
   //elevator
   elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
   limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);

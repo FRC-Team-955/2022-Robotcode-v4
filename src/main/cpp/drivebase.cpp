@@ -2,7 +2,11 @@
 
 // void DriveBase::Drive(photonlib::PhotonPipelineResult result) {
 void DriveBase::Drive() {
-  differential_drive->ArcadeDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis)*ReverseDrive, joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*0.5);
+  if(joystick_0->GetRawButton(Joy0Const::khorizontal_align_button)){
+    differential_drive->ArcadeDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeed());
+  }else{
+    differential_drive->ArcadeDrive(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis)*ReverseDrive, joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*0.5);
+  }
 }
 
 void DriveBase::DisplayDriveInfo() {
