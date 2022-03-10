@@ -12,7 +12,7 @@ double Limelight::GetDrivebaseSpeed() {
     return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
   } else {
     // If we have no targets, stay still
-    return 0;
+    return 100;
   }
 }
 
