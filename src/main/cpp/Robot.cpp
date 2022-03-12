@@ -10,7 +10,7 @@
 #include <frc/MotorSafety.h>
 #include <frc/motorcontrol/Spark.h>
 #include <frc/Compressor.h>
-
+//auto
 #include <frc/Filesystem.h>
 #include <frc/trajectory/TrajectoryUtil.h>
 #include <wpi/fs.h>
@@ -189,7 +189,7 @@ void Robot::AutonomousPeriodic() {
     auto [left, right] = kinematics->ToWheelSpeeds(adjustedSpeeds);
     drive_pid_left->SetReference(double(left), rev::ControlType::kVelocity);
     drive_pid_right->SetReference(double(right), rev::ControlType::kVelocity);
-    if(auto_timer->Get() < trajectory->TotalTime()){
+    if(auto_timer->Get() > trajectory->TotalTime()){
       auto_state++;
     }
   }
