@@ -63,6 +63,20 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
     }
 }
 
+bool BallManager::RevLimelight(){  
+    double target = limelight->GetShooterSpeed();
+    shooter->VelocityControl(target,target);
+    if(std::abs(shooter->VelocityOutput("Top")) >= target - MechanismConst::krange_target && 
+        std::abs(shooter->VelocityOutput("Top")) <= target + MechanismConst::krange_target &&
+        std::abs(shooter->VelocityOutput("Bottom")) >= target - MechanismConst::krange_target &&
+        std::abs(shooter->VelocityOutput("Bottom")) <= target + MechanismConst::krange_target){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 void BallManager::Shoot(){
     hopper->RunHopperMotor(0.5, 0.5);
 }

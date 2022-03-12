@@ -27,6 +27,9 @@
 #include "colorsensor.h"
 #include "ballmanager.h"
 #include "elevator.h"
+#include "navx.h"
+#include "auto.h"
+#include "limelight.h"
 
 #include "settings.h"
 
@@ -51,6 +54,7 @@ CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
 frc::DifferentialDrive *differential_drive;
 ButtonToggle *reverse_drive_toggle;
+Limelight *limelight;
 //Intake
 TalonSRX *intake_talon;
 DoubleSolenoid *intake_double_solonoid;
@@ -107,24 +111,14 @@ std::string ganyu_auto_selection = "Sleep";
 // Thank you for listening to my ted talk
 
 //auto
-frc::Trajectory *trajectory;
-frc::RamseteController *auto_controller;
-frc::Timer *auto_timer;
-Trajectory::State goal;
-ChassisSpeeds adjustedSpeeds;
-frc::DifferentialDriveOdometry *m_odometry;
-frc::Pose2d pose;
-frc::DifferentialDriveKinematics *kinematics;
-rev::SparkMaxPIDController *drive_pid_left;
-rev::SparkMaxRelativeEncoder *drive_encoder_left;
-rev::SparkMaxPIDController *drive_pid_right;
-rev::SparkMaxRelativeEncoder *drive_encoder_right;
-AHRS *navx;
+Auto *trajectory_auto;
 int auto_state = 0;
 
-units::meter_t track_width = units::meter_t(0.6);
-
 void Robot::RobotInit() {
+  m_auto_Chooser.SetDefaultOption("3 Ball Right","3BR");
+  m_auto_Chooser.AddOption("4 Ball Right","4BR");
+  m_auto_Chooser.AddOption("3 Ball Left","3BL");
+  frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
@@ -133,112 +127,206 @@ void Robot::RobotInit() {
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
 
+  m_leftLeadMotor_encoder->SetPosition(0);
+  m_rightLeadMotor_encoder->SetPosition(0);
+
+  ganyu_auto_selection = m_auto_Chooser.GetSelected();
+
   //auto
-  navx = new AHRS(SPI::Port::kMXP);
+  trajectory_auto = new Auto();
 }
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
   Build();
-  auto_controller = new RamseteController();
-  auto_timer = new Timer();
-  frc::Rotation2d gyroAngle{units::degree_t(-navx->GetAngle()*(3.141592/180.0))};
-  m_odometry = new DifferentialDriveOdometry(gyroAngle,Pose2d{9.871497057194068_m, 5.634024121231873_m, 0.7123575980943289_rad}); //need to update
-  kinematics = new DifferentialDriveKinematics(track_width);
-  drive_pid_left = new SparkMaxPIDController(m_leftFollowMotor->GetPIDController());
-  drive_pid_right = new SparkMaxPIDController(m_rightFollowMotor->GetPIDController());
-  drive_encoder_left = new SparkMaxRelativeEncoder(m_leftFollowMotor->GetEncoder());
-  drive_encoder_right = new SparkMaxRelativeEncoder(m_rightFollowMotor->GetEncoder());
-
-  drive_pid_left->SetP(0);
-  drive_pid_left->SetI(0);
-  drive_pid_left->SetD(0);
-  drive_pid_left->SetFF(0);
-
-  drive_pid_right->SetP(0);
-  drive_pid_right->SetI(0);
-  drive_pid_right->SetD(0);
-  drive_pid_right->SetFF(0);
+  trajectory_auto->Initilize(m_leftLeadMotor, m_rightLeadMotor);
 }
 void Robot::AutonomousPeriodic() {
-  intake->PistonDown();
-  ball_manager->CheckHopperState();
-  if(auto_state == 0){
-    if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-      ball_manager -> Shoot();
+  if(ganyu_auto_selection == "3BR"){
+    intake->PistonDown();
+    ball_manager->CheckHopperState();
+    if(auto_state == 0){
+      //shoot preload
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
     }
-    if (ball_manager -> IsEmpty()){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      auto_state++;
-    } 
-  }
-  if(auto_state == 1){
-    auto_timer->Reset();
-    auto_timer->Start();
-    fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
-    deployDirectory = deployDirectory / "paths" / "Out.wpilib.json";
-    trajectory = new Trajectory(frc::TrajectoryUtil::FromPathweaverJson(deployDirectory.string()));
-    auto_state++;
-  }
-  if(auto_state == 2){
-    intake->RunIntake(1);
-    frc::Rotation2d gyroAngle{units::degree_t(-navx->GetAngle()*(3.141592/180.0))};
-    pose = m_odometry->Update(gyroAngle, units::meter_t(drive_encoder_left->GetPosition()), units::meter_t(drive_encoder_right->GetPosition()));
-    goal = trajectory->Sample(auto_timer->Get());
-    adjustedSpeeds = auto_controller->Calculate(pose, goal);
-    auto [left, right] = kinematics->ToWheelSpeeds(adjustedSpeeds);
-    drive_pid_left->SetReference(double(left), rev::ControlType::kVelocity);
-    drive_pid_right->SetReference(double(right), rev::ControlType::kVelocity);
-    if(auto_timer->Get() > trajectory->TotalTime()){
+    if(auto_state == 1){
+      //init out path
+      trajectory_auto->LoadTrajectory("Out.wpilib.json");
       auto_state++;
     }
-  }
-  if(auto_state == 3){
-    intake->RunIntake(1);
-    auto_timer->Reset();
-    auto_timer->Start();
-    fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
-    deployDirectory = deployDirectory / "paths" / "Back.wpilib.json";
-    delete trajectory;
-    trajectory = new Trajectory(frc::TrajectoryUtil::FromPathweaverJson(deployDirectory.string()));
-    if(!ball_manager -> IsEmpty()){
-      auto_state++;
+    if(auto_state == 2){
+      //drive to 2nd ball and terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 3){
+      //init back path
+      trajectory_auto->LoadTrajectory("Back.wpilib.json");
+      if(!ball_manager -> IsEmpty()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 3){
+      //drive to goal
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 4){
+      //shoot
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
+    if(auto_state == 5){
+      //turn off all motors (not implemented yet)
+      delete trajectory_auto;
     }
   }
-  if(auto_state == 3){
-    frc::Rotation2d gyroAngle{units::degree_t(-(navx->GetAngle()+180)*(3.141592/180.0))};
-    pose = m_odometry->Update(gyroAngle, units::meter_t(drive_encoder_left->GetPosition()), units::meter_t(drive_encoder_right->GetPosition()));
-    goal = trajectory->Sample(auto_timer->Get());
-    adjustedSpeeds = auto_controller->Calculate(pose, goal);
-    auto [left, right] = kinematics->ToWheelSpeeds(adjustedSpeeds);
-    drive_pid_left->SetReference(double(-left), rev::ControlType::kVelocity);
-    drive_pid_right->SetReference(double(-right), rev::ControlType::kVelocity);
-    if(auto_timer->Get() < trajectory->TotalTime()){
+  if(ganyu_auto_selection == "4BR"){
+    intake->PistonDown();
+    ball_manager->CheckHopperState();
+    if(auto_state == 0){
+      //init out to 2nd ball
+      trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
       auto_state++;
     }
-  }
-  if(auto_state == 4){
-    if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-      ball_manager -> Shoot();
+    if(auto_state == 1){
+      //drive to 2nd ball
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
     }
-    if (ball_manager -> IsEmpty()){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
+    if(auto_state == 2){
+      //init back to goal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+    }
+    if(auto_state == 3){
+      //drive back to goal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("Back4-1.wpilib.json");
       auto_state++;
-    } 
+    }
+    if(auto_state == 4){
+      //shoot ball 1/2
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
+    if(auto_state == 5){
+      //init out to terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("Out4-2.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state == 6){
+      //drive to terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 7){
+      //load / init drive to goal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(ball_manager->IsFull()){
+        trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
+        auto_state++;
+      }
+    }
+    if(auto_state == 8){
+      //drive to goal
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 9){
+      //shoot ball 3/4
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
   }
-  if(auto_state == 5){
-    //turn off all motors (not implemented yet)
-    delete navx;
-    delete trajectory;
-    delete auto_controller;
-    delete auto_timer;
-    delete m_odometry;
-    delete kinematics;
-    delete drive_pid_left;
-    delete drive_pid_right;
-    delete drive_encoder_left;
-    delete drive_encoder_right;
+  if(ganyu_auto_selection == "3BL"){
+    intake->PistonDown();
+    ball_manager->CheckHopperState();
+    if(auto_state == 0){
+      //shoot preload
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
+    if(auto_state == 1){
+      // load out
+      trajectory_auto->LoadTrajectory("OutLeft.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state == 2){
+      // drive to terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 3){
+      // load back
+      trajectory_auto->LoadTrajectory("BackLeft.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state == 4){
+      // drive to shooter
+      if(trajectory_auto->FollowTrajectory()){
+        auto_state++;
+      }
+    }
+    if(auto_state == 5){
+      // shoot
+      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      } 
+    }
   }
 }
 
@@ -367,6 +455,7 @@ void Robot::DisabledInit() {
   delete m_rightFollowMotor;
   delete differential_drive;
   delete reverse_drive_toggle;
+  delete limelight;
   delete drive;
   //auto
   delete m_leftLeadMotor_encoder;
@@ -426,8 +515,9 @@ void Robot::Build(){
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
+  limelight = new Limelight();
   // differential_drive->SetSafetyEnabled(false);
-  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
+  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0, limelight);
   // xyalign = new XYalign(drive, joystick_0);
   //auto
   m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
@@ -457,7 +547,7 @@ void Robot::Build(){
   //Ir Break Beam
   ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   //BallManager
-  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
+  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top, limelight);
   //elevator
   elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
   limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);

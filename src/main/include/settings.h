@@ -1,6 +1,10 @@
 #pragma once
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <units/acceleration.h>
+#include <units/velocity.h>
+#include <units/angle.h>
+#include <units/length.h>
 
 namespace Joy0Const {
 constexpr int kdrive_speed_axis = 1;
@@ -9,6 +13,7 @@ constexpr int kreverse_drive = 6;
 //shooter
 constexpr int kshoot_wall_trigger = 3;
 constexpr int kshooter_goal_toggle_button = 7;
+constexpr int khorizontal_align_button = 5;
 // constexpr int kball_aimbot_button = 5;
 } // namespace Joy0Const
 
@@ -85,4 +90,13 @@ constexpr float kcompressor_warning_pressure = 10;
 } // namespace MechanismConst
 
 namespace AutoConst {
+    constexpr units::meter_t ktrack_width = 0.5842_m;
+    constexpr units::meter_t kwheel_diameter_meters = 0.1524_m;
+    constexpr double kgear_ratio = 10.75;
+
+    constexpr units::meter_t camera_height = 24_in;
+    constexpr units::meter_t target_height = 24_in;
+    constexpr units::radian_t camera_pitch = 0_deg;
+    constexpr double shooter_m = 1;
+    constexpr double shooter_b = 0;
 }

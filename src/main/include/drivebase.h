@@ -10,13 +10,14 @@
 
 #include <button_toggle.h>
 #include "settings.h"
+#include "limelight.h"
 
 using namespace rev;
 
 class DriveBase {
 public:
-  DriveBase(CANSparkMax *m_leftLeadMotor, CANSparkMax *m_rightLeadMotor, CANSparkMax *m_leftFollowMotor, CANSparkMax *m_rightFollowMotor, frc::DifferentialDrive *differential_drive,ButtonToggle *reverse_drive_toggle, frc::Joystick *joystick_0):
-  m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor), differential_drive(differential_drive), joystick_0(joystick_0){
+  DriveBase(CANSparkMax *m_leftLeadMotor, CANSparkMax *m_rightLeadMotor, CANSparkMax *m_leftFollowMotor, CANSparkMax *m_rightFollowMotor, frc::DifferentialDrive *differential_drive,ButtonToggle *reverse_drive_toggle, frc::Joystick *joystick_0, Limelight *limelight):
+  m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor), differential_drive(differential_drive), joystick_0(joystick_0), limelight(limelight){
     // m_rightFollowMotor->Follow(*m_rightLeadMotor);
     // m_leftFollowMotor->Follow(*m_leftLeadMotor);
     m_leftLeadMotor->SetInverted(false);
@@ -35,6 +36,8 @@ private:
   frc::DifferentialDrive *differential_drive;
   ButtonToggle *reverse_drive_toggle;
   frc::Joystick *joystick_0;
+
+  Limelight *limelight;
 
   double drive;
   double drive_old = 0;
