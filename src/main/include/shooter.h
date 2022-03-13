@@ -2,6 +2,7 @@
 #define SHOOTER
 
 #include "rev/CANSparkMax.h"
+#include <frc/DoubleSolenoid.h>
 
 #include "settings.h"
 
@@ -9,7 +10,7 @@ using namespace rev;
 
 class Shooter {
 public:
-  Shooter(CANSparkMax *shooterneo_top, CANSparkMax *shooterneo_bottom):
+  Shooter(CANSparkMax *shooterneo_top, CANSparkMax *shooterneo_bottom, frc::DoubleSolenoid *shooter_solenoid):
   shooterneo_top(shooterneo_top), shooterneo_bottom(shooterneo_bottom){
     shooterneo_top->SetSmartCurrentLimit(40);
     shooterneo_bottom->SetSmartCurrentLimit(40);
@@ -44,11 +45,15 @@ public:
   void VelocityControl(double top_velocity, double bottom_velocity);
   //Checks what the velocity of in inputed shooter motor ("Top", "Bottom")
   float VelocityOutput(std::string shooter_motor);
+
+  void SolenoidUp();
+  void SolenoidDown();
   void DisplayShooterInfo();
 
 private:
   CANSparkMax *shooterneo_top;
   CANSparkMax *shooterneo_bottom;
+  frc::DoubleSolenoid *shooter_solenoid;
 
   rev::SparkMaxPIDController *m_pidController_top;
   rev::SparkMaxPIDController *m_pidController_bottom;

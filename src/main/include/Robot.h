@@ -18,8 +18,8 @@ class Robot : public frc::TimedRobot {
   void TeleopPeriodic() override;
 
   void DisplayShuffle();
-  // void Delete();
   void Build();
+  void UpdateRGB();
 
   void DisabledInit() override;
   void DisabledPeriodic() override;
