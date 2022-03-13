@@ -10,6 +10,7 @@
 #include <frc/MotorSafety.h>
 #include <frc/motorcontrol/Spark.h>
 #include <frc/Compressor.h>
+#include "button_toggle.h"
 
 //our classes
 #include "drivebase.h"
@@ -19,6 +20,7 @@
 #include "colorsensor.h"
 #include "ballmanager.h"
 #include "elevator.h"
+#include "limelight.h"
 
 #include "settings.h"
 
@@ -42,7 +44,7 @@ CANSparkMax *m_rightLeadMotor;
 CANSparkMax *m_leftFollowMotor;
 CANSparkMax *m_rightFollowMotor;
 frc::DifferentialDrive *differential_drive;
-ButtonToggle *reverse_drive_toggle;
+Limelight *limelight;
 //Intake
 TalonSRX *intake_talon;
 DoubleSolenoid *intake_double_solonoid;
@@ -53,6 +55,7 @@ bool hopper_init = false;
 //Shooter
 CANSparkMax *shooterneo_top;
 CANSparkMax *shooterneo_bottom;
+DoubleSolenoid *shooter_solenoid;
 bool low_goal_mode = false;
 //Elevator
 TalonFX *elevator_motor;
@@ -74,9 +77,8 @@ Compressor *compressor;
 //Timers
 frc::Timer *m_timer_auto;
 frc::Timer *m_timer_intake;
-frc::Timer *m_timer_elevator;
 //RGB
-// Spark *rgb_spark;
+Spark *rgb_spark;
 
 ButtonToggle intake_deploy_toggle;
 ButtonToggle hopper_manual_toggle;
@@ -137,7 +139,7 @@ void Robot::AutonomousPeriodic() {
   //   std::cout<<"not yet"<<std::endl;
   // }
   if(ganyu_auto_selection == "Wall"){
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
+    if ((AutoState == 0) && ball_manager->RevHigh()){
       ball_manager -> Shoot();
     }
     if (ball_manager -> IsEmpty() && AutoState == 0){
@@ -159,7 +161,7 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     }
     if ((AutoState == 1)){
-      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+      if(ball_manager->RevSide()){
         ball_manager -> Shoot();
       }
     }
@@ -178,7 +180,7 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     } 
   }else if(ganyu_auto_selection == "Side"){
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+    if ((AutoState == 0) && ball_manager->RevSide()){
       ball_manager -> Shoot();
     }
     if (ball_manager -> IsEmpty() && AutoState == 0){
@@ -198,7 +200,7 @@ void Robot::AutonomousPeriodic() {
   }else if(ganyu_auto_selection == "Wall2Ball"){
     ball_manager->LoadHopper();
     intake->PistonDown();
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
+    if ((AutoState == 0) && ball_manager->RevHigh()){
       ball_manager -> Shoot();
     }
     if (ball_manager -> IsEmpty() && AutoState == 0){
@@ -233,7 +235,7 @@ void Robot::AutonomousPeriodic() {
       intake->StopIntake();
       AutoState++;
     }
-    if(AutoState == 5 && ball_manager->Rev(MechanismConst:: khigh_target_top,MechanismConst:: khigh_target_bottom)){
+    if(AutoState == 5 && ball_manager->RevHigh()){
       ball_manager -> Shoot();
     }
     if (m_timer_auto->GetMatchTime()<5_s){     
@@ -243,7 +245,7 @@ void Robot::AutonomousPeriodic() {
   }else if(ganyu_auto_selection == "Side2*Ball"){
     ball_manager->LoadHopper();
     intake->PistonDown();
-    if ((AutoState == 0) && ball_manager->Rev(MechanismConst:: kside_target_top,MechanismConst:: kside_target_bottom)){
+    if ((AutoState == 0) && ball_manager->RevSide()){
       ball_manager -> Shoot();
     }
     if (ball_manager -> IsEmpty() && AutoState == 0){
@@ -336,15 +338,21 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
   Build();
+  m_leftFollowMotor->Follow(*m_leftLeadMotor);
+  m_rightFollowMotor->Follow(*m_rightLeadMotor);
+  m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
   m_timer_intake->Start();
-  m_timer_elevator->Start();
 }
 void Robot::TeleopPeriodic() {
-  // rgb_spark->Set(-0.57);
-  ball_manager->CheckHopperState();
+  //random updates
   DisplayShuffle();
-  drive ->Drive();
+  UpdateRGB();
+  ball_manager->CheckHopperState();
   //compressor
   if (compressor_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
     compressor->EnableDigital();
@@ -353,79 +361,88 @@ void Robot::TeleopPeriodic() {
     compressor->Disable();
     frc::SmartDashboard::PutBoolean("Compressor", false);
   }
-
-  //The toggle for Low Goal
-  if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
-    low_goal_mode = true;
-  }else{
-    low_goal_mode = false;
-  }
-
-  if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
-    //shooting
-    if(low_goal_mode){
-      //low goal
-      if(ball_manager->Rev(MechanismConst::klow_target_top,MechanismConst::klow_target_bottom)){
-        ball_manager->Shoot();
-        ball_manager->CheckHopperState();
-      }else{
-        hopper->RunHopperMotor(0,0);
-      }
-    }else{
-      //high goal
-      if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
-        ball_manager->Shoot();
-        ball_manager->CheckHopperState();
-      }else{
-        hopper->RunHopperMotor(0,0);
-      }
+  if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
+    drive->Align();
+    if (ball_manager->RevLimeLight() && limelight->IsAligned()){
+      ball_manager->Shoot();
+    }
+  }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
+    shooter->SolenoidUp();
+    drive->Align();
+    if (ball_manager->RevLaunchPad() && limelight->IsAligned()){
+      ball_manager->Shoot();
     }
   }else{
-    //if not shooting
-    shooter->VelocityControl(0,0);
-    if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
-      //Reject code
-      intake->PistonDown();
-      ball_manager->Reject();
-    }else if(joystick_1->GetRawButtonReleased(Joy1Const::kreject_ball_button)){
-      //When you release shut off motor
-      intake->PistonUp();
-      hopper->RunHopperMotor(0,0);
+    drive ->Drive();
+    shooter->SolenoidDown();
+    //The toggle for Low Goal
+    if(shooter_goal_toggle.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
+      low_goal_mode = true;
     }else{
-      //if not rejecting
-      if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-          intake->PistonDown();
-          //If the intake is in the down state allow the intake to run
-          if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
-            hopper_init = true;
-            intake->RunIntake(1);
-            m_timer_intake->Start();
-            m_timer_intake->Reset();
-            ball_manager->CheckHopperState();
-          }else{
-            intake->RunIntake(0);
-          }
-      }else{
-        intake->PistonUp();
-      }
-      //if the m_intake_timer is less than 5s then run the hopper
-      //hopper in manual or auto will add the run loadhopper automatically later
-      if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
-        hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
-        frc::SmartDashboard::PutBoolean("Manual Hopper", true);
-      }else if(!m_timer_intake->HasElapsed(3_s)){
-        frc::SmartDashboard::PutBoolean("Manual Hopper", false);
-        if (hopper_init){
-          ball_manager->CheckHopperState();
-          ball_manager->LoadHopper();
+      low_goal_mode = false;
+    }
+    if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
+      //shooting
+      if(low_goal_mode){
+        //low goal
+        if(ball_manager->RevLow()){
+          ball_manager->Shoot();
+        }else{
+          hopper->RunHopperMotor(0,0);
         }
       }else{
+        //high goal
+        if(ball_manager->RevHigh()){
+          ball_manager->Shoot();
+        }else{
+          hopper->RunHopperMotor(0,0);
+        }
+      }
+    }else{
+      //if not shooting
+      shooter->VelocityControl(0,0);
+      if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
+        //Reject code
+        intake->PistonDown();
+        ball_manager->Reject();
+      }else if(joystick_1->GetRawButtonReleased(Joy1Const::kreject_ball_button)){
+        //When you release shut off motor
+        intake->PistonUp();
         hopper->RunHopperMotor(0,0);
+      }else{
+        //if not rejecting
+        if(intake_deploy_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+            intake->PistonDown();
+            //If the intake is in the down state allow the intake to run
+            if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+              hopper_init = true;
+              intake->RunIntake(1);
+              m_timer_intake->Start();
+              m_timer_intake->Reset();
+              ball_manager->CheckHopperState();
+            }else{
+              intake->RunIntake(0);
+            }
+        }else{
+          intake->PistonUp();
+        }
+        //if the m_intake_timer is less than 5s then run the hopper
+        //hopper in manual or auto will add the run loadhopper automatically later
+        if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
+          hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
+          frc::SmartDashboard::PutBoolean("Manual Hopper", true);
+        }else if(!m_timer_intake->HasElapsed(3_s)){
+          frc::SmartDashboard::PutBoolean("Manual Hopper", false);
+          if (hopper_init){
+            ball_manager->CheckHopperState();
+            ball_manager->LoadHopper();
+          }
+        }else{
+          hopper->RunHopperMotor(0,0);
+        }
       }
     }
   }
-  //check if its around time to climb //GetMatchTime()
-  // if(m_timer_elevator->GetMatchTime()<30_s){
   if(joystick_1->GetRawButton(Joy1Const::kelevator_allow)){
     if(elevator_lock_toggle.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
       elevator->LockElevator();
@@ -436,7 +453,6 @@ void Robot::TeleopPeriodic() {
   }else{
     elevator_motor->Set(ControlMode::PercentOutput, 0);
   }
-  // }
 }
 void Robot::DisplayShuffle() {
   drive->DisplayDriveInfo();
@@ -458,7 +474,7 @@ void Robot::DisabledInit() {
   delete m_leftFollowMotor;
   delete m_rightFollowMotor;
   delete differential_drive;
-  delete reverse_drive_toggle;
+  delete limelight;
   delete drive;
   //auto
   delete m_leftLeadMotor_encoder;
@@ -474,6 +490,7 @@ void Robot::DisabledInit() {
   //shooter
   delete shooterneo_top;
   delete shooterneo_bottom;
+  delete shooter_solenoid;
   delete shooter;
   //color sensor
   delete red_target_bot;
@@ -498,10 +515,9 @@ void Robot::DisabledInit() {
   //compressor
   delete compressor; 
   //rgb
-  // delete rgb_spark;
+  delete rgb_spark;
   //timer
   delete m_timer_intake;
-  delete m_timer_elevator;
   //Delete();
 }
 void Robot::DisabledPeriodic() {}
@@ -518,8 +534,9 @@ void Robot::Build(){
   m_leftFollowMotor = new CANSparkMax(DriveConst::kleft_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
+  limelight = new Limelight();
   // differential_drive->SetSafetyEnabled(false);
-  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0);
+  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive, joystick_0, limelight);
   // xyalign = new XYalign(drive, joystick_0);
   //auto
   m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
@@ -535,7 +552,8 @@ void Robot::Build(){
   //shooter
   shooterneo_top = new CANSparkMax(MechanismConst::shooter_top_port, CANSparkMax::MotorType::kBrushless);
   shooterneo_bottom = new CANSparkMax(MechanismConst::shooter_bottom_port, CANSparkMax::MotorType::kBrushless);
-  shooter = new Shooter(shooterneo_top, shooterneo_bottom); 
+  shooter_solenoid = new DoubleSolenoid(13, PneumaticsModuleType::REVPH,MechanismConst::kshooter_pnumatic_port_forward, MechanismConst::kshooter_pnumatic_port_reverse);
+  shooter = new Shooter(shooterneo_top, shooterneo_bottom, shooter_solenoid);
   //Color Sensor
   red_target_bot = new frc::Color(0.539917, 0.339233, 0.120972);
   blue_target_bot= new frc::Color(0.158325, 0.406372, 0.435181);
@@ -549,7 +567,7 @@ void Robot::Build(){
   //Ir Break Beam
   ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   //BallManager
-  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top);
+  ball_manager = new BallManager(intake,hopper,shooter, color_sensor_bot, color_sensor_top,limelight);
   //elevator
   elevator_motor = new TalonFX(MechanismConst::kelevator_motor_port);
   limit_switch_top = new DigitalInput(SensorConst::limit_switch_top_port);
@@ -559,13 +577,22 @@ void Robot::Build(){
   //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
   //rgb
-  // rgb_spark = new Spark(1);
+  rgb_spark = new Spark(1);
   //timer
   m_timer_auto = new frc::Timer();
   m_timer_intake = new frc::Timer();
-  m_timer_elevator = new frc::Timer();
 }
-
+void Robot::UpdateRGB(){
+  if(limit_switch_top->Get() == 0){
+    rgb_spark->Set(0.69);
+  }
+  else if (elevator_solenoid_lock->Get() == 1){
+    rgb_spark->Set(0.77);
+  } 
+  else{
+    rgb_spark->Set(-0.99);
+  }
+}
 #ifndef RUNNING_FRC_TESTS
 int main() {
   return frc::StartRobot<Robot>();

@@ -11,7 +11,7 @@ using namespace rev;
 class Shooter {
 public:
   Shooter(CANSparkMax *shooterneo_top, CANSparkMax *shooterneo_bottom, frc::DoubleSolenoid *shooter_solenoid):
-  shooterneo_top(shooterneo_top), shooterneo_bottom(shooterneo_bottom){
+  shooterneo_top(shooterneo_top), shooterneo_bottom(shooterneo_bottom), shooter_solenoid(shooter_solenoid){
     shooterneo_top->SetSmartCurrentLimit(40);
     shooterneo_bottom->SetSmartCurrentLimit(40);
 

@@ -8,15 +8,20 @@
 #include "hopper.h"
 #include "shooter.h"
 #include "intake.h"
+#include "limelight.h"
 
 #include "settings.h"
 
 class BallManager {
 public:
-  BallManager(Intake *intake, Hopper *hopper, Shooter *shooter, ColorSensor *color_sensor_bot, ColorSensor *color_sensor_top):
-  intake(intake), hopper(hopper),shooter(shooter), color_sensor_bot(color_sensor_bot), color_sensor_top(color_sensor_top){};
-  std::string GetHopperState(int position);
-  bool Rev(double target_velocity_top, double target_velocity_bottom);
+  BallManager(Intake *intake, Hopper *hopper, Shooter *shooter, ColorSensor *color_sensor_bot, ColorSensor *color_sensor_top, Limelight *limelight):
+  intake(intake), hopper(hopper),shooter(shooter), color_sensor_bot(color_sensor_bot), color_sensor_top(color_sensor_top), limelight(limelight){};
+  // std::string GetHopperState(int position);
+  bool RevLow();
+  bool RevHigh();
+  bool RevSide();
+  bool RevLimeLight();
+  bool RevLaunchPad();
   void MoveIndex();
   void CheckHopperState();
   bool IsFull();
@@ -28,6 +33,8 @@ public:
   std::string team_color = "Red";
 
 private:
+  bool Rev(double target_velocity_top, double target_velocity_bottom);
+
   std::string position[2] = {"None", "None"};//position[0] = color of position 1 position[1] = color of position 2
 
   Intake *intake;
@@ -35,6 +42,6 @@ private:
   Shooter *shooter;
   ColorSensor *color_sensor_bot;
   ColorSensor *color_sensor_top;
-
+  Limelight *limelight;
 };
 #endif

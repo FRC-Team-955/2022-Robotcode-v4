@@ -1,48 +1,32 @@
 #ifndef DRIVEBASE
 #define DRIVEBASE
 
-#include <iostream>
 #include "rev/CANSparkMax.h"
 #include <frc/Joystick.h>
 #include <frc/drive/DifferentialDrive.h>
-#include <stdlib.h>
-#include <math.h>
 
-#include <button_toggle.h>
+#include "limelight.h"
 #include "settings.h"
 
 using namespace rev;
 
 class DriveBase {
 public:
-  DriveBase(CANSparkMax *m_leftLeadMotor, CANSparkMax *m_rightLeadMotor, CANSparkMax *m_leftFollowMotor, CANSparkMax *m_rightFollowMotor, frc::DifferentialDrive *differential_drive,ButtonToggle *reverse_drive_toggle, frc::Joystick *joystick_0):
-  m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor), differential_drive(differential_drive), joystick_0(joystick_0){
-    // m_rightFollowMotor->Follow(*m_rightLeadMotor);
-    // m_leftFollowMotor->Follow(*m_leftLeadMotor);
+  DriveBase(CANSparkMax *m_leftLeadMotor, CANSparkMax *m_rightLeadMotor, CANSparkMax *m_leftFollowMotor, CANSparkMax *m_rightFollowMotor, frc::DifferentialDrive *differential_drive, frc::Joystick *joystick_0, Limelight *limelight):
+  m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor), differential_drive(differential_drive), joystick_0(joystick_0), limelight(limelight){
     m_leftLeadMotor->SetInverted(false);
     m_rightLeadMotor->SetInverted(true);
   };
   void Drive();
+  void Align();
   void DisplayDriveInfo();
-  void DriveTank(float leftWheelInput, float rightWheelInput);
-
 private:
   CANSparkMax *m_leftLeadMotor;
   CANSparkMax *m_rightLeadMotor;
   CANSparkMax *m_leftFollowMotor;
   CANSparkMax *m_rightFollowMotor;
-
   frc::DifferentialDrive *differential_drive;
-  ButtonToggle *reverse_drive_toggle;
   frc::Joystick *joystick_0;
-
-  double drive;
-  double drive_old = 0;
-  double turn;
-  double turn_old = 0;
-
-  bool is_quick_turn = false;
-  int ReverseDrive = -1;
-  bool ball_aimbot = false;
+  Limelight *limelight;
 };
 #endif

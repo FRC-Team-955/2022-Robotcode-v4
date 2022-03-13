@@ -1,8 +1,6 @@
 #ifndef HOPPER
 #define HOPPER
 
-#include <algorithm>
-#include <iostream>
 #include <ctre/Phoenix.h>
 
 #include "settings.h"
@@ -16,9 +14,7 @@ public:
     talon_hopper_top->TalonSRX::EnableCurrentLimit(true);
     talon_hopper_bottom->TalonSRX::EnableCurrentLimit(true);
   }
-  float max = 1;
-  void RunHopperMotor(float hopper_motor_percent_top,
-                      float hopper_motor_percent_bottom);
+  void RunHopperMotor(float hopper_motor_percent_top, float hopper_motor_percent_bottom);
   void DiplayHopperInfo();
 private:
   TalonSRX *talon_hopper_top;

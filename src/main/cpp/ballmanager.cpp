@@ -1,14 +1,14 @@
 #include "ballmanager.h"
 using namespace frc;
 
-std::string BallManager::GetHopperState(int slot){
-    if(slot != 0 && slot != 1){
-        return "NULL";
-    }
-    else{
-    return position[slot];
-    }
-}
+// std::string BallManager::GetHopperState(int slot){
+//     if(slot != 0 && slot != 1){
+//         return "NULL";
+//     }
+//     else{
+//     return position[slot];
+//     }
+// }
 void BallManager::CheckHopperState(){
     if(!color_sensor_bot->CheckForBall(SensorConst::kvalue_for_ball_bottom)){
         position[0] = "None";
@@ -50,41 +50,54 @@ bool BallManager::IsFull(){
 }
 
 bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom){  
-    //if the ball in position[1] is the right color, shoot at the inputted velocities
     shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
-    if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::krange_target && 
-        std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::krange_target &&
-        std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::krange_target &&
-        std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::krange_target){
+    if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_range && 
+        std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::ktarget_range &&
+        std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::ktarget_range &&
+        std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::ktarget_range){
         return true;
     }
     else{
         return false;
     }
 }
-
+bool BallManager::RevLow(){
+    return Rev(MechanismConst::ktarget_low_top,MechanismConst::ktarget_low_bottom);
+}
+bool BallManager::RevHigh(){
+    return Rev(MechanismConst::ktarget_high_top, MechanismConst::ktarget_high_bottom);
+}
+bool BallManager::RevSide(){
+    return Rev(MechanismConst::ktarget_side_top, MechanismConst::ktarget_side_bottom);
+}
+bool BallManager::RevLimeLight(){
+    return Rev(limelight->GetShooterSpeed("Top"), limelight->GetShooterSpeed("Bottom"));
+}
+bool BallManager::RevLaunchPad(){
+    return Rev(MechanismConst::ktarget_launch_top, MechanismConst::ktarget_launch_bottom);
+}
 void BallManager::Shoot(){
     hopper->RunHopperMotor(0.5, 0.5);
 }
-
 void BallManager::Reject(){
-    // if(position[1] != team_color){
-    //     if(Rev(MechanismConst::kreject_target,MechanismConst::kreject_target)){
-    //         hopper->RunHopperMotor(0.5,0);
-    //     }
-    // }
-    // if(position[0] != team_color){
-    //     hopper->RunHopperMotor(0, -0.5);
-    //     intake->RunIntake(-0.5);
-    // }
-    if(Rev(MechanismConst::kreject_target,MechanismConst::kreject_target)
-    && (position[1] != team_color || position[1] == "None")){
-        hopper->RunHopperMotor(0.5,0);
+    double top = 0.0;
+    double bottom = 0.0;
+    if(position[1] != team_color){
+        if(Rev(MechanismConst::ktarget_reject,MechanismConst::ktarget_reject)){
+            top = 0.5;
+            // hopper->RunHopperMotor(0.5,0);
+        }else{
+            top = 0.0;
+        }
     }
-    if(position[0] != team_color || position[0] == "None"){
-        hopper->RunHopperMotor(0, -0.5);
+    if(position[0] != team_color){
+        // hopper->RunHopperMotor(0, -0.5);
+        bottom = -0.5;
         intake->RunIntake(-0.5);
+    }else{
+        bottom = 0.0;
     }
+    hopper->RunHopperMotor(top,bottom);
 }
 
 void BallManager::DisplayBallManagerInfo(){
@@ -92,12 +105,12 @@ void BallManager::DisplayBallManagerInfo(){
     bool top[3] = {false};
     bool bottom[3] = {false};
     for(int i = 0; i<3; i++){
-        if(GetHopperState(0) == color_state[i]){
+        if(position[0] == color_state[i]){
             bottom[i]=true;
         }
     }
     for(int i = 0; i<3; i++){
-        if(GetHopperState(1) == color_state[i]){
+        if(position[1] == color_state[i]){
             top[i]=true;
         }
     }
@@ -109,7 +122,6 @@ void BallManager::DisplayBallManagerInfo(){
     SmartDashboard::PutBoolean("Top Red", top[1]);
     SmartDashboard::PutBoolean("Top Blue", top[2]);
 }
-
 bool BallManager::IsEmpty(){
         if(position[0] == "None" && position[1] == "None"){
             return 1;

@@ -2,9 +2,7 @@
 #define INTAKE
 
 #include <ctre/Phoenix.h>
-#include <frc/Joystick.h>
 #include <frc/DoubleSolenoid.h>
-#include <iostream>
 
 #include "settings.h"
 

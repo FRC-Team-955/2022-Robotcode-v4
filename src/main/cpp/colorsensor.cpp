@@ -9,7 +9,7 @@ std::string ColorSensor::ClosestColor() {
   } else if (nearest_color == *blue_target) {
     return "Blue";
   } else {
-    return "What happend (None)";
+    return "Blue";
   }
 }
 // Just returns a frc::Color value
