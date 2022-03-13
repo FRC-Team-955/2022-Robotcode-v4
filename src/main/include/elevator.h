@@ -26,7 +26,6 @@ public:
   void ElevatorMove(double joystick_position);
   void LockElevator();
   void UnlockElevator();
-  bool OffGround();
   void DisplayElevatorInfo();
   void ResetPosition();
 

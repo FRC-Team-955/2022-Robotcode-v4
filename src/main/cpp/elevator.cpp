@@ -35,42 +35,43 @@ void Elevator::ElevatorMove(double joystick_position) {
     // }
     //316000 //top
     //290000 //slow down
+  joystick_position = -joystick_position;
 
   if (limit_switch_bottom->Get() == 0) {
     ResetPosition();
   }
-  if (elevator_solenoid_lock->Get() == 1){
-      elevator_motor->Set(ControlMode::PercentOutput, 0);
-  }else{
-    if ((elevator_motor->GetSelectedSensorPosition() <= 5000) && joystick_position > 0) {
-      elevator_motor->Set(ControlMode::PercentOutput, 0);
-    }else{
-      elevator_motor->Set(ControlMode::PercentOutput, -joystick_position);
-    }
-  }
   // if (elevator_solenoid_lock->Get() == 1){
-  //       elevator_motor->Set(ControlMode::PercentOutput, 0);
+  //     elevator_motor->Set(ControlMode::PercentOutput, 0);
   // }else{
-  //   //if solenoid not out
-  //   if ((elevator_motor->GetSelectedSensorPosition() <= 5000) && joystick_position > 0) {
+  //   if ((elevator_motor->GetSelectedSensorPosition() <= 5000) && joystick_position < 0) {
   //     elevator_motor->Set(ControlMode::PercentOutput, 0);
   //   }else{
-  //     //if not at bottom and moving downwards
-  //     if (joystick_position < 0 && elevator_motor->GetOutputCurrent() > 50) {
-  //       hit_top_limit = true;
-  //     }
-  //     if (joystick_position > 0){
-  //       hit_top_limit = false;
-  //     }
-  //     if (joystick_position < 0 && (hit_top_limit || elevator_motor->GetSelectedSensorPosition() > 300000)){
-  //       //if top limit it hit or encoder is too big, and moving upwards
-  //       elevator_motor->Set(ControlMode::PercentOutput, 0);
-  //     }else{
-  //       elevator_motor->Set(ControlMode::PercentOutput, -joystick_position);
-  //     }
+  //     elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
   //   }
   // }
 
+  // if (joystick_position > 0 && elevator_motor->GetOutputCurrent() > 50) {
+  //   hit_top_limit = true;
+  // }
+  // if (joystick_position < 0){
+  //   hit_top_limit = false;
+  // }
+  std::cout<<"Elevator Position: "<<elevator_motor->GetSelectedSensorPosition()<<std::endl;
+  if (elevator_solenoid_lock->Get() == 1){
+        elevator_motor->Set(ControlMode::PercentOutput, 0);
+  }else{
+   //if solenoid not out
+    if (joystick_position < 0 && (elevator_motor->GetSelectedSensorPosition() <= 5000)) {
+      //if trying to move downwards and position is less than 5000 
+      elevator_motor->Set(ControlMode::PercentOutput, 0);
+    }else if(joystick_position > 0 && (limit_switch_top->Get() == 1 || elevator_motor->GetSelectedSensorPosition() > 300000 || hit_top_limit)){
+      //if trying to move upwards and position is greater than 300,000
+      elevator_motor->Set(ControlMode::PercentOutput, 0);
+    }else{
+      //if not at bottom and moving downwards
+      elevator_motor->Set(ControlMode::PercentOutput, joystick_position);
+    }
+  }
 }
 void Elevator::ResetPosition(){
   elevator_motor->SetSelectedSensorPosition(0);
@@ -85,13 +86,6 @@ void Elevator::UnlockElevator() {
   elevator_motor->Set(ControlMode::PercentOutput, 0);
 }
 
-bool Elevator::OffGround() {
-  if (elevator_motor->GetOutputCurrent() >= MechanismConst::climb_amperage) {
-    return true;
-  } else {
-    return false;
-  }
-}
 void Elevator::DisplayElevatorInfo(){
   frc::SmartDashboard::PutNumber("Elevator Amp", elevator_motor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("Elevator Position", elevator_motor->GetSelectedSensorPosition(0));
