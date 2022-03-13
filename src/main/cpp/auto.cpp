@@ -2,27 +2,22 @@
 /**
  * A 2nd constructor that must be run in auto init
  */
-void Auto::Initilize(rev::CANSparkMax *left_spark,
-                     rev::CANSparkMax *right_spark) {
+void Auto::Initilize(rev::CANSparkMax *left_spark, rev::CANSparkMax *right_spark) {
   auto_controller = new frc::RamseteController();
   auto_timer = new frc::Timer();
   m_odometry = new frc::DifferentialDriveOdometry(navx->GetRotation2d());
   kinematics = new frc::DifferentialDriveKinematics(AutoConst::ktrack_width);
-  drive_pid_left =
-      new rev::SparkMaxPIDController(left_spark->GetPIDController());
-  drive_pid_right =
-      new rev::SparkMaxPIDController(right_spark->GetPIDController());
-  drive_encoder_left =
-      new rev::SparkMaxRelativeEncoder(left_spark->GetEncoder());
-  drive_encoder_right =
-      new rev::SparkMaxRelativeEncoder(right_spark->GetEncoder());
+  drive_pid_left = new rev::SparkMaxPIDController(left_spark->GetPIDController());
+  drive_pid_right = new rev::SparkMaxPIDController(right_spark->GetPIDController());
+  drive_encoder_left = new rev::SparkMaxRelativeEncoder(left_spark->GetEncoder());
+  drive_encoder_right = new rev::SparkMaxRelativeEncoder(right_spark->GetEncoder());
 
-  drive_pid_left->SetP(0);
+  drive_pid_left->SetP(0.00008);
   drive_pid_left->SetI(0);
   drive_pid_left->SetD(0);
   drive_pid_left->SetFF(0);
 
-  drive_pid_right->SetP(0);
+  drive_pid_right->SetP(0.00008);
   drive_pid_right->SetI(0);
   drive_pid_right->SetD(0);
   drive_pid_right->SetFF(0);

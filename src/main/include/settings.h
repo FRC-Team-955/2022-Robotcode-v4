@@ -13,8 +13,8 @@ constexpr int kreverse_drive = 6;
 //shooter
 constexpr int kshoot_wall_trigger = 3;
 constexpr int kshooter_goal_toggle_button = 7;
-constexpr int khorizontal_align_button = 5;
-// constexpr int kball_aimbot_button = 5;
+constexpr int khorizontal_align_button = 4;
+constexpr int kshoot_distance_trigger = 2;
 } // namespace Joy0Const
 
 namespace Joy1Const {
@@ -67,16 +67,23 @@ constexpr double bottom_kP = 0.00009, bottom_kI = 0, bottom_kD = 0.015035, botto
 constexpr double kMinOutput = -1, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
-constexpr int krange_target = 200; //g?
+constexpr int krange_target = 100; //g?
 //low goal
 constexpr int klow_target_bottom = 1200; //g
 constexpr int klow_target_top = 1300; //g
 //high goal
+// constexpr int khigh_target_bottom = 1050; //g
+// constexpr int khigh_target_top = 4100; //g
 constexpr int khigh_target_bottom = 2100; //g
 constexpr int khigh_target_top = 2000; //g
+//Min bottom speed
+constexpr double krange_target_min = 1100;
 //side goal
 constexpr int kside_target_bottom = 2200; //g
 constexpr int kside_target_top = 2600; //g
+//Vertical shot
+constexpr int kvertical_target_bottom = 3000; //g
+constexpr int kvertical_target_top = 1950; //g
 //reject
 constexpr int kreject_target = 1200;
 //elevator
@@ -94,9 +101,11 @@ namespace AutoConst {
     constexpr units::meter_t kwheel_diameter_meters = 0.1524_m;
     constexpr double kgear_ratio = 10.75;
 
-    constexpr units::meter_t camera_height = 24_in;
-    constexpr units::meter_t target_height = 24_in;
-    constexpr units::radian_t camera_pitch = 0_deg;
-    constexpr double shooter_m = 1;
-    constexpr double shooter_b = 0;
+    constexpr units::meter_t camera_height = 38_in;
+    constexpr units::meter_t target_height = 104_in;
+    constexpr units::radian_t camera_pitch = 36_deg;
+    constexpr double shooter_m_top = 31.9;
+    constexpr double shooter_b_top = 2027;
+    constexpr double shooter_m_bottom = -16.1;
+    constexpr double shooter_b_bottom = 1977;
 }

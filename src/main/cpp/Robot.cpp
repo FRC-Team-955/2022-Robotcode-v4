@@ -115,25 +115,23 @@ Auto *trajectory_auto;
 int auto_state = 0;
 
 void Robot::RobotInit() {
-  m_auto_Chooser.SetDefaultOption("3 Ball Right","3BR");
-  m_auto_Chooser.AddOption("4 Ball Right","4BR");
-  m_auto_Chooser.AddOption("3 Ball Left","3BL");
-  frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-  m_team_color_Chooser.SetDefaultOption("Blue","Blue");
-  m_team_color_Chooser.AddOption("Red","Red");
-  frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-
-  frc::CameraServer::StartAutomaticCapture();
-  cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
-
-  m_leftLeadMotor_encoder->SetPosition(0);
-  m_rightLeadMotor_encoder->SetPosition(0);
-
-  ganyu_auto_selection = m_auto_Chooser.GetSelected();
-
-  //auto
-  trajectory_auto = new Auto();
+  // //Auto Tab Init
+  // m_auto_Chooser.SetDefaultOption("3 Ball Right","3BR");
+  // m_auto_Chooser.AddOption("4 Ball Right","4BR");
+  // m_auto_Chooser.AddOption("3 Ball Left","3BL");
+  // frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  // m_team_color_Chooser.SetDefaultOption("Blue","Blue");
+  // m_team_color_Chooser.AddOption("Red","Red");
+  // frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  // //Camera
+  // frc::CameraServer::StartAutomaticCapture();
+  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
+  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
+  // //Resets Encoders
+  // m_leftLeadMotor_encoder->SetPosition(0);
+  // m_rightLeadMotor_encoder->SetPosition(0);
+  
+  // ganyu_auto_selection = m_auto_Chooser.GetSelected();
 }
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
@@ -363,7 +361,6 @@ void Robot::TeleopPeriodic() {
       //low goal
       if(ball_manager->Rev(MechanismConst::klow_target_top,MechanismConst::klow_target_bottom)){
         ball_manager->Shoot();
-        ball_manager->CheckHopperState();
       }else{
         hopper->RunHopperMotor(0,0);
       }
@@ -371,12 +368,18 @@ void Robot::TeleopPeriodic() {
       //high goal
       if(ball_manager->Rev(MechanismConst::khigh_target_top,MechanismConst::khigh_target_bottom)){
         ball_manager->Shoot();
-        ball_manager->CheckHopperState();
       }else{
         hopper->RunHopperMotor(0,0);
       }
     }
+  }else if (joystick_0->GetRawAxis(Joy0Const::kshoot_distance_trigger)>0.3){
+      if(ball_manager->RevLimelight()){
+        ball_manager->Shoot();
+      }else{
+        hopper->RunHopperMotor(0,0);
+      }
   }else{
+
     //if not shooting
     shooter->VelocityControl(0,0);
     if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
@@ -506,6 +509,8 @@ void Robot::DisabledPeriodic() {}
 void Robot::TestInit() {}
 void Robot::TestPeriodic() {}
 void Robot::Build(){
+  //auto
+  trajectory_auto = new Auto();
   //joysticks
   joystick_0 = new frc::Joystick(0);
   joystick_1 = new frc::Joystick(1);
@@ -518,7 +523,6 @@ void Robot::Build(){
   limelight = new Limelight();
   // differential_drive->SetSafetyEnabled(false);
   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0, limelight);
-  // xyalign = new XYalign(drive, joystick_0);
   //auto
   m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
   m_rightLeadMotor_encoder = new SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
