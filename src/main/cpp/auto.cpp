@@ -12,15 +12,15 @@ void Auto::Initilize(rev::CANSparkMax *left_spark, rev::CANSparkMax *right_spark
   drive_encoder_left = new rev::SparkMaxRelativeEncoder(left_spark->GetEncoder());
   drive_encoder_right = new rev::SparkMaxRelativeEncoder(right_spark->GetEncoder());
 
-  drive_pid_left->SetP(0.00008);
+  drive_pid_left->SetP(1.4053);
   drive_pid_left->SetI(0);
   drive_pid_left->SetD(0);
-  drive_pid_left->SetFF(0);
+  drive_pid_left->SetFF(2.5594);
 
-  drive_pid_right->SetP(0.00008);
+  drive_pid_right->SetP(1.4053);
   drive_pid_right->SetI(0);
   drive_pid_right->SetD(0);
-  drive_pid_right->SetFF(0);
+  drive_pid_right->SetFF(2.5594);
 }
 
 /**
