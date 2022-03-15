@@ -115,23 +115,24 @@ Auto *trajectory_auto;
 int auto_state = 0;
 
 void Robot::RobotInit() {
-  // //Auto Tab Init
-  // m_auto_Chooser.SetDefaultOption("3 Ball Right","3BR");
-  // m_auto_Chooser.AddOption("4 Ball Right","4BR");
-  // m_auto_Chooser.AddOption("3 Ball Left","3BL");
-  // frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-  // m_team_color_Chooser.SetDefaultOption("Blue","Blue");
-  // m_team_color_Chooser.AddOption("Red","Red");
-  // frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
-  // //Camera
-  // frc::CameraServer::StartAutomaticCapture();
-  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
+  //Auto Tab Init
+  m_auto_Chooser.SetDefaultOption("3 Ball Right","3BR");
+  m_auto_Chooser.AddOption("4 Ball Right","4BR");
+  m_auto_Chooser.AddOption("3 Ball Left","3BL");
+  frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  m_team_color_Chooser.SetDefaultOption("Blue","Blue");
+  m_team_color_Chooser.AddOption("Red","Red");
+  frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+  //Camera
+  frc::CameraServer::StartAutomaticCapture();
+  cs::CvSink cvSink = frc::CameraServer::GetVideo();
+  cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
   // //Resets Encoders
   // m_leftLeadMotor_encoder->SetPosition(0);
   // m_rightLeadMotor_encoder->SetPosition(0);
+  trajectory_auto = new Auto();
   
-  // ganyu_auto_selection = m_auto_Chooser.GetSelected();
+  ganyu_auto_selection = m_auto_Chooser.GetSelected();
 }
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
@@ -510,7 +511,7 @@ void Robot::TestInit() {}
 void Robot::TestPeriodic() {}
 void Robot::Build(){
   //auto
-  trajectory_auto = new Auto();
+  // trajectory_auto = new Auto();
   //joysticks
   joystick_0 = new frc::Joystick(0);
   joystick_1 = new frc::Joystick(1);
