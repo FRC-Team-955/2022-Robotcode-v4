@@ -124,118 +124,81 @@ void Robot::RobotInit() {
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   //Camera
-  frc::CameraServer::StartAutomaticCapture();
-  cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
+  // frc::CameraServer::StartAutomaticCapture();
+  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
+  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
   // //Resets Encoders
   // m_leftLeadMotor_encoder->SetPosition(0);
   // m_rightLeadMotor_encoder->SetPosition(0);
   trajectory_auto = new Auto();
   
-  ganyu_auto_selection = m_auto_Chooser.GetSelected();
+  // ganyu_auto_selection = m_auto_Chooser.GetSelected();
 }
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
   Build();
+  m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   trajectory_auto->Initilize(m_leftLeadMotor, m_rightLeadMotor);
+  auto_state = 0;
 }
 void Robot::AutonomousPeriodic() {
-  if(ganyu_auto_selection == "3BR"){
-    intake->PistonDown();
-    ball_manager->CheckHopperState();
-    if(auto_state == 0){
-      //shoot preload
-      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-        ball_manager -> Shoot();
-      }
-      if (ball_manager -> IsEmpty()){
-        shooter->ShootPercentOutput(0,0);
-        hopper->RunHopperMotor(0,0);
-        auto_state++;
-      } 
-    }
-    if(auto_state == 1){
-      //init out path
-      trajectory_auto->LoadTrajectory("Out.wpilib.json");
-      auto_state++;
-    }
-    if(auto_state == 2){
-      //drive to 2nd ball and terminal
-      intake->RunIntake(1);
-      ball_manager->LoadHopper();
-      if(trajectory_auto->FollowTrajectory()){
-        auto_state++;
-      }
-    }
-    if(auto_state == 3){
-      //init back path
-      trajectory_auto->LoadTrajectory("Back.wpilib.json");
-      if(!ball_manager -> IsEmpty()){
-        auto_state++;
-      }
-    }
-    if(auto_state == 3){
-      //drive to goal
-      if(trajectory_auto->FollowTrajectory()){
-        auto_state++;
-      }
-    }
-    if(auto_state == 4){
-      //shoot
-      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-        ball_manager -> Shoot();
-      }
-      if (ball_manager -> IsEmpty()){
-        shooter->ShootPercentOutput(0,0);
-        hopper->RunHopperMotor(0,0);
-        auto_state++;
-      } 
-    }
-    if(auto_state == 5){
-      //turn off all motors (not implemented yet)
-      delete trajectory_auto;
-    }
-  }
-  if(ganyu_auto_selection == "4BR"){
+  if(true){
     intake->PistonDown();
     ball_manager->CheckHopperState();
     if(auto_state == 0){
       //init out to 2nd ball
+      std::cout<<"0"<<std::endl;
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
       auto_state++;
     }
     if(auto_state == 1){
       //drive to 2nd ball
+      std::cout<<"1"<<std::endl;
       intake->RunIntake(1);
       ball_manager->LoadHopper();
-      if(trajectory_auto->FollowTrajectory()){
+      if(trajectory_auto->FollowTrajectory(false)){
         auto_state++;
       }
     }
     if(auto_state == 2){
       //init back to goal
+      std::cout<<"2"<<std::endl;
       intake->RunIntake(1);
       ball_manager->LoadHopper();
+      if(!ball_manager->IsEmpty()){
+        auto_state++;
+      }
     }
     if(auto_state == 3){
       //drive back to goal
+      std::cout<<"3"<<std::endl;
       intake->RunIntake(1);
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("Back4-1.wpilib.json");
       auto_state++;
     }
     if(auto_state == 4){
+      std::cout<<"4"<<std::endl;
+      if(trajectory_auto->FollowTrajectory(true)){
+        auto_state++;
+      }
+    }
+    if(auto_state == 5){
       //shoot ball 1/2
+      std::cout<<"5"<<std::endl;
       if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
-        auto_state++;
+        // auto_state++;
       } 
     }
-    if(auto_state == 5){
+    if(auto_state == 6){
       //init out to terminal
       intake->RunIntake(1);
       ball_manager->LoadHopper();
@@ -246,7 +209,7 @@ void Robot::AutonomousPeriodic() {
       //drive to terminal
       intake->RunIntake(1);
       ball_manager->LoadHopper();
-      if(trajectory_auto->FollowTrajectory()){
+      if(trajectory_auto->FollowTrajectory(false)){
         auto_state++;
       }
     }
@@ -261,62 +224,12 @@ void Robot::AutonomousPeriodic() {
     }
     if(auto_state == 8){
       //drive to goal
-      if(trajectory_auto->FollowTrajectory()){
+      if(trajectory_auto->FollowTrajectory(false)){
         auto_state++;
       }
     }
     if(auto_state == 9){
       //shoot ball 3/4
-      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-        ball_manager -> Shoot();
-      }
-      if (ball_manager -> IsEmpty()){
-        shooter->ShootPercentOutput(0,0);
-        hopper->RunHopperMotor(0,0);
-        auto_state++;
-      } 
-    }
-  }
-  if(ganyu_auto_selection == "3BL"){
-    intake->PistonDown();
-    ball_manager->CheckHopperState();
-    if(auto_state == 0){
-      //shoot preload
-      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
-        ball_manager -> Shoot();
-      }
-      if (ball_manager -> IsEmpty()){
-        shooter->ShootPercentOutput(0,0);
-        hopper->RunHopperMotor(0,0);
-        auto_state++;
-      } 
-    }
-    if(auto_state == 1){
-      // load out
-      trajectory_auto->LoadTrajectory("OutLeft.wpilib.json");
-      auto_state++;
-    }
-    if(auto_state == 2){
-      // drive to terminal
-      intake->RunIntake(1);
-      ball_manager->LoadHopper();
-      if(trajectory_auto->FollowTrajectory()){
-        auto_state++;
-      }
-    }
-    if(auto_state == 3){
-      // load back
-      trajectory_auto->LoadTrajectory("BackLeft.wpilib.json");
-      auto_state++;
-    }
-    if(auto_state == 4){
-      // drive to shooter
-      if(trajectory_auto->FollowTrajectory()){
-        auto_state++;
-      }
-    }
-    if(auto_state == 5){
-      // shoot
       if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
         ball_manager -> Shoot();
       }
@@ -449,6 +362,10 @@ void Robot::DisplayShuffle() {
   frc::SmartDashboard::PutString("Team Color", ball_manager->team_color);
 }
 void Robot::DisabledInit() {
+  // m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  // m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  // m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  // m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   //joystick
   delete joystick_0;
   delete joystick_1;
@@ -525,8 +442,8 @@ void Robot::Build(){
   // differential_drive->SetSafetyEnabled(false);
   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive,reverse_drive_toggle, joystick_0, limelight);
   //auto
-  m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
-  m_rightLeadMotor_encoder = new SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
+  // m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
+  // m_rightLeadMotor_encoder = new SparkMaxRelativeEncoder(m_rightLeadMotor->GetEncoder());
   //Intake
   intake_talon = new TalonSRX(MechanismConst::kintake_motor);
   intake_double_solonoid = new DoubleSolenoid(13,PneumaticsModuleType::REVPH, MechanismConst::kintake_double_solonoid_port_forward, MechanismConst::kintake_double_solonoid_port_reverse);

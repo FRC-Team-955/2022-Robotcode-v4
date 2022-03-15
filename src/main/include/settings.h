@@ -97,8 +97,8 @@ constexpr float kcompressor_warning_pressure = 10;
 } // namespace MechanismConst
 
 namespace AutoConst {
-    constexpr units::meter_t ktrack_width = 0.5842_m;
-    constexpr units::meter_t kwheel_diameter_meters = 0.1524_m;
+    constexpr units::meter_t ktrack_width = 0.56_m;
+    constexpr units::meter_t kwheel_diameter_meters = 0.15_m;
     constexpr double kgear_ratio = 10.75;
 
     constexpr units::meter_t camera_height = 38_in;

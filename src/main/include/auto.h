@@ -10,6 +10,7 @@
 #include <frc/kinematics/DifferentialDriveOdometry.h>
 #include <frc/trajectory/TrajectoryUtil.h>
 #include <wpi/fs.h>
+#include <iostream>
 
 class Auto {
 public:
@@ -28,7 +29,7 @@ public:
   }
   void Initilize(rev::CANSparkMax *left_spark, rev::CANSparkMax *right_spark);
   void LoadTrajectory(std::string name);
-  bool FollowTrajectory();
+  bool FollowTrajectory(bool is_inverted);
   double ConvertToRPM(units::velocity::meters_per_second_t value);
   units::meter_t ConvertToMeters(double value);
 
