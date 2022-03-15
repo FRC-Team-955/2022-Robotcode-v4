@@ -72,9 +72,8 @@ constexpr int ktarget_range = 100; //g?
 constexpr int ktarget_low_bottom = 1200; //g
 constexpr int ktarget_low_top = 1300; //g
 //high goal
-constexpr int ktarget_high_bottom = 2100; //g
-constexpr int ktarget_high_top = 2000; //g
-// constexpr int ktarget_high_bottom = 2300; //g
+constexpr int ktarget_high_bottom = 2700; //g
+constexpr int ktarget_high_top = 1500; //g// constexpr int ktarget_high_bottom = 2300; //g
 // constexpr int ktarget_high_top = 3300; //g
 //Min bottom speed
 constexpr double ktarget_limelight_bottom_min = 1100;
