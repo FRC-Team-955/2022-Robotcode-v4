@@ -31,6 +31,8 @@ public:
   void LoadTrajectory(std::string name);
   bool FollowTrajectory(bool is_inverted);
   double ConvertToRPM(units::velocity::meters_per_second_t value);
+  bool Move(double pose);
+  void ResetEncoder();
   units::meter_t ConvertToMeters(double value);
 
 private:

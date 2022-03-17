@@ -113,6 +113,7 @@ std::string ganyu_auto_selection = "Sleep";
 //auto
 Auto *trajectory_auto;
 int auto_state = 0;
+frc::Timer *auto_timer;
 
 void Robot::RobotInit() {
   //Auto Tab Init
@@ -137,18 +138,23 @@ void Robot::RobotInit() {
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
   Build();
-  m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  compressor->Disable();
+  m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_rightFollowMotor->Follow(*m_rightLeadMotor);
+  m_leftFollowMotor->Follow(*m_leftLeadMotor);
   trajectory_auto->Initilize(m_leftLeadMotor, m_rightLeadMotor);
   auto_state = 0;
+  auto_timer = new frc::Timer();
 }
 void Robot::AutonomousPeriodic() {
+  DisplayShuffle();
   if(true){
-    intake->PistonDown();
     ball_manager->CheckHopperState();
     if(auto_state == 0){
+      intake->PistonDown();
       //init out to 2nd ball
       std::cout<<"0"<<std::endl;
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
@@ -182,62 +188,95 @@ void Robot::AutonomousPeriodic() {
     }
     if(auto_state == 4){
       std::cout<<"4"<<std::endl;
+      ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory(true)){
+      intake->RunIntake(0);
         auto_state++;
       }
     }
     if(auto_state == 5){
       //shoot ball 1/2
       std::cout<<"5"<<std::endl;
-      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+      if(ball_manager->Rev(1500,1500)){
         ball_manager -> Shoot();
+        std::cout<<"shoot"<<std::endl;
       }
       if (ball_manager -> IsEmpty()){
-        shooter->ShootPercentOutput(0,0);
-        hopper->RunHopperMotor(0,0);
-        // auto_state++;
-      } 
+        auto_timer->Reset();
+        auto_timer->Start();
+        auto_state++;
+      }
     }
     if(auto_state == 6){
+      std::cout<<"6"<<std::endl;
+
+      if(auto_timer->HasElapsed(1_s)){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      }
+    }
+    if(auto_state == 7){
+      std::cout<<"7"<<std::endl;
+
       //init out to terminal
       intake->RunIntake(1);
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("Out4-2.wpilib.json");
       auto_state++;
     }
-    if(auto_state == 6){
+    if(auto_state == 8){
       //drive to terminal
+      std::cout<<"8"<<std::endl;
+
       intake->RunIntake(1);
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory(false)){
         auto_state++;
+        trajectory_auto->ResetEncoder();
       }
     }
-    if(auto_state == 7){
-      //load / init drive to goal
+    if(auto_state==9){
       intake->RunIntake(1);
-      ball_manager->LoadHopper();
-      if(ball_manager->IsFull()){
-        trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
+      if(!trajectory_auto->Move(1)){
         auto_state++;
       }
     }
-    if(auto_state == 8){
+    if(auto_state ==11){
+      std::cout<<"5"<<std::endl;
+
+      //load / init drive to goal
+      ball_manager->LoadHopper();
+      if(ball_manager->IsFull()){
+        trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
+        intake->RunIntake(0);
+        auto_state++;
+      }
+    }
+    if(auto_state == 10){
       //drive to goal
       if(trajectory_auto->FollowTrajectory(false)){
         auto_state++;
       }
     }
-    if(auto_state == 9){
-      //shoot ball 3/4
-      if(ball_manager->Rev(MechanismConst::kside_target_top,MechanismConst::kside_target_bottom)){
+    if(auto_state == 11){
+      //shoot ball 1/2
+      std::cout<<"9"<<std::endl;
+      if(ball_manager->Rev(1500,1500)){
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
+        auto_timer->Reset();
+        auto_timer->Start();
+        auto_state++;
+      } 
+    }
+    if(auto_state == 12){
+      if(auto_timer->HasElapsed(0.25_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         auto_state++;
-      } 
+      }
     }
   }
 }
@@ -362,10 +401,6 @@ void Robot::DisplayShuffle() {
   frc::SmartDashboard::PutString("Team Color", ball_manager->team_color);
 }
 void Robot::DisabledInit() {
-  // m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
-  // m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
-  // m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
-  // m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   //joystick
   delete joystick_0;
   delete joystick_1;

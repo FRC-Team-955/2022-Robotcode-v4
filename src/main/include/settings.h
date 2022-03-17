@@ -37,7 +37,7 @@ constexpr int kcompressor_toggle_button = 7;
 namespace SensorConst {
 constexpr int limit_switch_top_port = 4; //g
 constexpr int limit_switch_bottom_port = 1; //g
-constexpr unsigned int kvalue_for_ball_top = 1700; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
+constexpr unsigned int kvalue_for_ball_top = 1500; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
 constexpr unsigned int kvalue_for_ball_bottom = 200; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
 constexpr int kir_break_beam_port = 2;
 } // namespace SensorConst
@@ -55,8 +55,8 @@ constexpr float krate_limit = 3/5;
 namespace MechanismConst {
 //intake
 constexpr int kintake_motor = 10; //g
-constexpr int kintake_double_solonoid_port_forward = 7;
-constexpr int kintake_double_solonoid_port_reverse = 6; 
+constexpr int kintake_double_solonoid_port_forward = 1;
+constexpr int kintake_double_solonoid_port_reverse = 2; 
 constexpr int kintake_reversal_amps = 50;
 //hopper
 constexpr int khopper_motor_top_port = 9; //g

@@ -43,6 +43,9 @@ void Auto::LoadTrajectory(std::string name) {
 
   // sets robot position to start of trajectory, to deal with inconsistent
   // placement
+  // navx->Reset(double(trajectory->InitialPose().Rotation().Degrees()));
+  drive_encoder_left->SetPosition(0);
+  drive_encoder_right->SetPosition(0);
   m_odometry->ResetPosition(trajectory->InitialPose(), navx->GetRotation2d());
 }
 
@@ -78,14 +81,33 @@ bool Auto::FollowTrajectory(bool is_inverted) {
 
   std::cout<<"Time: "<<double(auto_timer->Get())<<std::endl;
   std::cout<<"Total Time: "<<double(trajectory->TotalTime())<<std::endl;
-  std::cout<<"R: "<<double(right)<<std::endl;
-  std::cout<<"L: "<<double(left)<<std::endl;
-  std::cout<<"L_enc: "<<double(drive_encoder_left->GetPosition())<<std::endl;
-  std::cout<<"Navx: "<<double(navx->GetAngleRadians())<<std::endl;
+  // std::cout<<"R: "<<double(right)<<std::endl;
+  // std::cout<<"L: "<<double(left)<<std::endl;
+  // std::cout<<"L_enc: "<<double(drive_encoder_left->GetPosition())<<std::endl;
+  std::cout<<"Navx: "<<double(navx->GetRotation2d().Radians())<<std::endl;
+  std::cout<<"Navx: "<<double(goal.pose.Rotation().Radians())<<std::endl;
+    std::cout<<double(trajectory->InitialPose().X())<<std::endl;
 
   if (auto_timer->Get() > trajectory->TotalTime()) {
     delete trajectory;
     return true;
+  }
+  return false;
+}
+
+void Auto::ResetEncoder(){
+  drive_encoder_left->SetPosition(0);
+  drive_encoder_right->SetPosition(0);
+}
+
+bool Auto::Move(double pose){
+  if(drive_encoder_left->GetPosition()>pose){
+    m_leftLeadMotor->Set(0);
+    m_rightLeadMotor->Set(0);
+    return true;
+  }else{
+    m_leftLeadMotor->Set(.1);
+    m_rightLeadMotor->Set(.1);
   }
   return false;
 }
