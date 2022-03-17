@@ -279,6 +279,96 @@ void Robot::AutonomousPeriodic() {
       }
     }
   }
+  if(ganyu_auto_selection == "3Ball"){
+    ball_manager->CheckHopperState();
+    if(auto_state == 0){
+      intake->PistonDown();
+      trajectory_auto->LoadTrajectory("3BOut1.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state==1){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory(false)){
+        auto_state++;
+      }
+    }
+    if(auto_state == 3){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("3BBack1.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state==4){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory(false)){
+        auto_state++;
+      }
+    }
+    if(auto_state==5){
+      intake->RunIntake(0);
+      if(ball_manager->Rev(1500,1500)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        auto_timer->Reset();
+        auto_timer->Start();
+        auto_state++;
+      }
+    }
+    if(auto_state == 6){
+      if(auto_timer->HasElapsed(0.75_s)){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      }
+    }
+    if(auto_state == 7){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("3BOut2.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state==8){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory(false)){
+        auto_state++;
+      }
+    }
+    if(auto_state == 9){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("3BBack2.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state==10){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory(false)){
+        auto_state++;
+      }
+    }
+    if(auto_state==11){
+      intake->RunIntake(0);
+      if(ball_manager->Rev(1500,1500)){
+        ball_manager -> Shoot();
+      }
+      if (ball_manager -> IsEmpty()){
+        auto_timer->Reset();
+        auto_timer->Start();
+        auto_state++;
+      }
+    }
+    if(auto_state == 12){
+      if(auto_timer->HasElapsed(0.75_s)){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        auto_state++;
+      }
+    }
+  }
 }
 
 void Robot::TeleopInit() {
