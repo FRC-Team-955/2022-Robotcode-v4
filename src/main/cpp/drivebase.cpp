@@ -9,7 +9,7 @@ void DriveBase::Drive() {
   // differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*0.5);
 }
 void DriveBase::Align() {
-  differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeed());
+  differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeed(joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)));
 }
 
 void DriveBase::DisplayDriveInfo() {

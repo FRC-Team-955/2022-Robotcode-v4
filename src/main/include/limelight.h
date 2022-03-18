@@ -27,13 +27,14 @@ public:
       delete camera;
       delete controller;
   }
-  double GetDrivebaseSpeed();
+  double GetDrivebaseSpeed(double joy_axis);
   double GetShooterSpeed(std::string shooter_position);
   bool IsAligned();
 
 private:
   photonlib::PhotonCamera *camera;
   frc2::PIDController *controller;
+  double ramp_speed = 0;
 };
 
 #endif

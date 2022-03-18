@@ -3,18 +3,32 @@
 /**
  * @return the steering joystick input needed to align to target {-1,1} or 0 if none
  */
-double Limelight::GetDrivebaseSpeed() {
+double Limelight::GetDrivebaseSpeed(double joy_axis) {
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   if (result.HasTargets()) {
-    if(std::abs(result.GetBestTarget().GetYaw()) < 3){
-      controller->SetI(0.05);
+    if(std::abs(result.GetBestTarget().GetYaw()) < 7){
+      ramp_speed = 0;
+      return -controller->Calculate(result.GetBestTarget().GetYaw(), 0) + joy_axis*.1;
     }else{
-      controller->SetI(0.018);
+      if(ramp_speed < .5){
+        ramp_speed+=.01;
+      }
+      if(result.GetBestTarget().GetYaw()>0){
+        return -ramp_speed;
+      }else{
+        return ramp_speed;
+      }
     }
-    // Rotation speed is the output of the PID controller
-    return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
+    // if(std::abs(result.GetBestTarget().GetYaw()) < 3){
+    //   controller->SetI(0.05);
+    // }else{
+    //   controller->SetI(0.018);
+    // }
+    // // Rotation speed is the output of the PID controller
+    // return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
   } else {
     // If we have no targets, stay still
+    ramp_speed = 0;
     return 0;
   }
 }
