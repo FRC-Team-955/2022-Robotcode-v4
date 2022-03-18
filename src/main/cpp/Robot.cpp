@@ -233,13 +233,6 @@ void Robot::AutonomousPeriodic() {
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory(false)){
         auto_state++;
-        trajectory_auto->ResetEncoder();
-      }
-    }
-    if(auto_state==9){
-      intake->RunIntake(1);
-      if(!trajectory_auto->Move(1)){
-        auto_state++;
       }
     }
     if(auto_state ==11){
