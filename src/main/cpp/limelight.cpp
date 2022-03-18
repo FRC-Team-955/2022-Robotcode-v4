@@ -6,6 +6,11 @@
 double Limelight::GetDrivebaseSpeed() {
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   if (result.HasTargets()) {
+    if(std::abs(result.GetBestTarget().GetYaw()) < 3){
+      controller->SetI(0.05);
+    }else{
+      controller->SetI(0.018);
+    }
     // Rotation speed is the output of the PID controller
     return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
   } else {
@@ -25,7 +30,8 @@ double Limelight::GetShooterSpeed(std::string shooter_position) {
         AutoConst::camera_height, AutoConst::target_height,
         AutoConst::camera_pitch,
         units::degree_t{result.GetBestTarget().GetPitch()}));
-    range = range*39.3701 - 10;
+    range = range*39.3701;
+    std::cout<<"Range: "<<range<<std::endl;
     if (shooter_position == "Top"){
       return AutoConst::shooter_m_top * range + AutoConst::shooter_b_top;
     }else if (shooter_position == "Bottom"){

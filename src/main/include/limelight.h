@@ -20,7 +20,8 @@ public:
     //0.023, 0.003, -0.01
     //0.05,0.025,0.014
     //0.02,0.01,-0.3
-    controller = new frc2::PIDController(0.03,0.03,0);
+    //0.04,0.015,0.005
+    controller = new frc2::PIDController(0.055,0.018,0.005);
   };
   ~Limelight(){
       delete camera;

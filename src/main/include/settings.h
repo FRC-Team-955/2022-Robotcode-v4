@@ -72,8 +72,8 @@ constexpr int ktarget_range = 100; //g?
 constexpr int ktarget_low_bottom = 1200; //g
 constexpr int ktarget_low_top = 1300; //g
 //high goal
-constexpr int ktarget_high_bottom = 2700; //g
-constexpr int ktarget_high_top = 1500; //g// constexpr int ktarget_high_bottom = 2300; //g
+constexpr int ktarget_high_bottom = 3200; //g
+constexpr int ktarget_high_top = 1000; //g// constexpr int ktarget_high_bottom = 2300; //g
 // constexpr int ktarget_high_top = 3300; //g
 //Min bottom speed
 constexpr double ktarget_limelight_bottom_min = 1100;
@@ -92,13 +92,13 @@ constexpr int kelevator_pnumatic_port_reverse = 5;
 } // namespace MechanismConst
 
 namespace AutoConst {
-    constexpr units::meter_t ktrack_width = 0.5842_m;
-    constexpr units::meter_t kwheel_diameter_meters = 0.1524_m;
+    constexpr units::meter_t ktrack_width = 0.56_m;
+    constexpr units::meter_t kwheel_diameter_meters = 0.15_m;
     constexpr double kgear_ratio = 10.75;
 
-    constexpr units::meter_t camera_height = 38_in;
+    constexpr units::meter_t camera_height = 36.8_in;
     constexpr units::meter_t target_height = 104_in;
-    constexpr units::radian_t camera_pitch = 36_deg;
+    constexpr units::radian_t camera_pitch = 49_deg;
     constexpr double shooter_m_top = 31.9;
     constexpr double shooter_b_top = 2027;
     constexpr double shooter_m_bottom = -16.1;
