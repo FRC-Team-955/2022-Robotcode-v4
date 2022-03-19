@@ -474,6 +474,9 @@ void Robot::TeleopInit() {
   m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
 
+  compressor->Disable();
+  frc::SmartDashboard::PutBoolean("Compressor", false);
+
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
   m_timer_intake->Start();
 }

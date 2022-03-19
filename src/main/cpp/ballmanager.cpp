@@ -87,7 +87,7 @@ void BallManager::Reject(){
     double bottom = 0.0;
     if(position[1] != team_color){
         if(Rev(MechanismConst::ktarget_reject,MechanismConst::ktarget_reject)){
-            top = 0.5;
+            top = 1;
             // hopper->RunHopperMotor(0.5,0);
         }else{
             top = 0.0;
@@ -95,8 +95,8 @@ void BallManager::Reject(){
     }
     if(position[0] != team_color){
         // hopper->RunHopperMotor(0, -0.5);
-        bottom = -0.5;
-        intake->RunIntake(-0.5);
+        bottom = -1;
+        intake->RunIntake(-1);
     }else{
         bottom = 0.0;
     }
