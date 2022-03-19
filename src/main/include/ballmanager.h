@@ -20,7 +20,8 @@ public:
   bool RevLow();
   bool RevHigh();
   bool RevSide();
-  bool RevLimeLight();
+  bool RevLimeLightClose();
+  bool RevLimeLightFar();
   bool RevLaunchPad();
   void MoveIndex();
   void CheckHopperState();

@@ -492,13 +492,30 @@ void Robot::TeleopPeriodic() {
   }
   if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
     drive->Align();
-    if (ball_manager->RevLimeLight() && limelight->IsAligned()){
-      ball_manager->Shoot();
+    limelight->GetShooterSpeedClose("Top");
+    if(shooter_solenoid->Get() == 2){
+      if(limelight->ShootClose()){
+        shooter->SolenoidDown();
+        if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
+        ball_manager->Shoot();
+        }
+      }else{
+        shooter->SolenoidUp();
+        if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+          ball_manager->Shoot();
+        }
+      }
+    }else{
+      if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+        shooter->SolenoidUp();
+        ball_manager->Shoot();
+      }
     }
+
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
     shooter->SolenoidUp();
     drive->Align();
-    limelight->GetShooterSpeed("Top");
+    limelight->GetShooterSpeedClose("Top");
     if (ball_manager->RevLaunchPad() && limelight->IsAligned()){
       ball_manager->Shoot();
     }

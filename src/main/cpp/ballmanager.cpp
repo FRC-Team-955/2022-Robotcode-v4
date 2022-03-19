@@ -70,8 +70,11 @@ bool BallManager::RevHigh(){
 bool BallManager::RevSide(){
     return Rev(MechanismConst::ktarget_side_top, MechanismConst::ktarget_side_bottom);
 }
-bool BallManager::RevLimeLight(){
-    return Rev(limelight->GetShooterSpeed("Top"), limelight->GetShooterSpeed("Bottom"));
+bool BallManager::RevLimeLightClose(){
+    return Rev(limelight->GetShooterSpeedClose("Top"), limelight->GetShooterSpeedClose("Bottom"));
+}
+bool BallManager::RevLimeLightFar(){
+    return Rev(limelight->GetShooterSpeedFar(), 2300);
 }
 bool BallManager::RevLaunchPad(){
     return Rev(MechanismConst::ktarget_launch_top, MechanismConst::ktarget_launch_bottom);
