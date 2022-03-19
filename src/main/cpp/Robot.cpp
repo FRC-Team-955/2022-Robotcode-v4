@@ -197,7 +197,7 @@ void Robot::AutonomousPeriodic() {
     if(auto_state == 5){
       //shoot ball 1/2
       std::cout<<"5"<<std::endl;
-      if(ball_manager->Rev(1500,1500)){
+      if(ball_manager->RevLimelightFar()){
         ball_manager -> Shoot();
         std::cout<<"shoot"<<std::endl;
       }
@@ -255,7 +255,9 @@ void Robot::AutonomousPeriodic() {
     if(auto_state == 11){
       //shoot ball 1/2
       std::cout<<"9"<<std::endl;
-      if(ball_manager->Rev(1500,1500)){
+      drive->Align();
+      shooter->SolenoiodUp();
+      if(ball_manager->RevLimelightFar()&&limelight->IsAligned()){ 
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
@@ -316,11 +318,10 @@ void Robot::AutonomousPeriodic() {
         hopper->RunHopperMotor(0,0);
         auto_state++;
       }
-    }
-    if(auto_state == 7){
+    }if(auto_state == 7){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
-      trajectory_auto->LoadTrajectory("3BOut2.wpilib.json");
+      trajectory_auto->LoadTrajectory("3BTurn.wpilib.json");
       auto_state++;
     }
     if(auto_state==8){
@@ -333,7 +334,7 @@ void Robot::AutonomousPeriodic() {
     if(auto_state == 9){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
-      trajectory_auto->LoadTrajectory("3BBack2.wpilib.json");
+      trajectory_auto->LoadTrajectory("3BOut2.wpilib.json");
       auto_state++;
     }
     if(auto_state==10){
@@ -343,7 +344,20 @@ void Robot::AutonomousPeriodic() {
         auto_state++;
       }
     }
-    if(auto_state==11){
+    if(auto_state == 11){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("3BBack2.wpilib.json");
+      auto_state++;
+    }
+    if(auto_state==12){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory(false)){
+        auto_state++;
+      }
+    }
+    if(auto_state==13){
       intake->RunIntake(0);
       if(ball_manager->Rev(1500,1500)){
         ball_manager -> Shoot();
@@ -354,7 +368,7 @@ void Robot::AutonomousPeriodic() {
         auto_state++;
       }
     }
-    if(auto_state == 12){
+    if(auto_state == 14){
       if(auto_timer->HasElapsed(0.75_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
