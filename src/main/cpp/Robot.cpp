@@ -474,6 +474,8 @@ void Robot::TeleopInit() {
   m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
 
+  compressor_toggle.SetToggleState(false);
+
   compressor->Disable();
   frc::SmartDashboard::PutBoolean("Compressor", false);
 

@@ -8,6 +8,7 @@ public:
   bool GetToggleNoDebounce(bool button);
   void SetDebouncePeriod(float period);
   bool GetToggle(bool button);
+  void SetToggleState(bool state);
    units::second_t debounce_period = units::second_t(.1);
 private:
   void UpdateToggle(bool button);

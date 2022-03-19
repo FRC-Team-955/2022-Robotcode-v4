@@ -1,5 +1,9 @@
 #include "button_toggle.h"
 
+void ButtonToggle::SetToggleState(bool state){
+  toggle_on = state;
+}
+
 void ButtonToggle::UpdateToggle(bool button) {
   if (button) {
     if (!toggle_pressed) {
