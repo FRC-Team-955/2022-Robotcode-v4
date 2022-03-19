@@ -559,7 +559,7 @@ void Robot::TeleopPeriodic() {
         ball_manager->Reject();
       }else if(joystick_1->GetRawButtonReleased(Joy1Const::kreject_ball_button)){
         //When you release shut off motor
-        intake->PistonUp();
+        intake->StopIntake();
         hopper->RunHopperMotor(0,0);
       }else{
         //if not rejecting
@@ -729,17 +729,17 @@ void Robot::Build(){
   //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
   //rgb
-  rgb_spark = new Spark(1);
+  rgb_spark = new Spark(0);
   //timer
   m_timer_auto = new frc::Timer();
   m_timer_intake = new frc::Timer();
 }
 void Robot::UpdateRGB(){
-  if(limit_switch_top->Get() == 0){
-    rgb_spark->Set(0.69);
-  }
-  else if (elevator_solenoid_lock->Get() == 1){
+  if(limit_switch_top->Get() == 1){
     rgb_spark->Set(0.77);
+  }
+  else if (elevator_solenoid_lock->Get() == 1 || elevator_motor->GetSelectedSensorPosition() > 290000){
+    rgb_spark->Set(0.69);
   } 
   else{
     rgb_spark->Set(-0.99);

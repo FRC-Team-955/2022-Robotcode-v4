@@ -24,6 +24,7 @@ void Elevator::ElevatorMove(double joystick_position) {
       elevator_motor->Set(ControlMode::PercentOutput, 0);
     }else if(joystick_position > 0 && (limit_switch_top->Get() == 1 || elevator_motor->GetSelectedSensorPosition() > 300000 || hit_top_limit)){
       //if trying to move upwards and position is greater than 300,000
+      elevator_motor->SetSelectedSensorPosition(300000)
       elevator_motor->Set(ControlMode::PercentOutput, 0);
     }else{
       //if not at bottom and moving downwards
