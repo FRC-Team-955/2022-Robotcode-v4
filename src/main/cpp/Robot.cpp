@@ -498,6 +498,7 @@ void Robot::TeleopPeriodic() {
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
     shooter->SolenoidUp();
     drive->Align();
+    limelight->GetShooterSpeed("Top");
     if (ball_manager->RevLaunchPad() && limelight->IsAligned()){
       ball_manager->Shoot();
     }

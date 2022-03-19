@@ -67,19 +67,20 @@ constexpr int shooter_bottom_port = 7; //g
 constexpr int kshooter_pnumatic_port_forward = 3;
 constexpr int kshooter_pnumatic_port_reverse = 4;
 //range
-constexpr int ktarget_range = 100; //g?
+constexpr int ktarget_range = 75; //g?
 //low goal
 constexpr int ktarget_low_bottom = 1200; //g
 constexpr int ktarget_low_top = 1300; //g
 //high goal
-constexpr int ktarget_high_bottom = 3200; //g
-constexpr int ktarget_high_top = 1000; //g// constexpr int ktarget_high_bottom = 2300; //g
+constexpr int ktarget_high_top = 2900;
+constexpr int ktarget_high_bottom = 2200; //g
+ //g// constexpr int ktarget_high_bottom = 2300; //g
 // constexpr int ktarget_high_top = 3300; //g
 //Min bottom speed
 constexpr double ktarget_limelight_bottom_min = 1100;
 //launch pad goal
+constexpr int ktarget_launch_top= 3600;//for range shot
 constexpr int ktarget_launch_bottom = 2300; //for range shot
-constexpr int ktarget_launch_top= 3600; //for range shot
 //side goal
 constexpr int ktarget_side_bottom = 2200; //g
 constexpr int ktarget_side_top = 2600; //g

@@ -10,13 +10,13 @@ double Limelight::GetDrivebaseSpeed(double joy_axis) {
       ramp_speed = 0;
       return -controller->Calculate(result.GetBestTarget().GetYaw(), 0) + joy_axis*.1;
     }else{
-      if(ramp_speed < .5){
-        ramp_speed+=.01;
+      if(ramp_speed < .35){
+        ramp_speed+=.1;
       }
       if(result.GetBestTarget().GetYaw()>0){
-        return -ramp_speed;
-      }else{
         return ramp_speed;
+      }else{
+        return -ramp_speed;
       }
     }
     // if(std::abs(result.GetBestTarget().GetYaw()) < 3){
