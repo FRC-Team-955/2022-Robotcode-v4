@@ -154,6 +154,8 @@ void Robot::AutonomousInit() {
   m_rightLeadMotor_encoder->SetPosition(0);
   ganyu_auto_selection = m_auto_Chooser.GetSelected();
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
+  auto_timer->Reset();
+  auto_timer->Start();
 }
 void Robot::AutonomousPeriodic() {
   DisplayShuffle();
@@ -164,7 +166,9 @@ void Robot::AutonomousPeriodic() {
     if(AutoState == 0){
       intake->PistonDown();
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
-      AutoState++;
+      if(auto_timer->HasElapsed(0.5_s)){
+        AutoState++;
+      }
     }
     if(AutoState == 1){
       //to ball
@@ -196,7 +200,8 @@ void Robot::AutonomousPeriodic() {
       }
     }
     if(AutoState == 5){
-      if(ball_manager->RevLow()){
+      shooter->SolenoidUp();
+      if(ball_manager->RevLimeLightFar()){
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
