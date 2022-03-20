@@ -6,6 +6,7 @@
 #include <units/velocity.h>
 #include <units/angle.h>
 #include <units/length.h>
+#include <units/voltage.h>
 
 namespace Joy0Const {
 constexpr int kdrive_speed_axis = 1;
@@ -67,7 +68,7 @@ constexpr int shooter_bottom_port = 7; //g
 constexpr int kshooter_pnumatic_port_forward = 3;
 constexpr int kshooter_pnumatic_port_reverse = 4;
 //range
-constexpr int ktarget_range = 100; //g?
+constexpr int ktarget_range = 200; //g?
 //low goal
 constexpr int ktarget_low_bottom = 1700; //g
 constexpr int ktarget_low_top = 1400; //g
