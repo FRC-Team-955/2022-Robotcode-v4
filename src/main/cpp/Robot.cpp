@@ -184,7 +184,6 @@ void Robot::AutonomousPeriodic() {
   }
 
   if(ganyu_auto_selection == "4BR"){
-    ball_manager->CheckHopperState();
     if(AutoState == 0){
       shooter->SolenoidUp();
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
@@ -261,6 +260,7 @@ void Robot::AutonomousPeriodic() {
     if(AutoState == 9){
       intake->RunIntake(0);
       drive->Align();
+      std::cout<<"top speed: "<<limelight->GetShooterSpeedFar()<<std::endl;
       if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
       }
@@ -270,16 +270,13 @@ void Robot::AutonomousPeriodic() {
         AutoState++;
       }
     }
-    if(AutoState == 12){
-      if(timer_auto->HasElapsed(3_s)){
-        shooter->ShootPercentOutput(0,0);
-        hopper->RunHopperMotor(0,0);
-        AutoState++;
-      }
+    if(timer_auto_wait->GetMatchTime()<1_s){
+      std::cout<<"force shoot"<<std::endl;
+      ball_manager->RevLimeLightFar();
+      ball_manager->Shoot();
     }
   }
   if(ganyu_auto_selection == "3BR"){
-    ball_manager->CheckHopperState();
     if(AutoState == 0){
       shooter->SolenoidUp();
       trajectory_auto->LoadTrajectory("3BOut1.wpilib.json");
@@ -289,27 +286,16 @@ void Robot::AutonomousPeriodic() {
       //to ball
       intake->RunIntake(1);
       ball_manager->LoadHopper();
+      ball_manager->RevLimeLightFar();
       if(trajectory_auto->FollowTrajectory()){
+        offset = limelight->GetOffset();
         AutoState++;
       }
     }
-    if(AutoState == 3){
+    if(AutoState==2){
       intake->RunIntake(1);
-      ball_manager->LoadHopper();
-      trajectory_auto->LoadTrajectory("3BBack1.wpilib.json");
-      AutoState++;
-    }
-    if(AutoState==4){
-      //to shoot
-      intake->RunIntake(1);
-      ball_manager->LoadHopper();
-      if(trajectory_auto->FollowTrajectory()){
-        AutoState++;
-      }
-    }
-    if(AutoState==5){
-      intake->RunIntake(0);
-      if(ball_manager->RevLimeLightFar()){
+      drive ->Align();
+      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
@@ -318,54 +304,45 @@ void Robot::AutonomousPeriodic() {
         AutoState++;
       }
     }
-    if(AutoState == 6){
+    if(AutoState == 3){
       if(timer_auto->HasElapsed(0.75_s)){
+        drive->AlignToOffset(offset);
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         AutoState++;
       }
-    }if(AutoState == 7){
+    }if(AutoState == 4){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("3BTurn.wpilib.json");
       AutoState++;
     }
-    if(AutoState==8){
+    if(AutoState==5){
+      //turn back
       intake->RunIntake(1);
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory()){
         AutoState++;
       }
     }
-    if(AutoState == 9){
+    if(AutoState == 6){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("3BOut2.wpilib.json");
       AutoState++;
     }
-    if(AutoState==10){
+    if(AutoState==7){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory()){
+        offset = limelight->GetOffset();
         AutoState++;
       }
     }
-    if(AutoState == 11){
-      intake->RunIntake(1);
-      ball_manager->LoadHopper();
-      trajectory_auto->LoadTrajectory("3BBack2.wpilib.json");
-      AutoState++;
-    }
-    if(AutoState==12){
-      intake->RunIntake(1);
-      ball_manager->LoadHopper();
-      if(trajectory_auto->FollowTrajectory()){
-        AutoState++;
-      }
-    }
-    if(AutoState==13){
+    if(AutoState==8){
       intake->RunIntake(0);
-      if(ball_manager->RevLimeLightFar()){
+      drive -> Align();
+      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
@@ -374,8 +351,9 @@ void Robot::AutonomousPeriodic() {
         AutoState++;
       }
     }
-    if(AutoState == 14){
+    if(AutoState ==9){
       if(timer_auto->HasElapsed(0.75_s)){
+        drive ->AlignToOffset(offset);
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         AutoState++;
@@ -586,7 +564,6 @@ void Robot::TeleopPeriodic() {
               intake->RunIntake(1);
               m_timer_intake->Start();
               m_timer_intake->Reset();
-              ball_manager->CheckHopperState();
             }else{
               intake->RunIntake(0);
             }
@@ -601,7 +578,6 @@ void Robot::TeleopPeriodic() {
         }else if(!m_timer_intake->HasElapsed(3_s)){
           frc::SmartDashboard::PutBoolean("Manual Hopper", false);
           if (hopper_init){
-            ball_manager->CheckHopperState();
             ball_manager->LoadHopper();
           }
         }else{
