@@ -19,6 +19,7 @@ public:
   };
   void Drive();
   void Align();
+  void AlignToOffset(double offset);
   void DisplayDriveInfo();
 private:
   CANSparkMax *m_leftLeadMotor;

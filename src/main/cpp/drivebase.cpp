@@ -11,6 +11,9 @@ void DriveBase::Drive() {
 void DriveBase::Align() {
   differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeed(joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)));
 }
+void DriveBase::AlignToOffset(double offset) {
+  differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeedToOffset(offset));
+}
 
 void DriveBase::DisplayDriveInfo() {
   frc::SmartDashboard::PutNumber("LeftLeadAmps", m_leftLeadMotor->GetOutputCurrent());

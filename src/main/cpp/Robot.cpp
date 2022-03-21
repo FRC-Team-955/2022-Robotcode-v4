@@ -85,14 +85,16 @@ DigitalInput *ir_break_beam;
 //Compressor
 Compressor *compressor;
 //Timers
-frc::Timer *m_timer_auto;
+frc::Timer *timer_auto_wait;
+frc::Timer *timer_auto;
+
 frc::Timer *m_timer_intake;
 //RGB
 Spark *rgb_spark;
 //auto
 Auto *trajectory_auto;
 int AutoState = 0;
-frc::Timer *auto_timer;
+double offset = 0;
 
 ButtonToggle intake_deploy_toggle;
 ButtonToggle hopper_manual_toggle;
@@ -105,8 +107,11 @@ SparkMaxRelativeEncoder *m_rightLeadMotor_encoder;
 SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 
 frc::SendableChooser<std::string> m_auto_Chooser;
+frc::SendableChooser<std::string> m_auto_wait_Chooser;
 frc::SendableChooser<std::string> m_team_color_Chooser;
 std::string ganyu_auto_selection = "Sleep";
+std::string ganyu_auto_wait = "False";
+
 
 // chris is so cool 
 // bryan ganyu simp
@@ -120,13 +125,16 @@ void Robot::RobotInit() {
   m_auto_Chooser.AddOption("Ganyu 4 Ball Right","4BR");
   m_auto_Chooser.AddOption("Ganyu 3 Ball Right","3BR");
   m_auto_Chooser.AddOption("Ganyu Wall","Wall");
-  m_auto_Chooser.AddOption("Ganyu Side2*","Side2*Ball");
+  // m_auto_Chooser.AddOption("Ganyu Side2*","Side2*Ball");
   m_auto_Chooser.AddOption("Ganyu Side","Side");
-  m_auto_Chooser.AddOption("Ganyu Wait Side","Wait Side");
   m_auto_Chooser.AddOption("Ganyu Taxi","Taxi");
-  m_auto_Chooser.AddOption("Ganyu Wait Taxi","Wait Taxi");
-  m_auto_Chooser.AddOption("Ganyu Sleep","Nothing");
   frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+
+  m_auto_wait_Chooser.SetDefaultOption("False","False");
+  m_auto_wait_Chooser.AddOption("True","True");
+  frc::Shuffleboard::GetTab("Pre").Add("Wait", m_auto_wait_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+
+
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
@@ -152,39 +160,41 @@ void Robot::AutonomousInit() {
   m_rightFollowMotor->Follow(*m_rightLeadMotor);
   m_leftFollowMotor->Follow(*m_leftLeadMotor);
   trajectory_auto->Initilize(m_leftLeadMotor, m_rightLeadMotor, m_leftLeadMotor_encoder, m_rightLeadMotor_encoder);
-  auto_timer = new frc::Timer();
 
-  AutoState = 0;
+  AutoState = -1;
   m_leftLeadMotor_encoder->SetPosition(0);
   m_rightLeadMotor_encoder->SetPosition(0);
   ganyu_auto_selection = m_auto_Chooser.GetSelected();
+  ganyu_auto_wait = m_auto_wait_Chooser.GetSelected();
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
-  auto_timer->Reset();
-  auto_timer->Start();
+
+  timer_auto_wait->Reset();
+  timer_auto_wait->Start();
 }
 void Robot::AutonomousPeriodic() {
   DisplayShuffle();
   ball_manager->CheckHopperState();
-  if(ganyu_auto_selection == "Trap4BR"){
-    ball_manager->CheckHopperState();
+  intake->PistonDown();
 
-
+  if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->GetMatchTime()<5_s){
+    AutoState++;
+  }
+  if(AutoState == -1 && timer_auto_wait->Get()>0.5_s){
+    AutoState++;
   }
 
   if(ganyu_auto_selection == "4BR"){
     ball_manager->CheckHopperState();
     if(AutoState == 0){
       shooter->SolenoidUp();
-      intake->PistonDown();
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
-      if(auto_timer->HasElapsed(0.5_s)){
-        AutoState++;
-      }
+      AutoState++;
     }
     if(AutoState == 1){
       //to ball
       intake->RunIntake(1);
       ball_manager->LoadHopper();
+      ball_manager->RevLimeLightFar();
       if(trajectory_auto->FollowTrajectory()){
         AutoState++;
       }
@@ -192,24 +202,28 @@ void Robot::AutonomousPeriodic() {
     if(AutoState == 2){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
+      ball_manager->RevLimeLightFar();
       if(ball_manager->IsFull()){
         hopper->RunHopperMotor(0,0);
+        offset = limelight->GetOffset();
         AutoState++;
       }
     }
     if(AutoState == 3){
-      if(ball_manager->RevLimeLightFar()){
+      drive->Align();
+      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
         intake->RunIntake(0);      
       }
       if (ball_manager -> IsEmpty()){
-        auto_timer->Reset();
-        auto_timer->Start();
+        timer_auto->Reset();
+        timer_auto->Start();
         AutoState++;
       }
     }
     if(AutoState == 4){
-      if(auto_timer->HasElapsed(2_s)){
+      drive->AlignToOffset(offset);
+      if(timer_auto->HasElapsed(1.5_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         AutoState++;
@@ -231,32 +245,33 @@ void Robot::AutonomousPeriodic() {
     }
     if(AutoState == 7){
       ball_manager->LoadHopper();
-      if(ball_manager->IsFull()){
-        trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
-        intake->RunIntake(0);
-        AutoState++;
-      }
+      trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
+      intake->RunIntake(1);
+      AutoState++;
     }
     if(AutoState == 8){
       //to goal
+      ball_manager->LoadHopper();
+      ball_manager->RevLimeLightFar();
+      intake->RunIntake(1);
       if(trajectory_auto->FollowTrajectory()){
         AutoState++;
       }
     }
     if(AutoState == 9){
+      intake->RunIntake(0);
       drive->Align();
       if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
-        intake->RunIntake(0);      
       }
       if (ball_manager -> IsEmpty()){
-        auto_timer->Reset();
-        auto_timer->Start();
+        timer_auto->Reset();
+        timer_auto->Start();
         AutoState++;
       }
     }
     if(AutoState == 12){
-      if(auto_timer->HasElapsed(3_s)){
+      if(timer_auto->HasElapsed(3_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         AutoState++;
@@ -267,7 +282,6 @@ void Robot::AutonomousPeriodic() {
     ball_manager->CheckHopperState();
     if(AutoState == 0){
       shooter->SolenoidUp();
-      intake->PistonDown();
       trajectory_auto->LoadTrajectory("3BOut1.wpilib.json");
       AutoState++;
     }
@@ -299,13 +313,13 @@ void Robot::AutonomousPeriodic() {
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
-        auto_timer->Reset();
-        auto_timer->Start();
+        timer_auto->Reset();
+        timer_auto->Start();
         AutoState++;
       }
     }
     if(AutoState == 6){
-      if(auto_timer->HasElapsed(0.75_s)){
+      if(timer_auto->HasElapsed(0.75_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         AutoState++;
@@ -355,28 +369,19 @@ void Robot::AutonomousPeriodic() {
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
-        auto_timer->Reset();
-        auto_timer->Start();
+        timer_auto->Reset();
+        timer_auto->Start();
         AutoState++;
       }
     }
     if(AutoState == 14){
-      if(auto_timer->HasElapsed(0.75_s)){
+      if(timer_auto->HasElapsed(0.75_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         AutoState++;
       }
     }
   }
-
-  //rip DRY code :(
-  // if ((ganyu_auto_selection.find("Wait")!= std::string::npos) && m_timer_auto->GetMatchTime()<5_s){
-  //   std::cout<<"hi"<<std::endl;
-  //   // AutoState++;
-  // }else{
-  //   std::cout<<"not yet"<<std::endl;
-  // }
-
   if(ganyu_auto_selection == "Wall"){
     if ((AutoState == 0) && ball_manager->RevHigh()){
       ball_manager -> Shoot();
@@ -395,29 +400,6 @@ void Robot::AutonomousPeriodic() {
       m_leftLeadMotor->Set(0);
       AutoState++;
     }
-  }else if(ganyu_auto_selection == "Wait Side"){
-    if (m_timer_auto->GetMatchTime()<5_s && AutoState == 0){
-      AutoState++;
-    }
-    if ((AutoState == 1)){
-      if(ball_manager->RevSide()){
-        ball_manager -> Shoot();
-      }
-    }
-    if (ball_manager -> IsEmpty() && AutoState == 1){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 2){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10 && AutoState == 2){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      AutoState++;
-    } 
   }else if(ganyu_auto_selection == "Side"){
     if ((AutoState == 0) && ball_manager->RevSide()){
       ball_manager -> Shoot();
@@ -438,7 +420,6 @@ void Robot::AutonomousPeriodic() {
     } 
   }else if(ganyu_auto_selection == "Wall2Ball"){
     ball_manager->LoadHopper();
-    intake->PistonDown();
     if ((AutoState == 0) && ball_manager->RevHigh()){
       ball_manager -> Shoot();
     }
@@ -477,68 +458,11 @@ void Robot::AutonomousPeriodic() {
     if(AutoState == 5 && ball_manager->RevHigh()){
       ball_manager -> Shoot();
     }
-    if (m_timer_auto->GetMatchTime()<5_s){     
+    if (timer_auto->GetMatchTime()<5_s){     
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
     }
-  }else if(ganyu_auto_selection == "Side2*Ball"){
-    ball_manager->LoadHopper();
-    intake->PistonDown();
-    if ((AutoState == 0) && ball_manager->RevSide()){
-      ball_manager -> Shoot();
-    }
-    if (AutoState == 0 && ball_manager -> IsEmpty()){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 1){
-      m_rightLeadMotor->Set(0.2);
-      m_leftLeadMotor->Set(0.2);
-    } 
-    if (AutoState == 1 && m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      intake->RunIntake(1);
-      AutoState++;
-    }
-    if(AutoState == 2 && !ball_manager -> IsEmpty()){
-      intake->RunIntake(0);
-      AutoState++;
-    } 
-    if (AutoState == 3){     
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-    }
-    // if (AutoState == 3){
-    //   m_rightLeadMotor->Set(-0.3);
-    //   m_leftLeadMotor->Set(-0.3);
-    // } 
-    // if (m_rightLeadMotor_encoder->GetPosition() <= 1 && m_leftLeadMotor_encoder->GetPosition() <= 1 && AutoState == 3){
-    //   m_rightLeadMotor->Set(0);
-    //   m_leftLeadMotor->Set(0);
-    //   AutoState++;
-    // }
-    // // if (m_rightLeadMotor_encoder->GetPosition() <= -2 && AutoState == 3){
-    // //   m_rightLeadMotor->Set(0);
-    // // }  
-    // // if (m_leftLeadMotor_encoder->GetPosition() <= -5 && AutoState == 3){
-    // //   m_leftLeadMotor->Set(0);
-    // //   AutoState++;
-    // // }  
-    // if (AutoState == 4){
-    //   intake->StopIntake();
-    //   AutoState++;
-    // }
-    // if(AutoState == 5 && ball_manager->Rev(MechanismConst:: kside_target_top,MechanismConst:: kside_target_bottom)){
-    //   ball_manager -> Shoot();
-    // }
-    if (m_timer_auto->GetMatchTime()<5_s){     
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-    }
-  }
-  if(ganyu_auto_selection == "Taxi"){
+  }if(ganyu_auto_selection == "Taxi"){
     if ( AutoState == 0){
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
@@ -549,25 +473,6 @@ void Robot::AutonomousPeriodic() {
       m_leftLeadMotor->Set(0.3);
     } 
     if (AutoState == 1 && m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10){
-      m_rightLeadMotor->Set(0);
-      m_leftLeadMotor->Set(0);
-      AutoState++;
-    } 
-  }
-  if(ganyu_auto_selection == "Wait Taxi"){
-    if (AutoState == 0 && m_timer_auto->GetMatchTime()<5_s){
-      AutoState++;
-    }
-    if (AutoState == 1){
-      shooter->ShootPercentOutput(0,0);
-      hopper->RunHopperMotor(0,0);
-      AutoState++;
-    } 
-    if (AutoState == 2){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
-    } 
-    if (AutoState == 2 && m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10){
       m_rightLeadMotor->Set(0);
       m_leftLeadMotor->Set(0);
       AutoState++;
@@ -841,7 +746,8 @@ void Robot::Build(){
   //rgb
   rgb_spark = new Spark(0);
   //timer
-  m_timer_auto = new frc::Timer();
+  timer_auto_wait = new frc::Timer();
+  timer_auto = new frc::Timer();
   m_timer_intake = new frc::Timer();
 }
 void Robot::UpdateRGB(){

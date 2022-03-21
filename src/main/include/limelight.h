@@ -28,9 +28,12 @@ public:
       delete controller;
   }
   double GetDrivebaseSpeed(double joy_axis);
+  double GetDrivebaseSpeedToOffset(double offset);
   double GetShooterSpeedClose(std::string shooter_position);
   double GetShooterSpeedFar();
   bool IsAligned();
+  bool IsAligned(double offset);
+  double GetOffset();
   bool ShootClose();
 
 private:
