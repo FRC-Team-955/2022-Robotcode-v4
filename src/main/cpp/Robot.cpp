@@ -18,6 +18,7 @@
 #include <wpi/fs.h>
 #include <AHRS.h>
 
+
 //our classes
 #include "auto.h"
 #include "navx.h"
@@ -117,7 +118,7 @@ std::string ganyu_auto_selection = "Sleep";
 void Robot::RobotInit() {
   m_auto_Chooser.SetDefaultOption("Ganyu Wall2","Wall2Ball");
   m_auto_Chooser.AddOption("Ganyu 4 Ball Right","4BR");
-  m_auto_Chooser.AddOption("Ganyu 3 Ball Right","3BL");
+  m_auto_Chooser.AddOption("Ganyu 3 Ball Right","3BR");
   m_auto_Chooser.AddOption("Ganyu Wall","Wall");
   m_auto_Chooser.AddOption("Ganyu Side2*","Side2*Ball");
   m_auto_Chooser.AddOption("Ganyu Side","Side");
@@ -135,6 +136,10 @@ void Robot::RobotInit() {
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
 
   trajectory_auto = new Auto();
+  frc::TrapezoidProfile<units::meters> profile{
+  frc::TrapezoidProfile<units::meters>::Constraints{5_mps, 2_mps_sq},
+  frc::TrapezoidProfile<units::meters>::State{5_m, 0_mps},
+  frc::TrapezoidProfile<units::meters>::State{0_m, 0_mps}};
 }
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
@@ -154,17 +159,27 @@ void Robot::AutonomousInit() {
   m_rightLeadMotor_encoder->SetPosition(0);
   ganyu_auto_selection = m_auto_Chooser.GetSelected();
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
+  auto_timer->Reset();
+  auto_timer->Start();
 }
 void Robot::AutonomousPeriodic() {
   DisplayShuffle();
   ball_manager->CheckHopperState();
+  if(ganyu_auto_selection == "Trap4BR"){
+    ball_manager->CheckHopperState();
+
+
+  }
 
   if(ganyu_auto_selection == "4BR"){
     ball_manager->CheckHopperState();
     if(AutoState == 0){
+      shooter->SolenoidUp();
       intake->PistonDown();
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
-      AutoState++;
+      if(auto_timer->HasElapsed(0.5_s)){
+        AutoState++;
+      }
     }
     if(AutoState == 1){
       //to ball
@@ -177,26 +192,110 @@ void Robot::AutonomousPeriodic() {
     if(AutoState == 2){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
-      if(!ball_manager->IsEmpty()){
+      if(ball_manager->IsFull()){
+        hopper->RunHopperMotor(0,0);
+        AutoState++;
+      }
+    }
+    if(AutoState == 3){
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+        intake->RunIntake(0);      
+      }
+      if (ball_manager -> IsEmpty()){
+        auto_timer->Reset();
+        auto_timer->Start();
+        AutoState++;
+      }
+    }
+    if(AutoState == 4){
+      if(auto_timer->HasElapsed(2_s)){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        AutoState++;
+      }
+    }
+    if(AutoState == 5){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("Out4-2.wpilib.json");
+      AutoState++;
+    }
+    if(AutoState == 6){
+      //to terminal
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        AutoState++;
+      }
+    }
+    if(AutoState == 7){
+      ball_manager->LoadHopper();
+      if(ball_manager->IsFull()){
+        trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
+        intake->RunIntake(0);
+        AutoState++;
+      }
+    }
+    if(AutoState == 8){
+      //to goal
+      if(trajectory_auto->FollowTrajectory()){
+        AutoState++;
+      }
+    }
+    if(AutoState == 9){
+      drive->Align();
+      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+        ball_manager -> Shoot();
+        intake->RunIntake(0);      
+      }
+      if (ball_manager -> IsEmpty()){
+        auto_timer->Reset();
+        auto_timer->Start();
+        AutoState++;
+      }
+    }
+    if(AutoState == 12){
+      if(auto_timer->HasElapsed(3_s)){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        AutoState++;
+      }
+    }
+  }
+  if(ganyu_auto_selection == "3BR"){
+    ball_manager->CheckHopperState();
+    if(AutoState == 0){
+      shooter->SolenoidUp();
+      intake->PistonDown();
+      trajectory_auto->LoadTrajectory("3BOut1.wpilib.json");
+      AutoState++;
+    }
+    if(AutoState==1){
+      //to ball
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
         AutoState++;
       }
     }
     if(AutoState == 3){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
-      trajectory_auto->LoadTrajectory("Back4-1.wpilib.json");
+      trajectory_auto->LoadTrajectory("3BBack1.wpilib.json");
       AutoState++;
     }
-    if(AutoState == 4){
+    if(AutoState==4){
       //to shoot
+      intake->RunIntake(1);
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory()){
-      intake->RunIntake(0);
         AutoState++;
       }
     }
-    if(AutoState == 5){
-      if(ball_manager->RevLow()){
+    if(AutoState==5){
+      intake->RunIntake(0);
+      if(ball_manager->RevLimeLightFar()){
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
@@ -206,52 +305,63 @@ void Robot::AutonomousPeriodic() {
       }
     }
     if(AutoState == 6){
-      if(auto_timer->HasElapsed(1_s)){
+      if(auto_timer->HasElapsed(0.75_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         AutoState++;
       }
-    }
-    if(AutoState == 7){
+    }if(AutoState == 7){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
-      trajectory_auto->LoadTrajectory("Out4-2.wpilib.json");
+      trajectory_auto->LoadTrajectory("3BTurn.wpilib.json");
       AutoState++;
     }
-    if(AutoState == 8){
-      //to terminal
+    if(AutoState==8){
       intake->RunIntake(1);
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory()){
         AutoState++;
       }
     }
-    if(AutoState ==11){
+    if(AutoState == 9){
+      intake->RunIntake(1);
       ball_manager->LoadHopper();
-      if(ball_manager->IsFull()){
-        trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
-        intake->RunIntake(0);
-        AutoState++;
-      }
+      trajectory_auto->LoadTrajectory("3BOut2.wpilib.json");
+      AutoState++;
     }
-    if(AutoState == 10){
-      //to goal
+    if(AutoState==10){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory()){
         AutoState++;
       }
     }
     if(AutoState == 11){
-      if(ball_manager->RevLow()){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("3BBack2.wpilib.json");
+      AutoState++;
+    }
+    if(AutoState==12){
+      intake->RunIntake(1);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        AutoState++;
+      }
+    }
+    if(AutoState==13){
+      intake->RunIntake(0);
+      if(ball_manager->RevLimeLightFar()){
         ball_manager -> Shoot();
       }
       if (ball_manager -> IsEmpty()){
         auto_timer->Reset();
         auto_timer->Start();
         AutoState++;
-      } 
+      }
     }
-    if(AutoState == 12){
-      if(auto_timer->HasElapsed(0.25_s)){
+    if(AutoState == 14){
+      if(auto_timer->HasElapsed(0.75_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         AutoState++;
@@ -559,7 +669,7 @@ void Robot::TeleopPeriodic() {
         ball_manager->Reject();
       }else if(joystick_1->GetRawButtonReleased(Joy1Const::kreject_ball_button)){
         //When you release shut off motor
-        intake->PistonUp();
+        intake->StopIntake();
         hopper->RunHopperMotor(0,0);
       }else{
         //if not rejecting
@@ -729,17 +839,20 @@ void Robot::Build(){
   //compressor
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
   //rgb
-  rgb_spark = new Spark(1);
+  rgb_spark = new Spark(0);
   //timer
   m_timer_auto = new frc::Timer();
   m_timer_intake = new frc::Timer();
 }
 void Robot::UpdateRGB(){
-  if(limit_switch_top->Get() == 0){
-    rgb_spark->Set(0.69);
+  if(compressor_toggle.GetToggleState()){
+    rgb_spark->Set(0.93);
   }
-  else if (elevator_solenoid_lock->Get() == 1){
+  else if(limit_switch_top->Get() == 1){
     rgb_spark->Set(0.77);
+  }
+  else if (elevator_solenoid_lock->Get() == 1 || elevator_motor->GetSelectedSensorPosition() > 290000){
+    rgb_spark->Set(0.69);
   } 
   else{
     rgb_spark->Set(-0.99);

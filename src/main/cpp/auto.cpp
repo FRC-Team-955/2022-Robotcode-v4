@@ -26,6 +26,9 @@ void Auto::Initilize(rev::CANSparkMax *left_spark, rev::CANSparkMax *right_spark
   drive_pid_right->SetI(0);
   drive_pid_right->SetD(0);
   drive_pid_right->SetFF(0.00025594);
+
+  // feed_forward = new frc::SimpleMotorFeedforward<units::meters>(1_V, 1.5_V * 1_s / 1_m, 1.5_V * 1_s * 1_s / 1_m);
+  // constraints = new frc::TrapezoidProfile<units::meters>::Constraints(10_mps, 5_mps_sq);
 }
 
 /**
@@ -99,15 +102,29 @@ void Auto::ResetEncoder(){
   drive_encoder_left->SetPosition(0);
   drive_encoder_right->SetPosition(0);
 }
+void Auto::LoadState(double distance){
+  //  auto_timer->Reset();
+  // auto_timer->Start();
+  // state = new frc::TrapezoidProfile<units::meters>::State{units::unit_t<units::length::meter>(distance), 0_mps};
+  // profile = new frc::TrapezoidProfile<units::meters>{*constraints, *state, frc::TrapezoidProfile<units::meters>::State{0_m, 0_mps}};
+}
+bool Auto::TrapMove(){
+  // frc::TrapezoidProfile<units::meters>::State setpoint = profile->Calculate(auto_timer->Get());
 
-bool Auto::Move(double pose){
-  if(drive_encoder_left->GetPosition()>pose){
-    m_leftLeadMotor->Set(0);
-    m_rightLeadMotor->Set(0);
-    return true;
-  }else{
-    m_leftLeadMotor->Set(.1);
-    m_rightLeadMotor->Set(.1);
-  }
-  return false;
+  // units::volt_t kF = feed_forward->Calculate(setpoint.velocity)/12_V;
+  // drive_pid_left->SetReference(ConvertToRPM(setpoint.velocity), rev::ControlType::kVelocity,0, kF);
+  // drive_pid_right->SetReference(ConvertToRPM(setpoint.velocity), rev::ControlType::kVelocity,0, kF);
+  // if (setpoint.velocity == 0_mps){
+  //   return true;
+  // }
+  // return false;
+  // if(drive_encoder_left->GetPosition()>distance){
+  //   m_leftLeadMotor->Set(0);
+  //   m_rightLeadMotor->Set(0);
+  //   return true;
+  // }else{
+  //   m_leftLeadMotor->Set(.1);
+  //   m_rightLeadMotor->Set(.1);
+  // }
+  // return false;
 }

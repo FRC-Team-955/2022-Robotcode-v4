@@ -3,6 +3,9 @@
 void ButtonToggle::SetToggleState(bool state){
   toggle_on = state;
 }
+bool ButtonToggle::GetToggleState(){
+  return toggle_on;
+}
 
 void ButtonToggle::UpdateToggle(bool button) {
   if (button) {
