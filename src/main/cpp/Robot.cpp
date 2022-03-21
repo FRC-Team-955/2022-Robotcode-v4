@@ -338,8 +338,8 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     } 
     if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
+      m_rightLeadMotor->Set(0.2);
+      m_leftLeadMotor->Set(0.2);
     } 
     if (AutoState == 1 && m_rightLeadMotor_encoder->GetPosition() >= 23 && m_leftLeadMotor_encoder->GetPosition() >= 23){
       m_rightLeadMotor->Set(0);
@@ -383,8 +383,8 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     } 
     if (AutoState == 1){
-      m_rightLeadMotor->Set(0.3);
-      m_leftLeadMotor->Set(0.3);
+      m_rightLeadMotor->Set(0.2);
+      m_leftLeadMotor->Set(0.2);
     } 
     if (AutoState == 1 && m_rightLeadMotor_encoder->GetPosition() >= 10 && m_leftLeadMotor_encoder->GetPosition() >= 10){
       m_rightLeadMotor->Set(0);
