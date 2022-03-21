@@ -2,11 +2,13 @@
 #include <iostream>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-#include <units/acceleration.h>
-#include <units/velocity.h>
-#include <units/angle.h>
-#include <units/length.h>
-#include <units/voltage.h>
+#include <units/units.h>
+
+// #include <units/acceleration.h>
+// #include <units/velocity.h>
+// #include <units/angle.h>
+// #include <units/length.h>
+// #include <units/voltage.h>
 
 namespace Joy0Const {
 constexpr int kdrive_speed_axis = 1;
@@ -60,15 +62,15 @@ constexpr int kintake_double_solonoid_port_reverse = 2;
 constexpr int khopper_motor_top_port = 9; //g
 constexpr int khopper_motor_bottom_port = 11; //g
 //shooter
-constexpr double top_kP = 0.00008, top_kI = 0, top_kD = 0.015035, top_kFF = 0.000186, top_kMinOutput=0,top_kMaxOutput = 1;
-constexpr double bottom_kP = 0.00009, bottom_kI = 0, bottom_kD = 0.015035, bottom_kFF = 0.000185, bottom_kMinOutput=-1, bottom_kMaxOutput = 0;
+constexpr double top_kP = 0.00008, top_kI = 0, top_kD = 0, top_kFF =0.000187, top_kMinOutput=0,top_kMaxOutput = 1;
+constexpr double bottom_kP = 0.00008, bottom_kI = 0, bottom_kD = 0, bottom_kFF = 0.000187, bottom_kMinOutput=-1, bottom_kMaxOutput = 0;
 constexpr double kMinOutput = -1, kMaxOutput = 1;
 constexpr int shooter_top_port = 8; //g
 constexpr int shooter_bottom_port = 7; //g
 constexpr int kshooter_pnumatic_port_forward = 3;
 constexpr int kshooter_pnumatic_port_reverse = 4;
 //range
-constexpr int ktarget_range = 200; //g?
+constexpr int ktarget_range = 100; //g?
 //low goal
 constexpr int ktarget_low_bottom = 1700; //g
 constexpr int ktarget_low_top = 1400; //g
@@ -105,4 +107,8 @@ namespace AutoConst {
     constexpr double shooter_b_top = 2027;
     constexpr double shooter_m_bottom = -16.1;
     constexpr double shooter_b_bottom = 1977;
+
+    constexpr units::volt_t kS = 0.10023_V;
+  constexpr auto kV = 1.2794_V/ 1_mps;
+  constexpr auto kA = 1.2494_V/1_mps_sq;
 }

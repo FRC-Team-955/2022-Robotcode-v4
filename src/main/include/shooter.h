@@ -3,6 +3,8 @@
 
 #include "rev/CANSparkMax.h"
 #include <frc/DoubleSolenoid.h>
+#include <frc/controller/SimpleMotorFeedforward.h>
+#include <frc/DriverStation.h>
 
 #include "settings.h"
 
@@ -32,6 +34,11 @@ public:
     m_pidController_bottom->SetD(MechanismConst::bottom_kD);
     m_pidController_bottom->SetFF(MechanismConst::bottom_kFF);
     m_pidController_bottom->SetOutputRange(MechanismConst::bottom_kMinOutput,MechanismConst::bottom_kMaxOutput);
+    
+
+    // bottom_ff = new frc::SimpleMotorFeedforward<units::revolutions_per_minute_t>(AutoConst::kS,AutoConst::kV, AutoConst::kA);
+    //1_V, 1.5_V * 1_s / 1_m, 1.5_V * 1_s * 1_s / 1_m
+
   };
   ~Shooter() {
     delete m_pidController_top;
@@ -60,6 +67,7 @@ private:
 
   rev::SparkMaxRelativeEncoder *shooterneo_top_encoder;
   rev::SparkMaxRelativeEncoder *shooterneo_bottom_encoder;
+  // frc::SimpleMotorFeedforward<units::revolutions_per_minute_t> *bottom_ff;
 };
 
 #endif

@@ -80,7 +80,7 @@ bool BallManager::RevLaunchPad(){
     return Rev(MechanismConst::ktarget_launch_top, MechanismConst::ktarget_launch_bottom);
 }
 void BallManager::Shoot(){
-    hopper->RunHopperMotor(0.5, 0.5);
+    hopper->RunHopperMotor(0.3, 0.3);
 }
 void BallManager::Reject(){
     double top = 0.0;
