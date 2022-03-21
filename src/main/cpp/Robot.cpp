@@ -179,7 +179,7 @@ void Robot::AutonomousPeriodic() {
   intake->PistonDown();
   std::cout<<AutoState<<std::endl;
  
-  if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->GetMatchTime()<5_s){
+  if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->Get()>5_s){
     AutoState++;
   }
   if(AutoState == -1 && timer_auto_wait->Get()>0.5_s){
