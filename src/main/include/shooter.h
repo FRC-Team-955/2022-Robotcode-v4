@@ -3,7 +3,7 @@
 
 #include "rev/CANSparkMax.h"
 #include <frc/DoubleSolenoid.h>
-// #include <frc/controller/SimpleMotorFeedforward.h>
+#include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/DriverStation.h>
 #include <frc/Timer.h>
 

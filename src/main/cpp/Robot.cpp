@@ -582,6 +582,7 @@ void Robot::TeleopPeriodic() {
     frc::SmartDashboard::PutBoolean("Compressor", false);
   }
   if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
+    hopper->InitShoot();
     drive->Align();
     limelight->GetShooterSpeedClose("Top");
     if(shooter_solenoid->Get() == 2){
@@ -604,6 +605,7 @@ void Robot::TeleopPeriodic() {
     }
  
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
+    hopper->InitShoot();
     shooter->SolenoidUp();
     drive->Align();
     limelight->GetShooterSpeedClose("Top");
@@ -620,6 +622,7 @@ void Robot::TeleopPeriodic() {
       low_goal_mode = false;
     }
     if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
+      hopper->InitShoot();
       //shooting
       if(low_goal_mode){
         //low goal
@@ -668,8 +671,10 @@ void Robot::TeleopPeriodic() {
         if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
           hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
           frc::SmartDashboard::PutBoolean("Manual Hopper", true);
+          hopper->hopper_on = true;
         }else if(!m_timer_intake->HasElapsed(3_s)){
           frc::SmartDashboard::PutBoolean("Manual Hopper", false);
+          hopper->hopper_on = true;
           if (hopper_init){
             ball_manager->LoadHopper();
           }
