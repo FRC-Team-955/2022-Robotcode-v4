@@ -2,8 +2,13 @@
 #include <iostream>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-#include <units/units.h>
-
+// #include <units/units.h>
+#include <units/angle.h>
+#include <units/acceleration.h>
+#include <units/velocity.h>
+#include <units/voltage.h>
+#include <units/velocity.h>
+#include <units/voltage.h>
 // #include <units/acceleration.h>
 // #include <units/velocity.h>
 // #include <units/angle.h>
@@ -109,7 +114,7 @@ namespace AutoConst {
     constexpr double shooter_m_bottom = -16.1;
     constexpr double shooter_b_bottom = 1977;
 
-    constexpr units::volt_t kS = 0.10023_V;
-  constexpr auto kV = 1.2794_V/ 1_mps;
-  constexpr auto kA = 1.2494_V/1_mps_sq;
+    constexpr auto kS = 0.10023_V;
+    constexpr auto kV = 1.2794_V * 1_s/1_rad;
+    constexpr auto kA = 1.2494_V*1_s*1_s/1_rad;
 }
