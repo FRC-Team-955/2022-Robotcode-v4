@@ -87,7 +87,6 @@ Compressor *compressor;
 //Timers
 frc::Timer *timer_auto_wait;
 frc::Timer *timer_auto;
- 
 frc::Timer *m_timer_intake;
 //RGB
 Spark *rgb_spark;
@@ -824,10 +823,10 @@ void Robot::UpdateRGB(){
   if(compressor_toggle.GetToggleState()){
     rgb_spark->Set(0.93);
   }
-  else if(limit_switch_top->Get() == 1){
+  else if(limit_switch_top->Get() == 1 || elevator_motor->GetSelectedSensorPosition() > 290000){
     rgb_spark->Set(0.77);
   }
-  else if (elevator_solenoid_lock->Get() == 1 || elevator_motor->GetSelectedSensorPosition() > 290000){
+  else if (elevator_solenoid_lock->Get() == 1){
     rgb_spark->Set(0.69);
   }
   else{
