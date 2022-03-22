@@ -4,6 +4,16 @@ void Shooter::ShootPercentOutput(double top_percent, double bottom_percent) {
   shooterneo_top->Set(top_percent);
   shooterneo_bottom->Set(-bottom_percent);
 }
+
+void Shooter::ShootVoltage(units::volt_t top_voltage, units::volt_t bottom_voltage) {
+  shooterneo_top->SetVoltage(top_voltage);
+  shooterneo_bottom->SetVoltage(-bottom_voltage);
+}
+
+double Shooter::GetTargetVelocityFromVoltage(units::volt_t volts){
+  return double(volts*500);
+}
+
 void Shooter::VelocityControl(double top_velocity, double bottom_velocity) {
   // m_pidController_top->SetReference(top_velocity, rev::ControlType::kVelocity);
   // m_pidController_bottom->SetReference(-bottom_velocity, rev::ControlType::kVelocity);
