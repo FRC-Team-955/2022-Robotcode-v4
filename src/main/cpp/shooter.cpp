@@ -20,9 +20,10 @@ void Shooter::VelocityControl(double top_velocity, double bottom_velocity) {
   
   double top_arbFF = double(top_ff->Calculate(units::radians_per_second_t(top_velocity/60)))/frc::DriverStation::GetBatteryVoltage();
   double bottom_arbFF = double(bottom_ff->Calculate(units::radians_per_second_t(-bottom_velocity/60)))/frc::DriverStation::GetBatteryVoltage();
-  // double bottom_arbFF = double(bottom_ff->Calculate(units::radians_per_second_t(shooterneo_bottom_encoder->GetVelocity()/60),units::radians_per_second_t(bottom_velocity/60),timer_shooter->Get()))/frc::DriverStation::GetBatteryVoltage();
+  // double bottom_arbFF = double(bottom_ff->Calculate(units::radians_per_second_t(shooterneo_bottom_encoder->GetVelocity()/60),units::radians_per_second_t(bottom_velocity/60),timer_shooter->Get()-last_time))/frc::DriverStation::GetBatteryVoltage();
   m_pidController_top->SetReference(top_velocity, rev::ControlType::kVelocity,0,top_arbFF);
   m_pidController_bottom->SetReference(-bottom_velocity, rev::ControlType::kVelocity,0,bottom_arbFF);
+  //last_time = timer_shooter->Get();
 }
 float Shooter::VelocityOutput(std::string shooter_motor){
   if (shooter_motor == "Top"){

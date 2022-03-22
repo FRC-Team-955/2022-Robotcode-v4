@@ -79,6 +79,7 @@ private:
   frc::SimpleMotorFeedforward<units::radians> *bottom_ff;
   frc::SimpleMotorFeedforward<units::radians> *top_ff;
   // frc::Timer *timer_shooter;
+  // double last_time = 0;
 };
 
 #endif
