@@ -82,8 +82,8 @@ constexpr int ktarget_high_bottom = 3200; //g
 //Min bottom speed
 constexpr double ktarget_limelight_bottom_min = 1100;
 //launch pad goal
-constexpr int ktarget_launch_top= 3600;//for range shot
-constexpr int ktarget_launch_bottom = 2300; //for range shot
+constexpr int ktarget_launch_top= 3500;//for range shot
+constexpr int ktarget_launch_bottom = 2200; //for range shot
 //side goal
 constexpr int ktarget_side_bottom = 2200; //g
 constexpr int ktarget_side_top = 2600; //g
