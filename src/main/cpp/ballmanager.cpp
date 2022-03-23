@@ -32,7 +32,8 @@ void BallManager::MoveIndex(){
 
 void BallManager::LoadHopper(){
     if(position[1]=="None"){
-        hopper->RunHopperMotor(.31, 0.5);
+        //.31, 0.5
+        hopper->RunHopperMotor(.31, 0.7);
     }
     else if(position[1]!="None" && position[0] == "None"){
         hopper->RunHopperMotor(0, 0.5);
@@ -50,14 +51,21 @@ bool BallManager::IsFull(){
 }
 
 bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom){  
-    shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
+    // shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
     if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_range && 
         std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::ktarget_range &&
         std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::ktarget_range &&
         std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::ktarget_range){
+        shooter->ShootVoltage(target_velocity_top, target_velocity_bottom);
         return true;
-    }
-    else{
+    }else if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_switch_control_mode && 
+        std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::ktarget_switch_control_mode &&
+        std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::ktarget_switch_control_mode &&
+        std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::ktarget_switch_control_mode){
+        shooter->ShootVoltage(target_velocity_top, target_velocity_bottom);
+        return false;
+    }else{
+        shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
         return false;
     }
 }
@@ -80,7 +88,11 @@ bool BallManager::RevLaunchPad(){
     return Rev(MechanismConst::ktarget_launch_top, MechanismConst::ktarget_launch_bottom);
 }
 void BallManager::Shoot(){
-    hopper->RunHopperMotor(0.25, 0.25);
+    if (position[1] == "None"){
+        hopper->RunHopperMotor(0.25, 0.7);
+    }else{
+        hopper->RunHopperMotor(0.25, 0.25);
+    }
 }
 void BallManager::Reject(){
     double top = 0.0;

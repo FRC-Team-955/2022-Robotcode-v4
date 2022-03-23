@@ -76,6 +76,7 @@ constexpr int kshooter_pnumatic_port_forward = 3;
 constexpr int kshooter_pnumatic_port_reverse = 4;
 //range
 constexpr int ktarget_range = 100; //g?
+constexpr int ktarget_switch_control_mode = 250; //g?
 //low goal
 constexpr int ktarget_low_bottom = 1700; //g
 constexpr int ktarget_low_top = 1400; //g

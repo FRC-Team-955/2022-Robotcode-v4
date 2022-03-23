@@ -1,14 +1,14 @@
 #include "drivebase.h"
 
 void DriveBase::Drive() {
-  if (std::abs(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis))<0.02){
-    std::cout<<"quick"<<std::endl;
-    differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis),true);
-  }else{
-    std::cout<<"curve"<<std::endl;
-    differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis),false);
-  }
-  // differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis));
+  // if (std::abs(joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis))<0.02){
+  //   std::cout<<"quick"<<std::endl;
+  //   differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis),true);
+  // }else{
+  //   std::cout<<"curve"<<std::endl;
+  //   differential_drive->CurvatureDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis),false);
+  // }
+  differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis));
 }
 void DriveBase::Align() {
   differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeed());

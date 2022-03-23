@@ -59,8 +59,8 @@ public:
   //Checks what the velocity of in inputed shooter motor ("Top", "Bottom")
   float VelocityOutput(std::string shooter_motor);
 
-  void ShootVoltage(units::volt_t top_voltage, units::volt_t bottom_voltage);
-  double GetTargetVelocityFromVoltage(units::volt_t volts);
+  void ShootVoltage(double top_velocity, double bottom_velocity);
+  double GetTargetVoltFromVelocity(double velocity);
 
   void SolenoidUp();
   void SolenoidDown();
