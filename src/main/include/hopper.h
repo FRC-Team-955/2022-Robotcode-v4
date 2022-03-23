@@ -16,6 +16,8 @@ public:
   }
   void RunHopperMotor(float hopper_motor_percent_top, float hopper_motor_percent_bottom);
   void DiplayHopperInfo();
+  void InitShoot();
+  bool hopper_on = false;
 private:
   TalonSRX *talon_hopper_top;
   TalonSRX *talon_hopper_bottom;

@@ -27,7 +27,7 @@ public:
       delete camera;
       delete controller;
   }
-  double GetDrivebaseSpeed(double joy_axis);
+  double GetDrivebaseSpeed();
   double GetDrivebaseSpeedToOffset(double offset);
   double GetShooterSpeedClose(std::string shooter_position);
   double GetShooterSpeedFar();

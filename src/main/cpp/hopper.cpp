@@ -8,3 +8,10 @@ void Hopper::DiplayHopperInfo(){
   frc::SmartDashboard::PutNumber("Hopper Bottom Amp", talon_hopper_bottom->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("Hopper Top Amp", talon_hopper_top->GetOutputCurrent());
 }
+
+void Hopper::InitShoot (){
+  if(hopper_on){
+      RunHopperMotor(0,0);
+      hopper_on = false;
+    }
+}

@@ -5,6 +5,7 @@
 #include <frc/DoubleSolenoid.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/DriverStation.h>
+#include <frc/Timer.h>
 
 #include "settings.h"
 
@@ -36,15 +37,20 @@ public:
     m_pidController_bottom->SetOutputRange(MechanismConst::bottom_kMinOutput,MechanismConst::bottom_kMaxOutput);
     
 
-    // bottom_ff = new frc::SimpleMotorFeedforward<units::revolutions_per_minute_t>(AutoConst::kS,AutoConst::kV, AutoConst::kA);
-    //1_V, 1.5_V * 1_s / 1_m, 1.5_V * 1_s * 1_s / 1_m
+    bottom_ff = new frc::SimpleMotorFeedforward<units::radians>(AutoConst::kS,AutoConst::kV, AutoConst::kA);
+    top_ff = new frc::SimpleMotorFeedforward<units::radians>(AutoConst::kS,AutoConst::kV, AutoConst::kA);
 
+    // timer_shooter = new frc::Timer();
+    // timer_shooter->Reset();
+    // timer_shooter->Start();
   };
   ~Shooter() {
     delete m_pidController_top;
     delete m_pidController_bottom;
     delete shooterneo_top_encoder;
     delete shooterneo_bottom_encoder;
+    // delete timer_shooter;
+    delete bottom_ff;
   }
   //Takes in the two percent output of the motors and sets them to that output
   void ShootPercentOutput(double top_percent, double bottom_percent);
@@ -52,6 +58,9 @@ public:
   void VelocityControl(double top_velocity, double bottom_velocity);
   //Checks what the velocity of in inputed shooter motor ("Top", "Bottom")
   float VelocityOutput(std::string shooter_motor);
+
+  void ShootVoltage(units::volt_t top_voltage, units::volt_t bottom_voltage);
+  double GetTargetVelocityFromVoltage(units::volt_t volts);
 
   void SolenoidUp();
   void SolenoidDown();
@@ -67,7 +76,10 @@ private:
 
   rev::SparkMaxRelativeEncoder *shooterneo_top_encoder;
   rev::SparkMaxRelativeEncoder *shooterneo_bottom_encoder;
-  // frc::SimpleMotorFeedforward<units::revolutions_per_minute_t> *bottom_ff;
+  frc::SimpleMotorFeedforward<units::radians> *bottom_ff;
+  frc::SimpleMotorFeedforward<units::radians> *top_ff;
+  // frc::Timer *timer_shooter;
+  // double last_time = 0;
 };
 
 #endif

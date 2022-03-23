@@ -2,8 +2,13 @@
 #include <iostream>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-#include <units/units.h>
-
+// #include <units/units.h>
+#include <units/angle.h>
+#include <units/acceleration.h>
+#include <units/velocity.h>
+#include <units/voltage.h>
+#include <units/velocity.h>
+#include <units/voltage.h>
 // #include <units/acceleration.h>
 // #include <units/velocity.h>
 // #include <units/angle.h>
@@ -82,8 +87,9 @@ constexpr int ktarget_high_bottom = 3200; //g
 //Min bottom speed
 constexpr double ktarget_limelight_bottom_min = 1100;
 //launch pad goal
-constexpr int ktarget_launch_top= 3500;//for range shot
-constexpr int ktarget_launch_bottom = 2200; //for range shot
+//2925
+constexpr int ktarget_launch_top= 3280;//for range shot
+constexpr int ktarget_launch_bottom = 2300; //for range shot
 //side goal
 constexpr int ktarget_side_bottom = 2200; //g
 constexpr int ktarget_side_top = 2600; //g
@@ -108,7 +114,7 @@ namespace AutoConst {
     constexpr double shooter_m_bottom = -16.1;
     constexpr double shooter_b_bottom = 1977;
 
-    constexpr units::volt_t kS = 0.10023_V;
-  constexpr auto kV = 1.2794_V/ 1_mps;
-  constexpr auto kA = 1.2494_V/1_mps_sq;
+    constexpr auto kS = 0.10023_V;
+    constexpr auto kV = 1.2794_V * 1_s/1_rad;
+    constexpr auto kA = 1.2494_V*1_s*1_s/1_rad;
 }

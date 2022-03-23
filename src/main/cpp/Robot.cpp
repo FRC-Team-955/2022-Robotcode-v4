@@ -87,7 +87,6 @@ Compressor *compressor;
 //Timers
 frc::Timer *timer_auto_wait;
 frc::Timer *timer_auto;
- 
 frc::Timer *m_timer_intake;
 //RGB
 Spark *rgb_spark;
@@ -179,7 +178,7 @@ void Robot::AutonomousPeriodic() {
   intake->PistonDown();
   std::cout<<AutoState<<std::endl;
  
-  if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->GetMatchTime()<5_s){
+  if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->Get()>5_s){
     AutoState++;
   }
   if(AutoState == -1 && timer_auto_wait->Get()>0.5_s){
@@ -583,6 +582,7 @@ void Robot::TeleopPeriodic() {
     frc::SmartDashboard::PutBoolean("Compressor", false);
   }
   if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
+    hopper->InitShoot();
     drive->Align();
     limelight->GetShooterSpeedClose("Top");
     if(shooter_solenoid->Get() == 2){
@@ -605,6 +605,7 @@ void Robot::TeleopPeriodic() {
     }
  
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
+    hopper->InitShoot();
     shooter->SolenoidUp();
     drive->Align();
     limelight->GetShooterSpeedClose("Top");
@@ -621,6 +622,7 @@ void Robot::TeleopPeriodic() {
       low_goal_mode = false;
     }
     if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
+      hopper->InitShoot();
       //shooting
       if(low_goal_mode){
         //low goal
@@ -669,8 +671,10 @@ void Robot::TeleopPeriodic() {
         if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
           hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
           frc::SmartDashboard::PutBoolean("Manual Hopper", true);
+          hopper->hopper_on = true;
         }else if(!m_timer_intake->HasElapsed(3_s)){
           frc::SmartDashboard::PutBoolean("Manual Hopper", false);
+          hopper->hopper_on = true;
           if (hopper_init){
             ball_manager->LoadHopper();
           }
@@ -824,10 +828,10 @@ void Robot::UpdateRGB(){
   if(compressor_toggle.GetToggleState()){
     rgb_spark->Set(0.93);
   }
-  else if(limit_switch_top->Get() == 1){
+  else if(limit_switch_top->Get() == 1 || elevator_motor->GetSelectedSensorPosition() > 290000){
     rgb_spark->Set(0.77);
   }
-  else if (elevator_solenoid_lock->Get() == 1 || elevator_motor->GetSelectedSensorPosition() > 290000){
+  else if (elevator_solenoid_lock->Get() == 1){
     rgb_spark->Set(0.69);
   }
   else{

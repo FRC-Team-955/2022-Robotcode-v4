@@ -3,12 +3,12 @@
 /**
  * @return the steering joystick input needed to align to target {-1,1} or 0 if none
  */
-double Limelight::GetDrivebaseSpeed(double joy_axis) {
+double Limelight::GetDrivebaseSpeed() {
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   if (result.HasTargets()) {
     if(std::abs(result.GetBestTarget().GetYaw()) < 7){
       ramp_speed = 0;
-      return -controller->Calculate(result.GetBestTarget().GetYaw(), 0) + joy_axis*.1;
+      return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
     }else{
       if(ramp_speed < .35){
         ramp_speed+=.1;
@@ -80,7 +80,9 @@ double Limelight::GetShooterSpeedFar() {
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
     std::cout<<"Range: "<<range<<std::endl;
-    return 64.4 * range - 626;
+    // return 64.4 * range - 626;
+    // return 51.4 * range - 50.1;
+    return 1400 - 9.76*range +0.609*range*range;
   }else {
     // If we have no targets don't spin up
     return 0;
