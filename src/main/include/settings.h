@@ -23,6 +23,7 @@ constexpr int kshoot_wall_trigger = 3;
 constexpr int kshoot_limelight_trigger = 2;
 constexpr int kshoot_launchpad_button = 6;
 constexpr int kshooter_goal_toggle_button = 7;
+constexpr int kpid_only_toggle_button = 8;
 // constexpr int kball_aimbot_button = 5;
 } // namespace Joy0Const
 

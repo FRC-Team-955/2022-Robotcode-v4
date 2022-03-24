@@ -35,7 +35,9 @@ public:
   bool IsAligned(double offset);
   double GetOffset();
   bool ShootClose();
-
+  void DisplayLimelightFar();
+  void DisplayLimelightClose();
+  void DisplayLimelightInfo();
 private:
   photonlib::PhotonCamera *camera;
   frc2::PIDController *controller;

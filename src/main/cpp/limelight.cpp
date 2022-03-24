@@ -60,7 +60,6 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
     // First calculate range (in meters)
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
-    std::cout<<"Range: "<<range<<std::endl;
     if (shooter_position == "Top"){
       return 39.8 * range -24.5;
     }else if (shooter_position == "Bottom"){
@@ -110,4 +109,16 @@ bool Limelight::ShootClose(){
   }else{
     return true;
   }
+}
+void Limelight::DisplayLimelightFar(){
+    frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedFar());
+    frc::SmartDashboard::PutNumber("Target Bottom Velocity", 2300);
+
+}
+void Limelight::DisplayLimelightClose(){
+    frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedClose("Top"));
+    frc::SmartDashboard::PutNumber("Target Bottom Velocity", GetShooterSpeedClose("Bottom"));
+}
+void Limelight::DisplayLimelightInfo(){
+  frc::SmartDashboard::PutNumber("Limelight Range", range);
 }

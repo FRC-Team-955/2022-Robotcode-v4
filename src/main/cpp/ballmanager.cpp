@@ -52,7 +52,18 @@ bool BallManager::IsFull(){
 
 bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom){  
     // shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
-    if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_range && 
+    if (pid_only){
+        shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
+        if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_range && 
+        std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::ktarget_range &&
+        std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::ktarget_range &&
+        std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::ktarget_range){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    else if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_range && 
         std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::ktarget_range &&
         std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::ktarget_range &&
         std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::ktarget_range){
@@ -136,6 +147,8 @@ void BallManager::DisplayBallManagerInfo(){
     SmartDashboard::PutBoolean("Top None", top[0]);
     SmartDashboard::PutBoolean("Top Red", top[1]);
     SmartDashboard::PutBoolean("Top Blue", top[2]);
+
+    frc::SmartDashboard::PutBoolean("Pid Only", pid_only);
 }
 bool BallManager::IsEmpty(){
         if(position[0] == "None" && position[1] == "None"){

@@ -32,6 +32,7 @@ public:
   void Shoot();
   void DisplayBallManagerInfo();
   std::string team_color = "Red";
+  bool pid_only = false;
 
 private:
   bool Rev(double target_velocity_top, double target_velocity_bottom);
