@@ -413,7 +413,7 @@ void Robot::AutonomousPeriodic() {
       if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
       }
-      if(timer_auto->HasElapsed(0.5_s)){
+      if(timer_auto->HasElapsed(1_s)){
         shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         timer_auto->Reset();
@@ -421,14 +421,7 @@ void Robot::AutonomousPeriodic() {
         AutoState++;
       }
     }
-    if (AutoState == 12){
-      //reset offset
-      drive->AlignToOffset(offset);
-      if(timer_auto->Get()>0.25_s){
-        AutoState++;
-      }
-    }
-    if(AutoState ==13){
+    if(AutoState ==12){
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
       AutoState++;
@@ -658,9 +651,7 @@ void Robot::TeleopPeriodic() {
     }else{
       //if not shooting
       shooter->VelocityControl(0,0);
-      if (joystick_1->GetPOV() != -1){
-        intake->RunIntake(-1);
-      }else if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
+      if (joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
         //Reject code
         intake->PistonDown();
         ball_manager->Reject();
@@ -670,22 +661,27 @@ void Robot::TeleopPeriodic() {
         hopper->RunHopperMotor(0,0);
       }else{
         //if not rejecting
-        if(toggle_intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-            intake->PistonDown();
-            //If the intake is in the down state allow the intake to run
-            if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
-              hopper_init = true;
-              intake->RunIntake(1);
-              m_timer_intake->Start();
-              m_timer_intake->Reset();
-            }else{
-              intake->RunIntake(0);
-            }
-        }else{
-          intake->PistonUp();
-        }
+        // if(toggle_intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+        //     intake->PistonDown();
+        //     //If the intake is in the down state allow the intake to run
+        //     if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+        //       hopper_init = true;
+        //       intake->RunIntake(1);
+        //       m_timer_intake->Start();
+        //       m_timer_intake->Reset();
+        //     }else{
+        //       intake->RunIntake(0);
+        //     }
+        // }else{
+        //   intake->PistonUp();
+        // }
         //if the m_intake_timer is less than 5s then run the hopper
         //hopper in manual or auto will add the run loadhopper automatically later
+        if (joystick_1->GetPOV() != -1){
+        intake->RunIntake(-1);
+        }else{
+          intake->RunIntake(0);
+        }
         if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
           hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
           frc::SmartDashboard::PutBoolean("Manual Hopper", true);
@@ -702,6 +698,24 @@ void Robot::TeleopPeriodic() {
       }
     }
   }
+
+  if(toggle_intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+    intake->PistonDown();
+    //If the intake is in the down state allow the intake to run
+    if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+      hopper_init = true;
+      intake->RunIntake(1);
+      m_timer_intake->Start();
+      m_timer_intake->Reset();
+    }else if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button) || joystick_1->GetPOV() != -1){
+
+    }else{
+      intake->RunIntake(0);
+    }
+  }else{
+    intake->PistonUp();
+  }
+
   if(joystick_1->GetRawButton(Joy1Const::kelevator_allow)){
     if(toggle_elevator_lock.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
       elevator->LockElevator();
