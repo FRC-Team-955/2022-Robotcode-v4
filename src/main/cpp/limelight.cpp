@@ -8,6 +8,8 @@ double Limelight::GetDrivebaseSpeed() {
   if (result.HasTargets()) {
     if(std::abs(result.GetBestTarget().GetYaw()) < 7){
       ramp_speed = 0;
+
+      //line to calculate yaw with PID
       return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
     }else{
       if(ramp_speed < .35){
@@ -23,6 +25,19 @@ double Limelight::GetDrivebaseSpeed() {
     // If we have no targets, stay still
     ramp_speed = 0;
     return 0;
+  }
+}
+
+//alternative to GetDriveBaseSpeed to lower latency 
+double Limelight::DeadReckCaclulate(double offset){
+  if (targetYaw < 400 && std::abs(targetYaw - navx->GetYawRadians() * (180.0 / 3.141592)) < 0.35) {
+    targetYaw = 42069;
+    //shoot code here
+  } else {
+    if (targetYaw > 400) {
+    targetYaw = navx->GetYawRadians() * (180.0 / 3.141592) + offset;
+    }
+    return -controller->Calculate(navx->GetYawRadians()  * (180.0 / 3.141592) , targetYaw);
   }
 }
 /**
