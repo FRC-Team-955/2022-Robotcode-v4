@@ -33,7 +33,7 @@ public:
   bool IsAligned();
   bool IsAligned(double offset);
   double GetOffset();
-  bool CheckOtherColor();
+  bool CheckOtherColor(std::string teamcolor);
 private:
   photonlib::PhotonCamera *camera;
   frc2::PIDController *controller;

@@ -26,10 +26,10 @@ double Ballalign::GetDrivebaseSpeed() {
     return 0;
   }
 }
-bool Ballalign::CheckOtherColor) {
-  if(BallManager::team_color == "Red"){
+bool Ballalign::CheckOtherColor(std::string teamcolor) {
+  if(teamcolor == "Red"){
     camera->SetPipelineIndex(BallConst::kblue_pipeline_index);
-  } else if(BallManager::team_color == "Blue"){
+  } else if(teamcolor == "Blue"){
     camera->SetPipelineIndex(BallConst::kred_pipeline_index);
   }
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
@@ -78,7 +78,7 @@ bool Ballalign::IsAligned(){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   return std::abs(result.GetBestTarget().GetYaw()) < 3;
 }
-bool BallalignLimelight::IsAligned(double offset){
+bool Ballalign::IsAligned(double offset){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   return std::abs(result.GetBestTarget().GetYaw()-offset) < 3;
 }

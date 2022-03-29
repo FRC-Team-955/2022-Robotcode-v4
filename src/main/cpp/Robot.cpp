@@ -45,7 +45,7 @@ ColorSensor *color_sensor_top;
 ColorSensor *color_sensor_bot;
 BallManager *ball_manager;
 Elevator *elevator;
-BallAlign * ballalign;
+Ballalign * ballalign;
  
 //Joysticks
 frc::Joystick *joystick_0;
@@ -616,8 +616,9 @@ void Robot::TeleopPeriodic() {
     }
   }else if (joystick_0->GetRawButtonPressed(Joy0Const::kball_aimbot_button)){
     
-    if(ballalign->CheckOtherColor()){
-      joystick_0->SetRumble(1,1);
+    if(ballalign->CheckOtherColor(ball_manager->team_color)){
+      joystick_0->SetRumble(frc::GenericHID::RumbleType::kLeftRumble,1);
+      joystick_0->SetRumble(frc::GenericHID::RumbleType::kRightRumble,1);
       TimeToAlign = false;
     }else{
       TimeToAlign = true;
@@ -627,6 +628,9 @@ void Robot::TeleopPeriodic() {
     
   drive->DriveBallAlign();
     
+  }else if(joystick_0->GetRawButtonReleased(Joy0Const::kball_aimbot_button)){
+      joystick_0->SetRumble(frc::GenericHID::RumbleType::kLeftRumble,0);
+      joystick_0->SetRumble(frc::GenericHID::RumbleType::kRightRumble,0);
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
     hopper->InitShoot();
     shooter->SolenoidUp();
@@ -826,7 +830,7 @@ void Robot::Build(){
   limelight = new Limelight();
   ballalign = new Ballalign();
   // differential_drive->SetSafetyEnabled(false);
-  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive, joystick_0, limelight);
+  drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive, joystick_0, limelight, ballalign);
   // xyalign = new XYalign(drive, joystick_0);
   //auto
   m_leftLeadMotor_encoder = new SparkMaxRelativeEncoder(m_leftLeadMotor->GetEncoder());
