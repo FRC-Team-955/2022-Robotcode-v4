@@ -58,12 +58,14 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   if (result.HasTargets()) {
     // First calculate range (in meters)
+    velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Max Speed", 1).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);
+
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
     if (shooter_position == "Top"){
-      return 39.8 * range -24.5;
+      return 39.8 * range -24.5 + velocity_offset;
     }else if (shooter_position == "Bottom"){
-      return std::max(-20.1 * range + 3684, MechanismConst::ktarget_limelight_bottom_min);
+      return std::max(-20.1 * range + 3684 + velocity_offset, MechanismConst::ktarget_limelight_bottom_min);
     }else{
       return 0;
     }
@@ -75,13 +77,14 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
 double Limelight::GetShooterSpeedFar() {
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   if (result.HasTargets()) {
+    velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Max Speed", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);
     // First calculate range (in meters)
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
-    std::cout<<"Range: "<<range<<std::endl;
+    // std::cout<<"Range: "<<range<<std::endl;
     // return 64.4 * range - 626;
     // return 51.4 * range - 50.1;
-    return 1400 - 9.76*range +0.609*range*range;
+    return 1400 - 9.76*range +0.609*range*range + velocity_offset;
   }else {
     // If we have no targets don't spin up
     return 0;

@@ -138,7 +138,9 @@ void Robot::RobotInit() {
   m_team_color_Chooser.SetDefaultOption("Blue","Blue");
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
- 
+  
+  frc::Shuffleboard::GetTab("Pre").Add("Max Speed", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider);
+
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
@@ -177,8 +179,7 @@ void Robot::AutonomousPeriodic() {
   DisplayShuffle();
   ball_manager->CheckHopperState();
   intake->PistonDown();
-  std::cout<<AutoState<<std::endl;
- 
+  // std::cout<<AutoState<<std::endl;
   if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->Get()>5_s){
     AutoState++;
   }
@@ -304,7 +305,6 @@ void Robot::AutonomousPeriodic() {
       }
     }
     if(timer_auto_wait->GetMatchTime()<1_s){
-      std::cout<<"force shoot"<<std::endl;
       ball_manager->RevLimeLightFar();
       ball_manager->Shoot();
     }
