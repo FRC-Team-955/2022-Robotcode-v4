@@ -31,6 +31,7 @@
 #include "ballmanager.h"
 #include "elevator.h"
 #include "limelight.h"
+#include "BallAlign.h"
  
 #include "settings.h"
  
@@ -44,6 +45,7 @@ ColorSensor *color_sensor_top;
 ColorSensor *color_sensor_bot;
 BallManager *ball_manager;
 Elevator *elevator;
+BallAlign * ballalign;
  
 //Joysticks
 frc::Joystick *joystick_0;
@@ -94,6 +96,7 @@ Spark *rgb_spark;
 Auto *trajectory_auto;
 int AutoState = 0;
 double offset = 0;
+bool TimeToAlign = false;
  
 ButtonToggle toggle_intake_deploy;
 ButtonToggle toggle_hopper_manual;
@@ -611,7 +614,19 @@ void Robot::TeleopPeriodic() {
         ball_manager->Shoot();
       }
     }
- 
+  }else if (joystick_0->GetRawButtonPressed(Joy0Const::kball_aimbot_button)){
+    
+    if(ballalign->CheckOtherColor()){
+      joystick_0->SetRumble(1,1);
+      TimeToAlign = false;
+    }else{
+      TimeToAlign = true;
+    }
+    
+  }else if(joystick_0->GetRawButton(Joy0Const::kball_aimbot_button) && TimeToAlign){
+    
+  drive->DriveBallAlign();
+    
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
     hopper->InitShoot();
     shooter->SolenoidUp();
@@ -809,6 +824,7 @@ void Robot::Build(){
   m_rightFollowMotor = new CANSparkMax(DriveConst::kright_follow_neo_number, CANSparkMax::MotorType::kBrushless);
   differential_drive = new frc::DifferentialDrive(*m_leftLeadMotor,*m_rightLeadMotor);
   limelight = new Limelight();
+  ballalign = new Ballalign();
   // differential_drive->SetSafetyEnabled(false);
   drive = new DriveBase(m_leftLeadMotor,m_rightLeadMotor,m_leftFollowMotor,m_rightFollowMotor,differential_drive, joystick_0, limelight);
   // xyalign = new XYalign(drive, joystick_0);

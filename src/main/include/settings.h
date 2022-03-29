@@ -24,7 +24,7 @@ constexpr int kshoot_limelight_trigger = 2;
 constexpr int kshoot_launchpad_button = 6;
 constexpr int kshooter_goal_toggle_button = 7;
 constexpr int kpid_only_toggle_button = 8;
-// constexpr int kball_aimbot_button = 5;
+constexpr int kball_aimbot_button = 5;
 } // namespace Joy0Const
 
 namespace Joy1Const {
@@ -119,4 +119,8 @@ namespace AutoConst {
     constexpr auto kS = 0.10023_V;
     constexpr auto kV = 1.2794_V * 1_s/1_rad;
     constexpr auto kA = 1.2494_V*1_s*1_s/1_rad;
+}
+namespace BallConst {
+    constexpr int kred_pipeline_index = 1;
+    constexpr int kblue_pipeline_index = 2;
 }

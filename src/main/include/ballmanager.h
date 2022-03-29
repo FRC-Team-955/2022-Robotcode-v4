@@ -31,7 +31,7 @@ public:
   void Reject();
   void Shoot();
   void DisplayBallManagerInfo();
-  std::string team_color = "Red";
+  static std::string team_color = "Red";
   bool pid_only = false;
 
 private:

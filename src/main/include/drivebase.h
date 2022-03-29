@@ -6,6 +6,7 @@
 #include <frc/drive/DifferentialDrive.h>
 
 #include "limelight.h"
+#include "ballalign.h"
 #include "settings.h"
 
 using namespace rev;
@@ -19,6 +20,7 @@ public:
   };
   void Drive();
   void Align();
+  void DriveBallAlign();
   void AlignToOffset(double offset);
   void DisplayDriveInfo();
 private:
