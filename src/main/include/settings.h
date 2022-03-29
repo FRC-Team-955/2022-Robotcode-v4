@@ -40,6 +40,7 @@ constexpr int kreject_ball_button = 6;
 constexpr int kelevator_lock_button = 8;
 constexpr int kelevator_allow = 3;
 constexpr int kelevator_axis = 1;
+constexpr int kelevator_override = 4;
 //compressor
 constexpr int kcompressor_toggle_button = 7;
 }

@@ -82,14 +82,14 @@ bool Auto::FollowTrajectory() {
   drive_pid_left->SetReference(ConvertToRPM(left), rev::ControlType::kVelocity);
   drive_pid_right->SetReference(ConvertToRPM(right), rev::ControlType::kVelocity);
 
-  std::cout<<"Time: "<<double(auto_timer->Get())<<std::endl;
-  std::cout<<"Total Time: "<<double(trajectory->TotalTime())<<std::endl;
+  // std::cout<<"Time: "<<double(auto_timer->Get())<<std::endl;
+  // std::cout<<"Total Time: "<<double(trajectory->TotalTime())<<std::endl;
   // std::cout<<"R: "<<double(right)<<std::endl;
   // std::cout<<"L: "<<double(left)<<std::endl;
   // std::cout<<"L_enc: "<<double(drive_encoder_left->GetPosition())<<std::endl;
-  std::cout<<"Navx: "<<double(navx->GetRotation2d().Radians())<<std::endl;
-  std::cout<<"Navx: "<<double(goal.pose.Rotation().Radians())<<std::endl;
-    std::cout<<double(trajectory->InitialPose().X())<<std::endl;
+  // std::cout<<"Navx: "<<double(navx->GetRotation2d().Radians())<<std::endl;
+  // std::cout<<"Navx: "<<double(goal.pose.Rotation().Radians())<<std::endl;
+    // std::cout<<double(trajectory->InitialPose().X())<<std::endl;
 
   if (auto_timer->Get() > trajectory->TotalTime()) {
     delete trajectory;

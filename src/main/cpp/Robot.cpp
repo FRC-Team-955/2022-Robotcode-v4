@@ -10,6 +10,7 @@
 #include <frc/MotorSafety.h>
 #include <frc/motorcontrol/Spark.h>
 #include <frc/Compressor.h>
+#include <wpi/PortForwarder.h>
 #include "button_toggle.h"
  
 //auto
@@ -121,8 +122,8 @@ std::string ganyu_auto_wait = "False";
 // Thank you for listening to my ted talk
  
 void Robot::RobotInit() {
-  m_auto_Chooser.SetDefaultOption("Ganyu Wall2","Wall2Ball");
-  m_auto_Chooser.AddOption("Ganyu Any*2Ball","Any*2Ball");
+  m_auto_Chooser.SetDefaultOption("Ganyu Any*2Ball","Any*2Ball");
+  m_auto_Chooser.AddOption("Ganyu Wall2","Wall2Ball");
   m_auto_Chooser.AddOption("Ganyu 4 Ball Right","4BR");
   m_auto_Chooser.AddOption("Ganyu 3 Ball Right","3BR");
   m_auto_Chooser.AddOption("Ganyu Wall","Wall");
@@ -172,12 +173,17 @@ void Robot::AutonomousInit() {
   timer_auto_wait->Start();
   timer_auto->Reset();
   timer_auto->Start();
+
+  // wpi::PortForwarder::GetInstance().Add(5800,"10.9.55.11", 5800);
+  // wpi::PortForwarder::GetInstance().Add(5801,"10.9.55.11", 5801);
+  // wpi::PortForwarder::GetInstance().Add(5802,"10.9.55.11", 5802);
+  wpi::PortForwarder::GetInstance().Add(5800, "gloworm.local", 5800);
 }
 void Robot::AutonomousPeriodic() {
   DisplayShuffle();
   ball_manager->CheckHopperState();
   intake->PistonDown();
-  std::cout<<AutoState<<std::endl;
+  // std::cout<<AutoState<<std::endl;
  
   if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->Get()>5_s){
     AutoState++;
@@ -185,8 +191,8 @@ void Robot::AutonomousPeriodic() {
   if(AutoState == -1 && timer_auto_wait->Get()>0.5_s){
     AutoState++;
   }
- 
-  if(ganyu_auto_selection == "4BR"){
+ //ganyu_auto_selection == "4BR"
+  if(true){
     if(AutoState == 0){
       shooter->SolenoidUp();
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
@@ -304,12 +310,13 @@ void Robot::AutonomousPeriodic() {
       }
     }
     if(timer_auto_wait->GetMatchTime()<1_s){
-      std::cout<<"force shoot"<<std::endl;
+      // std::cout<<"force shoot"<<std::endl;
       ball_manager->RevLimeLightFar();
       ball_manager->Shoot();
     }
   }
-  if(ganyu_auto_selection == "3BR"){
+  //ganyu_auto_selection == "3BR"
+  if(false){
     if(AutoState == 0){
       shooter->SolenoidUp();
       trajectory_auto->LoadTrajectory("3BOut1.wpilib.json");
@@ -427,7 +434,8 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     }
   }
-  if(ganyu_auto_selection == "Any*2Ball"){
+  //ganyu_auto_selection == "Any*2Ball"
+  if(false){
     if (AutoState == 0){
       shooter->SolenoidUp();
       intake->RunIntake(1);
@@ -471,7 +479,8 @@ void Robot::AutonomousPeriodic() {
       }
     }
   }
-  if(ganyu_auto_selection == "Wall"){
+  //ganyu_auto_selection == "Wall"
+  if(false){
     shooter->SolenoidDown();
     if ((AutoState == 0) && ball_manager->RevHigh()){
       ball_manager -> Shoot();
@@ -490,7 +499,8 @@ void Robot::AutonomousPeriodic() {
       m_leftLeadMotor->Set(0);
       AutoState++;
     }
-  }else if(ganyu_auto_selection == "Wall2Ball"){
+  //ganyu_auto_selection == "Wall2Ball"
+  }else if(false){
     shooter->SolenoidDown();
     ball_manager->LoadHopper();
     if ((AutoState == 0) && ball_manager->RevHigh()){
@@ -536,7 +546,9 @@ void Robot::AutonomousPeriodic() {
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
     }
-  }if(ganyu_auto_selection == "Taxi"){
+  }
+  //ganyu_auto_selection == "Taxi"
+  if(false){
     if ( AutoState == 0){
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
