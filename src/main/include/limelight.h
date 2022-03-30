@@ -2,6 +2,7 @@
 #define LIMELIGHT
 
 #include "settings.h"
+#include "navx.h"
 #include <iostream>
 #include <algorithm>
 #include <photonlib/PhotonCamera.h>
@@ -22,12 +23,14 @@ public:
     //0.02,0.01,-0.3
     //0.04,0.015,0.005
     controller = new frc2::PIDController(0.055,0.018,0);
+    navx = new Navx();
   };
   ~Limelight(){
       delete camera;
       delete controller;
   }
   double GetDrivebaseSpeed();
+  double DeadReckCaclulate(double offset);
   double GetDrivebaseSpeedToOffset(double offset);
   double GetShooterSpeedClose(std::string shooter_position);
   double GetShooterSpeedFar();
@@ -39,11 +42,13 @@ public:
   void DisplayLimelightClose();
   void DisplayLimelightInfo();
 private:
+  Navx *navx;
   photonlib::PhotonCamera *camera;
   frc2::PIDController *controller;
   double velocity_offset = 0;
   double ramp_speed = 0;
   double range = 0;
+  double targetYaw = 42069;
 };
 
 #endif
