@@ -121,10 +121,10 @@ bool Limelight::ShootIsCloseFromClose(){
   }
 }
 bool Limelight::ShootIsCloseFromFar(){
-  if (range > 30){
-    return false;
-  }else{
+  if (range < 30){
     return true;
+  }else{
+    return false;
   }
 }
 void Limelight::DisplayLimelightFar(){

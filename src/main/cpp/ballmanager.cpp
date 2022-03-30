@@ -106,7 +106,11 @@ void BallManager::Shoot(){
         hopper->RunHopperMotor(0.25, 0.25);
     }
 }
-
+/**
+ * Determines whether to shoot from close or far
+ * @param int shooter_soleniod_state (1 or 2)
+ * @return false if should shoot from far (up), true if should shoot from far (down)
+ */
 bool BallManager::ShootFromClose(int shooter_solenoid_state){
     if (shooter_solenoid_state == 2){
         return limelight->ShootIsCloseFromClose();
