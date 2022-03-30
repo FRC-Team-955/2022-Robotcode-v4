@@ -37,7 +37,8 @@ public:
   bool IsAligned();
   bool IsAligned(double offset);
   double GetOffset();
-  bool ShootClose();
+  bool ShootIsCloseFromClose();
+  bool ShootIsCloseFromFar();
   void DisplayLimelightFar();
   void DisplayLimelightClose();
   void DisplayLimelightInfo();
@@ -45,6 +46,7 @@ private:
   Navx *navx;
   photonlib::PhotonCamera *camera;
   frc2::PIDController *controller;
+  photonlib::PhotonPipelineResult result;
   double velocity_offset = 0;
   double ramp_speed = 0;
   double range = 0;

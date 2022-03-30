@@ -1,26 +1,16 @@
 #include "ballmanager.h"
 using namespace frc;
 
-// std::string BallManager::GetHopperState(int slot){
-//     if(slot != 0 && slot != 1){
-//         return "NULL";
-//     }
-//     else{
-//     return position[slot];
-//     }
-// }
 void BallManager::CheckHopperState(){
-    if(!color_sensor_bot->CheckForBall(SensorConst::kvalue_for_ball_bottom)){
-        position[0] = "None";
-    }
-    if(!color_sensor_top->CheckForBall(SensorConst::kvalue_for_ball_top)){
-        position[1] = "None";
-    }
     if(color_sensor_bot->CheckForBall(SensorConst::kvalue_for_ball_bottom)){
         position[0] = color_sensor_bot->ClosestColor(); 
+    }else{
+        position[0] = "None";
     }
     if(color_sensor_top->CheckForBall(SensorConst::kvalue_for_ball_top)){
         position[1] = color_sensor_top->ClosestColor();
+    }else{
+        position[1] = "None";
     }
 }
 
@@ -49,9 +39,14 @@ bool BallManager::IsFull(){
         return false;
     }
 }
-
-bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom){  
-    // shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
+/**
+ * Revs the shooter wheels to the target speeds
+ * @param double target_velocity_top 
+ * @param double target_velocity_bottom
+ * @returns false if wheel velocity are not in range, true if the wheel velocities are within range
+ */
+bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom){
+    //No voltage just velocity
     if (pid_only){
         shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
         if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_range && 
@@ -63,23 +58,29 @@ bool BallManager::Rev(double target_velocity_top, double target_velocity_bottom)
             return false;
         }
     }
+    //voltage mode when within range of the target range
     else if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_range && 
         std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::ktarget_range &&
         std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::ktarget_range &&
         std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::ktarget_range){
         shooter->ShootVoltage(target_velocity_top, target_velocity_bottom);
         return true;
-    }else if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_switch_control_mode && 
+    }
+    //have extra range to switch into voltage mode
+    else if(std::abs(shooter->VelocityOutput("Top")) >= target_velocity_top - MechanismConst::ktarget_switch_control_mode && 
         std::abs(shooter->VelocityOutput("Top")) <= target_velocity_top + MechanismConst::ktarget_switch_control_mode &&
         std::abs(shooter->VelocityOutput("Bottom")) >= target_velocity_bottom - MechanismConst::ktarget_switch_control_mode &&
         std::abs(shooter->VelocityOutput("Bottom")) <= target_velocity_bottom + MechanismConst::ktarget_switch_control_mode){
         shooter->ShootVoltage(target_velocity_top, target_velocity_bottom);
         return false;
-    }else{
+    }
+    //run velocity mode to quickly get close to the target velocity
+    else{
         shooter->VelocityControl(target_velocity_top, target_velocity_bottom);
         return false;
     }
 }
+/// @returns false if wheel velocity are not in range, true if the wheel velocities are within range
 bool BallManager::RevLow(){
     return Rev(MechanismConst::ktarget_low_top,MechanismConst::ktarget_low_bottom);
 }
@@ -105,6 +106,16 @@ void BallManager::Shoot(){
         hopper->RunHopperMotor(0.25, 0.25);
     }
 }
+
+bool BallManager::ShootFromClose(int shooter_solenoid_state){
+    if (shooter_solenoid_state == 2){
+        return limelight->ShootIsCloseFromClose();
+    }else{
+        return limelight->ShootIsCloseFromFar();
+    }
+
+}
+
 void BallManager::RejectBottom(){
     intake->RunIntake(-1);
     hopper->RunHopperMotor(0,-1);
