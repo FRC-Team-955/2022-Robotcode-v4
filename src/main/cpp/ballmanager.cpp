@@ -105,6 +105,17 @@ void BallManager::Shoot(){
         hopper->RunHopperMotor(0.25, 0.25);
     }
 }
+void BallManager::RejectBottom(){
+    intake->RunIntake(-1);
+    hopper->RunHopperMotor(0,-1);
+}
+void BallManager::RejectTop(){
+    if(Rev(MechanismConst::ktarget_reject,MechanismConst::ktarget_reject)){
+        hopper->RunHopperMotor(1,0);
+    }else{
+        hopper->RunHopperMotor(0,0);
+    }
+}
 void BallManager::Reject(){
     double top = 0.0;
     double bottom = 0.0;

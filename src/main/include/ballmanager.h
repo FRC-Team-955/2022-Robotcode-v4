@@ -29,6 +29,8 @@ public:
   bool IsEmpty();
   void LoadHopper();
   void Reject();
+  void RejectBottom();
+  void RejectTop();
   void Shoot();
   void DisplayBallManagerInfo();
   std::string team_color = "Red";
