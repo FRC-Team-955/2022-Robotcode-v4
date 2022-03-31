@@ -30,7 +30,7 @@ public:
       delete controller;
   }
   double GetDrivebaseSpeed();
-  double DeadReckCaclulate(double offset);
+  double DeadReckCaclulate();
   double GetDrivebaseSpeedToOffset(double offset);
   double GetShooterSpeedClose(std::string shooter_position);
   double GetShooterSpeedFar();
