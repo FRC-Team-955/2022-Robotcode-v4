@@ -70,7 +70,7 @@ double Limelight::GetDrivebaseSpeedToOffset(double offset) {
 double Limelight::GetShooterSpeedClose(std::string shooter_position) {
   if (result.HasTargets()) {
     // First calculate range (in meters)
-    velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Max Speed", 1).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);
+    velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 1).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);
 
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
@@ -88,7 +88,7 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
 }
 double Limelight::GetShooterSpeedFar() {
   if (result.HasTargets()) {
-    velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Max Speed", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);
+    velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);
     // First calculate range (in meters)
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
@@ -121,7 +121,7 @@ bool Limelight::ShootIsCloseFromClose(){
   }
 }
 bool Limelight::ShootIsCloseFromFar(){
-  if (range < 30){
+  if (range < 40){
     return true;
   }else{
     return false;

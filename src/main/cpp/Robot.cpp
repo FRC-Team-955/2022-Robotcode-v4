@@ -139,7 +139,7 @@ void Robot::RobotInit() {
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   
-  frc::Shuffleboard::GetTab("Pre").Add("Max Speed", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider);
+  frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider);
 
   frc::CameraServer::StartAutomaticCapture();
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
