@@ -29,13 +29,15 @@ double Limelight::GetDrivebaseSpeed() {
 }
 
 //alternative to GetDriveBaseSpeed to lower latency 
-double Limelight::DeadReckCaclulate(double offset){
+double Limelight::DeadReckCaclulate(){
+  limelight 
   if (targetYaw < 400 && std::abs(targetYaw - navx->GetYawRadians() * (180.0 / 3.141592)) < 0.35) {
     targetYaw = 42069;
     //shoot code here
   } else {
     if (targetYaw > 400) {
-    targetYaw = navx->GetYawRadians() * (180.0 / 3.141592) + offset;
+      targetYaw = navx->GetYawRadians() * (180.0 / 3.141592) + result.GetBestTarget().GetYaw();
+      
     }
     return -controller->Calculate(navx->GetYawRadians()  * (180.0 / 3.141592) , targetYaw);
   }
