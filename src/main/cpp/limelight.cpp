@@ -11,8 +11,8 @@ double Limelight::GetDrivebaseSpeed() {
       //line to calculate yaw with PID
       return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
     }else{
-      if(ramp_speed < .35){
-        ramp_speed+=.1;
+      if(ramp_speed < .25){
+        ramp_speed+=.08;
       }
       if(result.GetBestTarget().GetYaw()>0){
         return ramp_speed;
@@ -49,8 +49,8 @@ double Limelight::GetDrivebaseSpeedToOffset(double offset) {
       ramp_speed = 0;
       return -controller->Calculate((result.GetBestTarget().GetYaw()), offset);
     }else{
-      if(ramp_speed < .35){
-        ramp_speed+=.1;
+      if(ramp_speed < .25){
+        ramp_speed+=.08;
       }
       if((result.GetBestTarget().GetYaw()-offset)>0){
         return ramp_speed;
