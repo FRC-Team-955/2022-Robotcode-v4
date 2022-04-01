@@ -41,6 +41,9 @@ bool Ballalign::CheckOtherColor(std::string teamcolor) {
 
 }
 
+void Ballalign::SetDriverMode(bool mode){
+  camera->SetDriverMode(mode);
+}
 /**
  * @return the steering joystick input needed to align to target {-1,1} or 0 if none
  */

@@ -34,6 +34,7 @@ public:
   bool IsAligned(double offset);
   double GetOffset();
   bool CheckOtherColor(std::string teamcolor);
+  void SetDriverMode(bool mode);
 private:
   photonlib::PhotonCamera *camera;
   frc2::PIDController *controller;

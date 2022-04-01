@@ -615,7 +615,7 @@ void Robot::TeleopPeriodic() {
       }
     }
   }else if (joystick_0->GetRawButtonPressed(Joy0Const::kball_aimbot_button)){
-    
+    camera->SetDriverMode(false);
     if(ballalign->CheckOtherColor(ball_manager->team_color)){
       joystick_0->SetRumble(frc::GenericHID::RumbleType::kLeftRumble,1);
       joystick_0->SetRumble(frc::GenericHID::RumbleType::kRightRumble,1);
@@ -631,6 +631,7 @@ void Robot::TeleopPeriodic() {
   }else if(joystick_0->GetRawButtonReleased(Joy0Const::kball_aimbot_button)){
       joystick_0->SetRumble(frc::GenericHID::RumbleType::kLeftRumble,0);
       joystick_0->SetRumble(frc::GenericHID::RumbleType::kRightRumble,0);
+      amera->SetDriverMode(true);
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
     hopper->InitShoot();
     shooter->SolenoidUp();
