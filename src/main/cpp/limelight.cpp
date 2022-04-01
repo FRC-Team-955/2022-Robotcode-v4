@@ -4,6 +4,8 @@
  * @return the steering joystick input needed to align to target {-1,1} or 0 if none
  */
 double Limelight::GetDrivebaseSpeed() {
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+
   if (result.HasTargets()) {
     if(std::abs(result.GetBestTarget().GetYaw()) < 7){
       ramp_speed = 0;
@@ -11,8 +13,8 @@ double Limelight::GetDrivebaseSpeed() {
       //line to calculate yaw with PID
       return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
     }else{
-      if(ramp_speed < .35){
-        ramp_speed+=.1;
+      if(ramp_speed < .25){
+        ramp_speed+=.08;
       }
       if(result.GetBestTarget().GetYaw()>0){
         return ramp_speed;
@@ -29,6 +31,8 @@ double Limelight::GetDrivebaseSpeed() {
 
 //alternative to GetDriveBaseSpeed to lower latency 
 double Limelight::DeadReckCaclulate(){
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+
   if (targetYaw < 400 && std::abs(targetYaw - navx->GetYawRadians() * (180.0 / 3.141592)) < 0.35) {
     targetYaw = 42069;
     //shoot code here
@@ -44,13 +48,14 @@ double Limelight::DeadReckCaclulate(){
  * @return the steering joystick input needed to align to target {-1,1} or 0 if none
  */
 double Limelight::GetDrivebaseSpeedToOffset(double offset) {
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   if (result.HasTargets()) {
     if(std::abs(result.GetBestTarget().GetYaw()-offset) < 7){
       ramp_speed = 0;
       return -controller->Calculate((result.GetBestTarget().GetYaw()), offset);
     }else{
-      if(ramp_speed < .35){
-        ramp_speed+=.1;
+      if(ramp_speed < .25){
+        ramp_speed+=.08;
       }
       if((result.GetBestTarget().GetYaw()-offset)>0){
         return ramp_speed;
@@ -70,12 +75,15 @@ double Limelight::GetDrivebaseSpeedToOffset(double offset) {
  * @return shooter wheel velocity from distance to target and then regression in the close position
  */
 double Limelight::GetShooterSpeedClose(std::string shooter_position) {
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+
   if (result.HasTargets()) {
     // First calculate range (in meters)
     velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 1).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);
 
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
+    std::cout<<"range close: "<<range<<std::endl;
     if (shooter_position == "Top"){
       return 39.8 * range -24.5 + velocity_offset;
     }else if (shooter_position == "Bottom"){
@@ -93,11 +101,13 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
  * @note bottom shooter wheel velocity should be set to 2300
  */
 double Limelight::GetShooterSpeedFar() {
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   if (result.HasTargets()) {
     velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);
     // First calculate range (in meters)
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
+    std::cout<<"range far: "<<range<<std::endl;
     // std::cout<<"Range: "<<range<<std::endl;
     // return 64.4 * range - 626;
     // return 51.4 * range - 50.1;
@@ -111,15 +121,22 @@ double Limelight::GetShooterSpeedFar() {
  * @return If yaw is in range
  */
 bool Limelight::IsAligned(){
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+
   return std::abs(result.GetBestTarget().GetYaw()) < 3;
 }
 bool Limelight::IsAligned(double offset){
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+
   return std::abs(result.GetBestTarget().GetYaw()-offset) < 3;
 }
 double Limelight::GetOffset(){
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+
   return result.GetBestTarget().GetYaw();
 }
 bool Limelight::ShootIsCloseFromClose(){
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   if (range > 60){
     return false;
   }else{
@@ -127,6 +144,8 @@ bool Limelight::ShootIsCloseFromClose(){
   }
 }
 bool Limelight::ShootIsCloseFromFar(){
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+
   if (range < 40){
     return true;
   }else{
@@ -143,6 +162,5 @@ void Limelight::DisplayLimelightClose(){
     frc::SmartDashboard::PutNumber("Target Bottom Velocity", GetShooterSpeedClose("Bottom"));
 }
 void Limelight::DisplayLimelightInfo(){
-  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
   frc::SmartDashboard::PutNumber("Limelight Range", range);
 }
