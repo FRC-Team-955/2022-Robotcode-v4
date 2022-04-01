@@ -29,7 +29,6 @@ double Limelight::GetDrivebaseSpeed() {
 
 //alternative to GetDriveBaseSpeed to lower latency 
 double Limelight::DeadReckCaclulate(){
-   
   if (targetYaw < 400 && std::abs(targetYaw - navx->GetYawRadians() * (180.0 / 3.141592)) < 0.35) {
     targetYaw = 42069;
     //shoot code here
@@ -67,7 +66,8 @@ double Limelight::GetDrivebaseSpeedToOffset(double offset) {
 }
 
 /**
- * @return shooter wheel speed from distance to target and regression
+ * @param string shooter position "Top" or "Bottom"
+ * @return shooter wheel velocity from distance to target and then regression in the close position
  */
 double Limelight::GetShooterSpeedClose(std::string shooter_position) {
   if (result.HasTargets()) {
@@ -88,6 +88,10 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
     return 0;
   }
 }
+/**
+ * @returns top shooter wheel velocity from distance to target and then regression in the far position
+ * @note bottom shooter wheel velocity should be set to 2300
+ */
 double Limelight::GetShooterSpeedFar() {
   if (result.HasTargets()) {
     velocity_offset = frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider).GetEntry().GetDouble(0);

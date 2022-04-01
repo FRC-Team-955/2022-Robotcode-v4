@@ -15,7 +15,7 @@ void BallManager::CheckHopperState(){
 }
 
 void BallManager::MoveIndex(){
-    if(color_sensor_bot->CheckForBall(200) && !color_sensor_top->CheckForBall(2000)){
+    if(color_sensor_bot->CheckForBall(SensorConst::kvalue_for_ball_bottom) && !color_sensor_top->CheckForBall(SensorConst::kvalue_for_ball_top)){
         hopper->RunHopperMotor(0.1, 0.25);
     }
 }
@@ -23,7 +23,7 @@ void BallManager::MoveIndex(){
 void BallManager::LoadHopper(){
     if(position[1]=="None"){
         //.31, 0.5
-        hopper->RunHopperMotor(.31, 0.7);
+        hopper->RunHopperMotor(.3, 0.7);
     }
     else if(position[1]!="None" && position[0] == "None"){
         hopper->RunHopperMotor(0, 0.5);
@@ -39,6 +39,15 @@ bool BallManager::IsFull(){
         return false;
     }
 }
+bool BallManager::IsEmpty(){
+    if(position[0] == "None" && position[1] == "None"){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
 /**
  * Revs the shooter wheels to the target speeds
  * @param double target_velocity_top 
@@ -176,11 +185,3 @@ void BallManager::DisplayBallManagerInfo(){
 
     frc::SmartDashboard::PutBoolean("Pid Only", pid_only);
 }
-bool BallManager::IsEmpty(){
-        if(position[0] == "None" && position[1] == "None"){
-            return 1;
-        }
-        else{
-            return 0;
-        }
-    }

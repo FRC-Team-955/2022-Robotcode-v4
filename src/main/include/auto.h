@@ -11,8 +11,6 @@
 #include <frc/trajectory/TrajectoryUtil.h>
 #include <wpi/fs.h>
 
-#include <frc/trajectory/TrapezoidProfile.h>
-
 #include "settings.h"
 
 class Auto {
@@ -35,7 +33,6 @@ public:
   bool FollowTrajectory();
   double ConvertToRPM(units::velocity::meters_per_second_t value);
   void LoadState(double distance);
-  bool TrapMove();
   void ResetEncoder();
   units::meter_t ConvertToMeters(double value);
 
@@ -55,11 +52,6 @@ private:
   rev::SparkMaxRelativeEncoder *drive_encoder_right;
   rev::CANSparkMax *m_leftLeadMotor;
   rev::CANSparkMax *m_rightLeadMotor;
-  // frc::SimpleMotorFeedforward<units::meters> *feed_forward;
-  // frc::TrapezoidProfile<units::meters>::Constraints *constraints;
-  // frc::TrapezoidProfile<units::meters>::State *state;
-  // frc::TrapezoidProfile<units::meters> *profile;
-
 };
 
 #endif

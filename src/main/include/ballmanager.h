@@ -16,22 +16,27 @@ class BallManager {
 public:
   BallManager(Intake *intake, Hopper *hopper, Shooter *shooter, ColorSensor *color_sensor_bot, ColorSensor *color_sensor_top, Limelight *limelight):
   intake(intake), hopper(hopper),shooter(shooter), color_sensor_bot(color_sensor_bot), color_sensor_top(color_sensor_top), limelight(limelight){};
+  
+  void CheckHopperState();
+  void MoveIndex();
+  void LoadHopper();
+  bool IsFull();
+  bool IsEmpty();
+
   bool RevLow();
   bool RevHigh();
   bool RevSide();
   bool RevLimeLightClose();
   bool RevLimeLightFar();
   bool RevLaunchPad();
+
+  void Shoot();
   bool ShootFromClose(int shooter_solenoid_state);
-  void MoveIndex();
-  void CheckHopperState();
-  bool IsFull();
-  bool IsEmpty();
-  void LoadHopper();
-  void Reject();
+
   void RejectBottom();
   void RejectTop();
-  void Shoot();
+  void Reject();
+
   void DisplayBallManagerInfo();
   std::string team_color = "Red";
   bool pid_only = false;

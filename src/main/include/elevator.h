@@ -19,15 +19,13 @@ public:
     elevator_motor->SetNeutralMode(NeutralMode::Brake);
     elevator_motor->SetSelectedSensorPosition(0);
     elevator_motor->TalonFX::ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 40, 0));
-    // line above sets current limit. SupplyCurrentLimitConfiguration goes as
-    // follow: CupplyCurrentLimitConfiguration(enable, current limit,
-    // triggerThresholdCurrent, triggerThresholdTime)
   }
   void ElevatorMove(double joystick_position);
+  void ResetPosition();
   void LockElevator();
   void UnlockElevator();
+  
   void DisplayElevatorInfo();
-  void ResetPosition();
 
 private:
   bool hit_top_limit = false;

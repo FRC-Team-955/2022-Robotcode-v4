@@ -90,6 +90,7 @@ frc::Timer *timer_auto;
 frc::Timer *m_timer_intake;
 //RGB
 Spark *rgb_spark;
+Spark *rgb_spark_color_sensor;
 //auto
 Auto *trajectory_auto;
 int AutoState = 0;
@@ -146,10 +147,6 @@ void Robot::RobotInit() {
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
  
   trajectory_auto = new Auto();
-  frc::TrapezoidProfile<units::meters> profile{
-  frc::TrapezoidProfile<units::meters>::Constraints{5_mps, 2_mps_sq},
-  frc::TrapezoidProfile<units::meters>::State{5_m, 0_mps},
-  frc::TrapezoidProfile<units::meters>::State{0_m, 0_mps}};
 }
 void Robot::RobotPeriodic() {}
 void Robot::AutonomousInit() {
@@ -572,6 +569,9 @@ void Robot::TeleopInit() {
   m_timer_intake->Start();
 }
 void Robot::TeleopPeriodic() {
+  std::cout<<"Red Top: "<<color_sensor_top->GetColor().red<<" Green  Top: "<<color_sensor_top->GetColor().green<<" Blue  Top: "<<color_sensor_top->GetColor().blue<<std::endl;
+  std::cout<<"Red Bottom: "<<color_sensor_bot->GetColor().red<<" Green Bottom: "<<color_sensor_bot->GetColor().green<<" Blue Bottom: "<<color_sensor_bot->GetColor().blue<<std::endl;
+
   //random updates
   DisplayShuffle();
   UpdateRGB();
@@ -795,6 +795,7 @@ void Robot::DisabledInit() {
   delete compressor;
   //rgb
   delete rgb_spark;
+  delete rgb_spark_color_sensor;
   //timer
   delete m_timer_intake;
   //Delete();
@@ -857,6 +858,8 @@ void Robot::Build(){
   compressor = new Compressor(13,frc::PneumaticsModuleType::REVPH);
   //rgb
   rgb_spark = new Spark(0);
+  rgb_spark_color_sensor = new Spark(1);
+
   //timer
   timer_auto_wait = new frc::Timer();
   timer_auto = new frc::Timer();
@@ -867,6 +870,7 @@ void Robot::Build(){
   toggle_pid_only.SetToggleState(false);
 }
 void Robot::UpdateRGB(){
+  rgb_spark_color_sensor->Set(0.93);
   if(toggle_compressor.GetToggleState()){
     rgb_spark->Set(0.93);
   }

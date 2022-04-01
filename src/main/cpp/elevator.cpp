@@ -1,7 +1,5 @@
 #include "elevator.h"
 
-#include "iostream"
-
 using namespace frc;
 
 void Elevator::ElevatorMove(double joystick_position) {
