@@ -30,7 +30,7 @@ private:
   frc::Color *blue_target;
 
   frc::Color nearest_color;
-  double confidence = 1.0;
+  double confidence = 0.5;
 };
 
 #endif

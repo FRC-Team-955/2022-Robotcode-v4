@@ -142,9 +142,9 @@ void Robot::RobotInit() {
   
   frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider);
 
-  frc::CameraServer::StartAutomaticCapture();
-  cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
+  // frc::CameraServer::StartAutomaticCapture();
+  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
+  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
  
   trajectory_auto = new Auto();
 }
@@ -839,15 +839,17 @@ void Robot::Build(){
   shooter_solenoid = new DoubleSolenoid(13, PneumaticsModuleType::REVPH,MechanismConst::kshooter_pnumatic_port_forward, MechanismConst::kshooter_pnumatic_port_reverse);
   shooter = new Shooter(shooterneo_top, shooterneo_bottom, shooter_solenoid);
   //Color Sensor
-  red_target_bot = new frc::Color(0.539917, 0.339233, 0.120972);
-  blue_target_bot= new frc::Color(0.158325, 0.406372, 0.435181);
-  red_target_top= new frc::Color(0.666, 0.333, 0.001);
-  blue_target_top= new frc::Color(0.250122, 0.500122, 0.250122);
+  red_target_top= new frc::Color(0.680054, 0.200073, 0.119995); //g
+  blue_target_top= new frc::Color(0.137085, 0.274048, 0.588989); //g
+
+  red_target_bot = new frc::Color(0.5670717, 0.325073, 0.108032); //g
+  blue_target_bot= new frc::Color(0.165161, 0.394653, 0.440063); //g
+
   rev_color_sensor_bot = new ColorSensorV3(frc::I2C::Port::kOnboard);
   rev_color_sensor_top = new ColorSensorV3(frc::I2C::Port::kMXP);
   color_match = new ColorMatch();
-  color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match,red_target_bot, blue_target_bot);
   color_sensor_top= new ColorSensor(rev_color_sensor_top,color_match, red_target_top, blue_target_top);
+  color_sensor_bot= new ColorSensor(rev_color_sensor_bot,color_match,red_target_bot, blue_target_bot);
   //Ir Break Beam
   ir_break_beam = new DigitalInput(SensorConst::kir_break_beam_port);
   //BallManager
