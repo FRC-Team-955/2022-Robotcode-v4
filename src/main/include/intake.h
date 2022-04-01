@@ -12,8 +12,8 @@ class Intake {
 public:
   Intake(TalonSRX *intake_talon, DoubleSolenoid *double_solenoid):
   intake_talon(intake_talon), double_solenoid(double_solenoid){
-    intake_talon->TalonSRX::ConfigPeakCurrentLimit(40);
-    intake_talon->TalonSRX::EnableCurrentLimit(true);
+    // intake_talon->TalonSRX::ConfigPeakCurrentLimit(50);
+    // intake_talon->TalonSRX::EnableCurrentLimit(true);
     intake_talon->SetInverted(true);
   }
   void PistonUp();

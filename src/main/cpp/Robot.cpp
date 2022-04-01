@@ -193,7 +193,7 @@ void Robot::AutonomousPeriodic() {
     }
     if(AutoState == 1){
       //to ball
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       ball_manager->RevLimeLightFar();
       if(trajectory_auto->FollowTrajectory()){
@@ -201,7 +201,7 @@ void Robot::AutonomousPeriodic() {
       }
     }
     if(AutoState == 2){
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       ball_manager->RevLimeLightFar();
       if(ball_manager->IsFull()){
@@ -244,14 +244,14 @@ void Robot::AutonomousPeriodic() {
       }
     }
     if(AutoState == 5){
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("Out4-2.wpilib.json");
       AutoState++;
     }
     if(AutoState == 6){
       //to terminal
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory()){
         timer_auto->Reset();
@@ -262,7 +262,7 @@ void Robot::AutonomousPeriodic() {
     if(AutoState == 7){
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       if(timer_auto->Get()>0.5_s){
         AutoState++;
       }
@@ -271,7 +271,7 @@ void Robot::AutonomousPeriodic() {
       //to goal
       ball_manager->LoadHopper();
       ball_manager->RevLimeLightFar();
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       if(trajectory_auto->FollowTrajectory()){
         AutoState++;
       }
@@ -315,7 +315,7 @@ void Robot::AutonomousPeriodic() {
     }
     if(AutoState==1){
       //to ball
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       ball_manager->RevLimeLightFar();
       if(trajectory_auto->FollowTrajectory()){
@@ -323,7 +323,7 @@ void Robot::AutonomousPeriodic() {
       }
     }
     if (AutoState == 2){
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       ball_manager->RevLimeLightFar();
       if(ball_manager->IsFull()){
@@ -365,28 +365,28 @@ void Robot::AutonomousPeriodic() {
       }
     }
     if(AutoState == 6){
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("3BTurn.wpilib.json");
       AutoState++;
     }
     if(AutoState==7){
       //turn back
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory()){
         AutoState++;
       }
     }
     if(AutoState == 8){
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("3BOut2.wpilib.json");
       AutoState++;
     }
     if(AutoState==9){
       //to 2nd ball
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       if(trajectory_auto->FollowTrajectory()){
         offset = limelight->GetOffset();
@@ -395,7 +395,7 @@ void Robot::AutonomousPeriodic() {
     }
     if(AutoState==10){
       //set up shoot
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       drive ->Align();
       if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
@@ -428,7 +428,7 @@ void Robot::AutonomousPeriodic() {
   if(ganyu_auto_selection == "Any*2Ball"){
     if (AutoState == 0){
       shooter->SolenoidUp();
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       m_rightLeadMotor->Set(0.2);
       m_leftLeadMotor->Set(0.2);
       ball_manager->LoadHopper();
@@ -505,7 +505,7 @@ void Robot::AutonomousPeriodic() {
       if (m_rightLeadMotor_encoder->GetPosition() >= 42 && m_leftLeadMotor_encoder->GetPosition() >= 42){
         m_rightLeadMotor->Set(0);
         m_leftLeadMotor->Set(0);
-        intake->RunIntake(1);
+        intake->RunIntake(0.8);
         AutoState++;
       }
     }
@@ -519,7 +519,7 @@ void Robot::AutonomousPeriodic() {
       if(m_rightLeadMotor_encoder->GetPosition() <= 5 && m_leftLeadMotor_encoder->GetPosition() <= 5){
         m_rightLeadMotor->Set(0);
         m_leftLeadMotor->Set(0);
-        intake->RunIntake(1);
+        intake->RunIntake(0.8);
         AutoState++;
       }
     }
@@ -712,7 +712,7 @@ void Robot::TeleopPeriodic() {
       //if running any reject dont run or shut off the intake
     }else if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
       hopper_init = true;
-      intake->RunIntake(1);
+      intake->RunIntake(0.8);
       m_timer_intake->Start();
       m_timer_intake->Reset();
     }else if (joystick_1->GetPOV() == 270){
