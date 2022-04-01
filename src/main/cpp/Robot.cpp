@@ -600,40 +600,40 @@ void Robot::TeleopPeriodic() {
   if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
     hopper->InitShoot();
     drive->Align();
-    // if(ball_manager->ShootFromClose(shooter_solenoid->Get())){
-    //   shooter->SolenoidDown();
-    //   limelight->DisplayLimelightClose();
-    //   if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
-    //     ball_manager->Shoot();
-    //   }
-    // }else{
-    //   shooter->SolenoidUp();
-    //   limelight->DisplayLimelightFar();
-    //   if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
-    //     ball_manager->Shoot();
-    //   }
-    // }
-    if(shooter_solenoid->Get() == 2){
-      if(limelight->ShootIsCloseFromClose()){
-        limelight->DisplayLimelightClose();
-        shooter->SolenoidDown();
-        if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
+    if(ball_manager->ShootFromClose(shooter_solenoid->Get())){
+      shooter->SolenoidDown();
+      limelight->DisplayLimelightClose();
+      if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
         ball_manager->Shoot();
-        }
-      }else{
-        shooter->SolenoidUp();
-        limelight->DisplayLimelightFar();
-        if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
-          ball_manager->Shoot();
-        }
       }
     }else{
+      shooter->SolenoidUp();
       limelight->DisplayLimelightFar();
       if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
-        shooter->SolenoidUp();
         ball_manager->Shoot();
       }
     }
+    // if(shooter_solenoid->Get() == 2){
+    //   if(limelight->ShootIsCloseFromClose()){
+    //     limelight->DisplayLimelightClose();
+    //     shooter->SolenoidDown();
+    //     if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
+    //     ball_manager->Shoot();
+    //     }
+    //   }else{
+    //     shooter->SolenoidUp();
+    //     limelight->DisplayLimelightFar();
+    //     if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+    //       ball_manager->Shoot();
+    //     }
+    //   }
+    // }else{
+    //   limelight->DisplayLimelightFar();
+    //   if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+    //     shooter->SolenoidUp();
+    //     ball_manager->Shoot();
+    //   }
+    // }
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
     hopper->InitShoot();
     shooter->SolenoidUp();
