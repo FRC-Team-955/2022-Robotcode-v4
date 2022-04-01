@@ -32,15 +32,19 @@ public:
   double GetDrivebaseSpeed();
   double DeadReckCaclulate();
   double GetDrivebaseSpeedToOffset(double offset);
+  
   double GetShooterSpeedClose(std::string shooter_position);
   double GetShooterSpeedFar();
+
   bool IsAligned();
   bool IsAligned(double offset);
   double GetOffset();
+
   bool ShootIsCloseFromClose();
   bool ShootIsCloseFromFar();
-  void DisplayLimelightFar();
+
   void DisplayLimelightClose();
+  void DisplayLimelightFar();
   void DisplayLimelightInfo();
 private:
   Navx *navx;

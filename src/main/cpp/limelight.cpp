@@ -83,7 +83,6 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
 
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
-    std::cout<<"range close: "<<range<<std::endl;
     if (shooter_position == "Top"){
       return 39.8 * range -24.5 + velocity_offset;
     }else if (shooter_position == "Bottom"){
@@ -107,8 +106,6 @@ double Limelight::GetShooterSpeedFar() {
     // First calculate range (in meters)
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
-    std::cout<<"range far: "<<range<<std::endl;
-    // std::cout<<"Range: "<<range<<std::endl;
     // return 64.4 * range - 626;
     // return 51.4 * range - 50.1;
     return 1400 - 9.76*range +0.609*range*range + velocity_offset;
@@ -146,20 +143,20 @@ bool Limelight::ShootIsCloseFromClose(){
 bool Limelight::ShootIsCloseFromFar(){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
 
-  if (range < 40){
+  if (range < 35){
     return true;
   }else{
     return false;
   }
 }
+void Limelight::DisplayLimelightClose(){
+    frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedClose("Top"));
+    frc::SmartDashboard::PutNumber("Target Bottom Velocity", GetShooterSpeedClose("Bottom"));
+}
 void Limelight::DisplayLimelightFar(){
     frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedFar());
     frc::SmartDashboard::PutNumber("Target Bottom Velocity", 2300);
 
-}
-void Limelight::DisplayLimelightClose(){
-    frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedClose("Top"));
-    frc::SmartDashboard::PutNumber("Target Bottom Velocity", GetShooterSpeedClose("Bottom"));
 }
 void Limelight::DisplayLimelightInfo(){
   frc::SmartDashboard::PutNumber("Limelight Range", range);

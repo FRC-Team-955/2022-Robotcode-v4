@@ -121,6 +121,7 @@ void BallManager::Shoot(){
  * @return false if should shoot from far (up), true if should shoot from far (down)
  */
 bool BallManager::ShootFromClose(int shooter_solenoid_state){
+    //shooter_solenoid_state == 2 is down
     if (shooter_solenoid_state == 2){
         return limelight->ShootIsCloseFromClose();
     }else{
