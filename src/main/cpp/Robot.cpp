@@ -110,6 +110,7 @@ SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 frc::SendableChooser<std::string> m_auto_Chooser;
 frc::SendableChooser<std::string> m_auto_wait_Chooser;
 frc::SendableChooser<std::string> m_team_color_Chooser;
+nt::NetworkTableEntry velocity_offset_entry;
 std::string ganyu_auto_selection = "Sleep";
 std::string ganyu_auto_wait = "False";
  
@@ -126,9 +127,6 @@ void Robot::RobotInit() {
   m_auto_Chooser.AddOption("Ganyu Any*2Ball","Any*2Ball");
   m_auto_Chooser.AddOption("Ganyu 4 Ball Right","4BR");
   m_auto_Chooser.AddOption("Ganyu 3 Ball Right","3BR");
-  m_auto_Chooser.AddOption("Ganyu Wall","Wall");
-  // m_auto_Chooser.AddOption("Ganyu Side2*","Side2*Ball");
-  m_auto_Chooser.AddOption("Ganyu Taxi","Taxi");
   frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
  
   m_auto_wait_Chooser.SetDefaultOption("False","False");
@@ -140,8 +138,7 @@ void Robot::RobotInit() {
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   
-  frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider);
- 
+  frc::SmartDashboard::PutNumber("Velocity Offset", 0);
   trajectory_auto = new Auto();
 }
 void Robot::RobotPeriodic() {}
@@ -565,9 +562,6 @@ void Robot::TeleopInit() {
   m_timer_intake->Start();
 }
 void Robot::TeleopPeriodic() {
-  // std::cout<<"Red Top: "<<color_sensor_top->GetColor().red<<" Green  Top: "<<color_sensor_top->GetColor().green<<" Blue  Top: "<<color_sensor_top->GetColor().blue<<std::endl;
-  // std::cout<<"Red Bottom: "<<color_sensor_bot->GetColor().red<<" Green Bottom: "<<color_sensor_bot->GetColor().green<<" Blue Bottom: "<<color_sensor_bot->GetColor().blue<<std::endl;
-
   //random updates
   DisplayShuffle();
   UpdateRGB();
@@ -601,35 +595,18 @@ void Robot::TeleopPeriodic() {
       limelight->DisplayLimelightClose();
       if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
         ball_manager->Shoot();
+      }else{
+        hopper->RunHopperMotor(0,0);
       }
     }else{
       shooter->SolenoidUp();
       limelight->DisplayLimelightFar();
       if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager->Shoot();
+      }else{
+        hopper->RunHopperMotor(0,0);
       }
     }
-    // if(shooter_solenoid->Get() == 2){
-    //   if(limelight->ShootIsCloseFromClose()){
-    //     limelight->DisplayLimelightClose();
-    //     shooter->SolenoidDown();
-    //     if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
-    //       ball_manager->Shoot();
-    //     }
-    //   }else{
-    //     shooter->SolenoidUp();
-    //     limelight->DisplayLimelightFar();
-    //     if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
-    //       ball_manager->Shoot();
-    //     }
-    //   }
-    // }else{
-    //   limelight->DisplayLimelightFar();
-    //   if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
-    //     shooter->SolenoidUp();
-    //     ball_manager->Shoot();
-    //   }
-    // }
   }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
     hopper->InitShoot();
     shooter->SolenoidUp();
@@ -637,6 +614,8 @@ void Robot::TeleopPeriodic() {
     limelight->DisplayLimelightFar();
     if (ball_manager->RevLaunchPad() && limelight->IsAligned()){
       ball_manager->Shoot();
+    }else{
+      hopper->RunHopperMotor(0,0);
     }
   }
   else{
