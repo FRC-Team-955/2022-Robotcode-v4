@@ -40,9 +40,10 @@ constexpr int kcompressor_toggle_button = 7;
 namespace SensorConst {
 constexpr int limit_switch_top_port = 4; //g
 constexpr int limit_switch_bottom_port = 1; //g
-//1700
-constexpr unsigned int kvalue_for_ball_top = 1000; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
-constexpr unsigned int kvalue_for_ball_bottom = 190; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
+//1000
+constexpr unsigned int kvalue_for_ball_top = 1700; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
+//190
+constexpr unsigned int kvalue_for_ball_bottom = 200; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
 constexpr int kir_break_beam_port = 2;
 } // namespace SensorConst
 
@@ -85,7 +86,7 @@ constexpr int ktarget_high_bottom = 3200; //g
 constexpr double ktarget_limelight_bottom_min = 1100;
 //launch pad goal
 //2925
-constexpr int ktarget_launch_top= 3280;//for range shot
+constexpr int ktarget_launch_top= 3500;//for range shot
 constexpr int ktarget_launch_bottom = 2300; //for range shot
 //side goal
 constexpr int ktarget_side_bottom = 2200; //g

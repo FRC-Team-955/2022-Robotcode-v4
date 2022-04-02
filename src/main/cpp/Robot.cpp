@@ -565,8 +565,8 @@ void Robot::TeleopInit() {
   m_timer_intake->Start();
 }
 void Robot::TeleopPeriodic() {
-  std::cout<<"Red Top: "<<color_sensor_top->GetColor().red<<" Green  Top: "<<color_sensor_top->GetColor().green<<" Blue  Top: "<<color_sensor_top->GetColor().blue<<std::endl;
-  std::cout<<"Red Bottom: "<<color_sensor_bot->GetColor().red<<" Green Bottom: "<<color_sensor_bot->GetColor().green<<" Blue Bottom: "<<color_sensor_bot->GetColor().blue<<std::endl;
+  // std::cout<<"Red Top: "<<color_sensor_top->GetColor().red<<" Green  Top: "<<color_sensor_top->GetColor().green<<" Blue  Top: "<<color_sensor_top->GetColor().blue<<std::endl;
+  // std::cout<<"Red Bottom: "<<color_sensor_bot->GetColor().red<<" Green Bottom: "<<color_sensor_bot->GetColor().green<<" Blue Bottom: "<<color_sensor_bot->GetColor().blue<<std::endl;
 
   //random updates
   DisplayShuffle();
