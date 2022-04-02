@@ -141,10 +141,6 @@ void Robot::RobotInit() {
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   
   frc::Shuffleboard::GetTab("Pre").Add("Velocity Offset", 0).WithWidget(frc::BuiltInWidgets::kNumberSlider);
-
-  // frc::CameraServer::StartAutomaticCapture();
-  // cs::CvSink cvSink = frc::CameraServer::GetVideo();
-  // cs::CvSource outputStream = frc::CameraServer::PutVideo("Driver Cam", 640, 480);
  
   trajectory_auto = new Auto();
 }

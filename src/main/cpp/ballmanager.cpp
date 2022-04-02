@@ -23,7 +23,7 @@ void BallManager::MoveIndex(){
 void BallManager::LoadHopper(){
     if(position[1]=="None"){
         //.31, 0.5
-        hopper->RunHopperMotor(.2, 0.6);
+        hopper->RunHopperMotor(0.3, 0.4);
     }
     else if(position[1]!="None" && position[0] == "None"){
         hopper->RunHopperMotor(0, 0.4);

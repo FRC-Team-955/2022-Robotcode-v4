@@ -42,7 +42,7 @@ constexpr int limit_switch_top_port = 4; //g
 constexpr int limit_switch_bottom_port = 1; //g
 //1700
 constexpr unsigned int kvalue_for_ball_top = 1000; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
-constexpr unsigned int kvalue_for_ball_bottom = 200; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
+constexpr unsigned int kvalue_for_ball_bottom = 190; //value at which color sensor proximity will return there is a ball 0(far away) - 2047(close as possible)
 constexpr int kir_break_beam_port = 2;
 } // namespace SensorConst
 
@@ -74,7 +74,7 @@ constexpr int kshooter_pnumatic_port_reverse = 4;
 constexpr int ktarget_range = 100; //g?
 constexpr int ktarget_switch_control_mode = 250; //g?
 //low goal
-constexpr int ktarget_low_bottom = 1100; //g
+constexpr int ktarget_low_bottom = 1300; //g
 constexpr int ktarget_low_top = 2000; //g
 //high goal
 constexpr int ktarget_high_top = 1000;
@@ -91,7 +91,7 @@ constexpr int ktarget_launch_bottom = 2300; //for range shot
 constexpr int ktarget_side_bottom = 2200; //g
 constexpr int ktarget_side_top = 2600; //g
 //reject
-constexpr int ktarget_reject = 1200;
+constexpr int ktarget_reject = 1500;
 //elevator
 constexpr int kelevator_motor_port = 12; //g
 constexpr int kelevator_pnumatic_port_forward = 6;
