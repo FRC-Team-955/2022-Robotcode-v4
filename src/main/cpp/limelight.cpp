@@ -5,7 +5,6 @@
  */
 double Limelight::GetDrivebaseSpeed() {
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
-  std::cout<<range<<std::endl;
 
   if (result.HasTargets()) {
     if(std::abs(result.GetBestTarget().GetYaw()) < 7){
@@ -123,7 +122,7 @@ double Limelight::GetShooterSpeedFar() {
 bool Limelight::IsAligned(){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
 
-  return std::abs(result.GetBestTarget().GetYaw()) < 2;
+  return std::abs(result.GetBestTarget().GetYaw()) < 3;
 }
 bool Limelight::IsAligned(double offset){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();

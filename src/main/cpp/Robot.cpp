@@ -126,6 +126,8 @@ void Robot::RobotInit() {
   m_auto_Chooser.AddOption("Ganyu Any*2Ball","Any*2Ball");
   m_auto_Chooser.AddOption("Ganyu 4 Ball Right","4BR");
   m_auto_Chooser.AddOption("Ganyu 3 Ball Right","3BR");
+  m_auto_Chooser.AddOption("Ganyu Wall","Wall");
+
   frc::Shuffleboard::GetTab("Pre").Add("Auto Chooser", m_auto_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
  
   m_auto_wait_Chooser.SetDefaultOption("False","False");
@@ -174,7 +176,7 @@ void Robot::AutonomousPeriodic() {
   if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->Get()>5_s){
     AutoState++;
   }
-  if(AutoState == -1 && timer_auto_wait->Get()>0.5_s){
+  else if(AutoState == -1){
     AutoState++;
   }
  
@@ -232,17 +234,17 @@ void Robot::AutonomousPeriodic() {
     if(AutoState == 5){
       //align to offset
       drive->AlignToOffset(offset);
-      if(timer_auto->Get()>0.25_s){
+      if(timer_auto->Get()>1_s){
         AutoState++;
       }
     }
-    if(AutoState == 5){
+    if(AutoState == 6){
       intake->RunIntake(0.8);
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("Out4-2.wpilib.json");
       AutoState++;
     }
-    if(AutoState == 6){
+    if(AutoState == 7){
       //to terminal
       intake->RunIntake(0.8);
       ball_manager->LoadHopper();
@@ -252,7 +254,7 @@ void Robot::AutonomousPeriodic() {
         AutoState++;
       }
     }
-    if(AutoState == 7){
+    if(AutoState == 8){
       ball_manager->LoadHopper();
       trajectory_auto->LoadTrajectory("Back4-2.wpilib.json");
       intake->RunIntake(0.8);
@@ -260,7 +262,7 @@ void Robot::AutonomousPeriodic() {
         AutoState++;
       }
     }
-    if(AutoState == 8){
+    if(AutoState == 9){
       //to goal
       ball_manager->LoadHopper();
       ball_manager->RevLimeLightFar();
@@ -269,7 +271,7 @@ void Robot::AutonomousPeriodic() {
         AutoState++;
       }
     }
-    if(AutoState == 9){
+    if(AutoState == 10){
       //shoot
       intake->RunIntake(0);
       drive->Align();
@@ -282,7 +284,7 @@ void Robot::AutonomousPeriodic() {
         }
       }
     }
-    if(AutoState == 10){
+    if(AutoState == 11){
       //shoot rest
       if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
