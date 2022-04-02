@@ -708,9 +708,9 @@ void Robot::TeleopPeriodic() {
   }
 }
 void Robot::DisplayShuffle() {
-  drive->DisplayDriveInfo();
+  // drive->DisplayDriveInfo();
   intake->DisplayIntakeInfo();
-  hopper->DiplayHopperInfo();
+  // hopper->DiplayHopperInfo();
   shooter->DisplayShooterInfo();
   ball_manager->DisplayBallManagerInfo();
   elevator->DisplayElevatorInfo();

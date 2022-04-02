@@ -83,9 +83,11 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
     if (shooter_position == "Top"){
-      return 39.8 * range -24.5;
+      //39.8 * range -24.5;
+      return 45.6*range+171;
     }else if (shooter_position == "Bottom"){
-      return std::max(-20.1 * range + 3684, MechanismConst::ktarget_limelight_bottom_min);
+      // -20.1 * range + 3684
+      return std::max(4472+-81.6*range+0.73*range*range, MechanismConst::ktarget_limelight_bottom_min);
     }else{
       return 0;
     }
@@ -108,7 +110,8 @@ double Limelight::GetShooterSpeedFar() {
     // return 64.4 * range - 626;
     // return 51.4 * range - 50.1;
     //1400 - 9.76*range +0.609*range*range 
-    return 59.9* range- 519;
+    //59.9* range- 519
+    return -284 +50.7*range+0.08*range*range;
   }else {
     // If we have no targets don't spin up
     return 0;
@@ -120,7 +123,7 @@ double Limelight::GetShooterSpeedFar() {
 bool Limelight::IsAligned(){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
 
-  return std::abs(result.GetBestTarget().GetYaw()) < 3;
+  return std::abs(result.GetBestTarget().GetYaw()) < 2;
 }
 bool Limelight::IsAligned(double offset){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();

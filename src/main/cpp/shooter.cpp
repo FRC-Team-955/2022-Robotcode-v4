@@ -42,8 +42,8 @@ void Shooter::SolenoidDown(){
   shooter_solenoid->Set(frc::DoubleSolenoid::Value::kReverse);
 }
 void Shooter::DisplayShooterInfo(){
-  frc::SmartDashboard::PutNumber("Shooter Top Amp", shooterneo_top->GetOutputCurrent());
+  // frc::SmartDashboard::PutNumber("Shooter Top Amp", shooterneo_top->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("Shooter Top Velocity", shooterneo_top_encoder->GetVelocity());
-  frc::SmartDashboard::PutNumber("Shooter Bottom Amp", shooterneo_bottom->GetOutputCurrent());
+  // frc::SmartDashboard::PutNumber("Shooter Bottom Amp", shooterneo_bottom->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("Shooter Bottom Velocity", -shooterneo_bottom_encoder->GetVelocity());
 }

@@ -45,7 +45,7 @@ void Elevator::UnlockElevator() {
 
 void Elevator::DisplayElevatorInfo(){
   frc::SmartDashboard::PutBoolean("Elevator Amp Limit Hit", hit_top_limit);
-  frc::SmartDashboard::PutNumber("Elevator Amp", elevator_motor->GetOutputCurrent());
+  // frc::SmartDashboard::PutNumber("Elevator Amp", elevator_motor->GetOutputCurrent());
   frc::SmartDashboard::PutNumber("Elevator Position", elevator_motor->GetSelectedSensorPosition(0));
   frc::SmartDashboard::PutBoolean("Elevator Solenoid Extended", !(bool)(elevator_solenoid_lock->Get()-1));
 }
