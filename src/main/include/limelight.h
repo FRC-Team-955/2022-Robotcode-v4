@@ -50,7 +50,7 @@ private:
   Navx *navx;
   photonlib::PhotonCamera *camera;
   frc2::PIDController *controller;
-  double velocity_offset = 0;
+
   double ramp_speed = 0;
   double range = 0;
   double targetYaw = 42069;

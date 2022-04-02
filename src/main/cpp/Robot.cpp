@@ -110,7 +110,6 @@ SparkMaxRelativeEncoder *m_leftLeadMotor_encoder;
 frc::SendableChooser<std::string> m_auto_Chooser;
 frc::SendableChooser<std::string> m_auto_wait_Chooser;
 frc::SendableChooser<std::string> m_team_color_Chooser;
-nt::NetworkTableEntry velocity_offset_entry;
 std::string ganyu_auto_selection = "Sleep";
 std::string ganyu_auto_wait = "False";
  
@@ -138,7 +137,8 @@ void Robot::RobotInit() {
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   
-  frc::SmartDashboard::PutNumber("Velocity Offset", 0);
+  frc::SmartDashboard::PutNumber("Velocity Offset Limelight", 0);
+  frc::SmartDashboard::PutNumber("Velocity Offset Fixed", 0);
   trajectory_auto = new Auto();
 }
 void Robot::RobotPeriodic() {}

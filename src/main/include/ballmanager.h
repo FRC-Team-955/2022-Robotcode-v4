@@ -45,6 +45,8 @@ private:
   bool Rev(double target_velocity_top, double target_velocity_bottom);
 
   std::string position[2] = {"None", "None"};//position[0] = color of position 1 position[1] = color of position 2
+  double velocity_offset_limelight = 0;
+  double velocity_offset_fixed = 0;
 
   Intake *intake;
   Hopper *hopper;

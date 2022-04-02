@@ -83,9 +83,9 @@ double Limelight::GetShooterSpeedClose(std::string shooter_position) {
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
     if (shooter_position == "Top"){
-      return 39.8 * range -24.5 + velocity_offset;
+      return 39.8 * range -24.5;
     }else if (shooter_position == "Bottom"){
-      return std::max(-20.1 * range + 3684 + velocity_offset, MechanismConst::ktarget_limelight_bottom_min);
+      return std::max(-20.1 * range + 3684, MechanismConst::ktarget_limelight_bottom_min);
     }else{
       return 0;
     }
@@ -108,7 +108,7 @@ double Limelight::GetShooterSpeedFar() {
     // return 64.4 * range - 626;
     // return 51.4 * range - 50.1;
     //1400 - 9.76*range +0.609*range*range 
-    return 59.9* range- 519 + velocity_offset;
+    return 59.9* range- 519;
   }else {
     // If we have no targets don't spin up
     return 0;
@@ -159,6 +159,5 @@ void Limelight::DisplayLimelightFar(){
 
 }
 void Limelight::DisplayLimelightInfo(){
-  velocity_offset = frc::SmartDashboard::GetNumber("Velocity Offset", 0);
   frc::SmartDashboard::PutNumber("Limelight Range", range);
 }

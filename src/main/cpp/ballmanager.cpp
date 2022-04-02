@@ -94,19 +94,19 @@ bool BallManager::RevLow(){
     return Rev(MechanismConst::ktarget_low_top,MechanismConst::ktarget_low_bottom);
 }
 bool BallManager::RevHigh(){
-    return Rev(MechanismConst::ktarget_high_top, MechanismConst::ktarget_high_bottom);
+    return Rev(MechanismConst::ktarget_high_top + velocity_offset_fixed, MechanismConst::ktarget_high_bottom  + velocity_offset_fixed);
 }
 bool BallManager::RevSide(){
     return Rev(MechanismConst::ktarget_side_top, MechanismConst::ktarget_side_bottom);
 }
 bool BallManager::RevLimeLightClose(){
-    return Rev(limelight->GetShooterSpeedClose("Top"), limelight->GetShooterSpeedClose("Bottom"));
+    return Rev(limelight->GetShooterSpeedClose("Top") + velocity_offset_limelight, limelight->GetShooterSpeedClose("Bottom") + velocity_offset_limelight);
 }
 bool BallManager::RevLimeLightFar(){
-    return Rev(limelight->GetShooterSpeedFar(), 2300);
+    return Rev(limelight->GetShooterSpeedFar() + velocity_offset_limelight, 2300);
 }
 bool BallManager::RevLaunchPad(){
-    return Rev(MechanismConst::ktarget_launch_top, MechanismConst::ktarget_launch_bottom);
+    return Rev(MechanismConst::ktarget_launch_top + velocity_offset_fixed, MechanismConst::ktarget_launch_bottom  + velocity_offset_fixed);
 }
 void BallManager::Shoot(){
     if (position[1] == "None"){
@@ -185,4 +185,7 @@ void BallManager::DisplayBallManagerInfo(){
     SmartDashboard::PutBoolean("Top Blue", top[2]);
 
     frc::SmartDashboard::PutBoolean("Pid Only", pid_only);
+
+    velocity_offset_limelight = frc::SmartDashboard::GetNumber("Velocity Offset Limelight", 0);
+    velocity_offset_fixed = frc::SmartDashboard::GetNumber("Velocity Offset Fixed", 0);
 }
