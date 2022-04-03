@@ -22,7 +22,7 @@ public:
     //0.05,0.025,0.014
     //0.02,0.01,-0.3
     //0.04,0.015,0.005
-    controller = new frc2::PIDController(0.050,0.018,0);
+    controller = new frc2::PIDController(0.055,0.018,0);
     navx = new Navx();
   };
   ~Limelight(){

@@ -772,14 +772,18 @@ void Robot::TeleopPeriodic() {
       shooter->VelocityControl(0,0);
       //Reject code
       if (joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
+        shooter->SolenoidDown();
+
         hopper->hopper_on = true;
         toggle_intake_deploy.SetToggleState(true);
         ball_manager->Reject();
       }else if(joystick_1->GetPOV() == 0){
+        shooter->SolenoidDown();
         hopper->hopper_on = true;
         toggle_intake_deploy.SetToggleState(true);
         ball_manager->RejectTop();
       }else if(joystick_1->GetPOV() == 180){
+        shooter->SolenoidDown();
         hopper->hopper_on = true;
         toggle_intake_deploy.SetToggleState(true);
         ball_manager->RejectBottom();

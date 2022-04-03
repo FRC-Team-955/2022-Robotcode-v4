@@ -110,9 +110,9 @@ bool BallManager::RevLaunchPad(){
 }
 void BallManager::Shoot(){
     if (position[1] == "None"){
-        hopper->RunHopperMotor(0.25, 0.7);
+        hopper->RunHopperMotor(0.5, 1);
     }else{
-        hopper->RunHopperMotor(0.25, 0.25);
+        hopper->RunHopperMotor(0.5, 0.5);
     }
 }
 /**
@@ -135,7 +135,7 @@ void BallManager::RejectBottom(){
     hopper->RunHopperMotor(0,-1);
 }
 void BallManager::RejectTop(){
-    if(Rev(MechanismConst::ktarget_reject,MechanismConst::ktarget_reject)){
+    if(Rev(MechanismConst::ktarget_low_top,MechanismConst::ktarget_low_bottom)){
         hopper->RunHopperMotor(1,0);
     }else{
         hopper->RunHopperMotor(0,0);
@@ -145,7 +145,7 @@ void BallManager::Reject(){
     double top = 0.0;
     double bottom = 0.0;
     if(position[1] != team_color){
-        if(Rev(MechanismConst::ktarget_reject,MechanismConst::ktarget_reject)){
+        if(Rev(MechanismConst::ktarget_low_top,MechanismConst::ktarget_low_bottom)){
             top = 1;
             // hopper->RunHopperMotor(0.5,0);
         }else{
