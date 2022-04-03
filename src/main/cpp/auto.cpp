@@ -37,7 +37,8 @@ void Auto::LoadTrajectory(std::string name) {
 
   // loads trajectory from deploy directory
   fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
-  deployDirectory = deployDirectory / "paths" / name;
+  /// "pathplanner"/"generatedJSON"
+  deployDirectory = deployDirectory/ "paths"  / name;
   trajectory = new frc::Trajectory(
       frc::TrajectoryUtil::FromPathweaverJson(deployDirectory.string()));
 
