@@ -173,7 +173,7 @@ void Robot::AutonomousPeriodic() {
   DisplayShuffle();
   ball_manager->CheckHopperState();
   intake->PistonDown();
-  // std::cout<<AutoState<<std::endl;
+  std::cout<<AutoState<<std::endl;
   if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->Get()>5_s){
     AutoState++;
   }
@@ -341,12 +341,16 @@ void Robot::AutonomousPeriodic() {
           timer_auto->Start();
           AutoState++;
         }
+      }else{
+        hopper->RunHopperMotor(0,0);
       }
     }
     if(AutoState == 4){
       //shoot rest
       if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
+      }else{
+        hopper->RunHopperMotor(0,0);
       }
       if(timer_auto->Get()>0.5_s){
         shooter->ShootPercentOutput(0,0);
@@ -399,22 +403,26 @@ void Robot::AutonomousPeriodic() {
     if(AutoState == 10){
       //shoot
       intake->RunIntake(0);
-      drive->Align();
-      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+      drive->AlignAuto();
+      if(ball_manager->RevLimeLightFar() && limelight->IsAlignedAuto()){
         ball_manager -> Shoot();
         if (ball_manager -> IsEmpty()){
           timer_auto->Reset();
           timer_auto->Start();
           AutoState++;
         }
+      }else{
+        hopper->RunHopperMotor(0,0);
       }
     }
     if(AutoState == 11){
       //shoot rest
       if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
         ball_manager -> Shoot();
+      }else{
+        hopper->RunHopperMotor(0,0);
       }
-      if(timer_auto->Get()>3_s){
+      if(timer_auto->Get()>5_s){
         // shooter->ShootPercentOutput(0,0);
         hopper->RunHopperMotor(0,0);
         timer_auto->Reset();
@@ -455,7 +463,7 @@ void Robot::AutonomousPeriodic() {
     if(AutoState==3){
       //init shoot
       drive ->Align();
-      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+      if(ball_manager->RevLimeLightFar() && limelight->IsAlignedAuto()){
         ball_manager -> Shoot();
         intake->RunIntake(0);
         if (ball_manager -> IsEmpty()){
@@ -463,12 +471,16 @@ void Robot::AutonomousPeriodic() {
           timer_auto->Start();
           AutoState++;
         }
+      }else{
+        ball_manager->LoadHopper();
       }
     }
     if(AutoState == 4){
       //shoot rest
-      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+      if(ball_manager->RevLimeLightFar() && limelight->IsAlignedAuto()){
         ball_manager -> Shoot();
+      }else{
+        ball_manager->LoadHopper();
       }
       if(timer_auto->Get()>0.5_s){
         shooter->ShootPercentOutput(0,0);
@@ -517,19 +529,23 @@ void Robot::AutonomousPeriodic() {
       //set up shoot
       intake->RunIntake(0.8);
       drive ->Align();
-      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+      if(ball_manager->RevLimeLightFar() && limelight->IsAlignedAuto()){
         ball_manager -> Shoot();
         if (ball_manager -> IsEmpty()){
           timer_auto->Reset();
           timer_auto->Start();
           AutoState++;
         }
+      }else{
+        ball_manager->LoadHopper();
       }
     }
     if(AutoState == 11){
       //shoot rest of balls
-      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+      if(ball_manager->RevLimeLightFar() && limelight->IsAlignedAuto()){
         ball_manager -> Shoot();
+      }else{
+        ball_manager->LoadHopper();
       }
       if(timer_auto->HasElapsed(1_s)){
         shooter->ShootPercentOutput(0,0);
@@ -567,7 +583,7 @@ void Robot::AutonomousPeriodic() {
     if(AutoState== 2){
       //init shoot
       drive ->Align();
-      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+      if(ball_manager->RevLimeLightFar() && limelight->IsAlignedAuto()){
         ball_manager -> Shoot();
         intake->RunIntake(0);
         if (ball_manager -> IsEmpty()){
@@ -575,12 +591,16 @@ void Robot::AutonomousPeriodic() {
           timer_auto->Start();
           AutoState++;
         }
+      }else{
+        hopper->RunHopperMotor(0,0);
       }
     }
     if(AutoState == 3){
       //shoot rest
-      if(ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+      if(ball_manager->RevLimeLightFar() && limelight->IsAlignedAuto()){
         ball_manager -> Shoot();
+      }else{
+        hopper->RunHopperMotor(0,0);
       }
       if(timer_auto->Get()>1_s){
         shooter->ShootPercentOutput(0,0);
@@ -593,6 +613,8 @@ void Robot::AutonomousPeriodic() {
     shooter->SolenoidDown();
     if ((AutoState == 0) && ball_manager->RevHigh()){
       ball_manager -> Shoot();
+    }else{
+        hopper->RunHopperMotor(0,0);
     }
     if (ball_manager -> IsEmpty() && AutoState == 0){
       shooter->ShootPercentOutput(0,0);
@@ -682,7 +704,7 @@ void Robot::TeleopInit() {
   m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
  
   compressor->Disable();
-  frc::SmartDashboard::PutBoolean("Compressor", false);
+  // frc::SmartDashboard::PutBoolean("Compressor", false);
  
   ball_manager->team_color = m_team_color_Chooser.GetSelected();
   hopper_init = false;
@@ -696,10 +718,10 @@ void Robot::TeleopPeriodic() {
   //compressor
   if (toggle_compressor.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
     compressor->EnableDigital();
-    frc::SmartDashboard::PutBoolean("Compressor", true);
+    // frc::SmartDashboard::PutBoolean("Compressor", true);
   }else{
     compressor->Disable();
-    frc::SmartDashboard::PutBoolean("Compressor", false);
+    // frc::SmartDashboard::PutBoolean("Compressor", false);
   }
   //The toggle for pid mode
   if (toggle_pid_only.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kpid_only_toggle_button))){
@@ -747,6 +769,7 @@ void Robot::TeleopPeriodic() {
   }
   else{
     drive->Drive();
+    shooter->SolenoidDown();
     limelight->DisplayLimelightClose();
     if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
       hopper->InitShoot();
@@ -793,10 +816,10 @@ void Robot::TeleopPeriodic() {
         //hopper in manual or auto will add the run loadhopper automatically later
         if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
           hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
-          frc::SmartDashboard::PutBoolean("Manual Hopper", true);
+          // frc::SmartDashboard::PutBoolean("Manual Hopper", true);
           hopper->hopper_on = true;
         }else if(!m_timer_intake->HasElapsed(3_s)){
-          frc::SmartDashboard::PutBoolean("Manual Hopper", false);
+          // frc::SmartDashboard::PutBoolean("Manual Hopper", false);
           hopper->hopper_on = true;
           if (hopper_init){
             ball_manager->LoadHopper();
@@ -840,14 +863,13 @@ void Robot::TeleopPeriodic() {
 }
 void Robot::DisplayShuffle() {
   // drive->DisplayDriveInfo();
-  intake->DisplayIntakeInfo();
+  // intake->DisplayIntakeInfo();
   // hopper->DiplayHopperInfo();
   shooter->DisplayShooterInfo();
   ball_manager->DisplayBallManagerInfo();
   elevator->DisplayElevatorInfo();
   limelight->DisplayLimelightInfo();
   frc::SmartDashboard::PutBoolean("Low Goal Mode", low_goal_mode);
-  frc::SmartDashboard::PutString("Team Color", ball_manager->team_color);
 }
 void Robot::DisabledInit() {
   //joystick

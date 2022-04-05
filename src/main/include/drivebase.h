@@ -16,9 +16,12 @@ public:
   m_leftLeadMotor(m_leftLeadMotor),m_rightLeadMotor(m_rightLeadMotor),m_leftFollowMotor(m_leftFollowMotor),m_rightFollowMotor(m_rightFollowMotor), differential_drive(differential_drive), joystick_0(joystick_0), limelight(limelight){
     m_leftLeadMotor->SetInverted(false);
     m_rightLeadMotor->SetInverted(true);
+    m_leftLeadMotor->SetSmartCurrentLimit(40);
+    m_rightLeadMotor->SetSmartCurrentLimit(40);
   };
   void Drive();
   void Align();
+  void AlignAuto();
   void AlignToOffset(double offset);
   void DisplayDriveInfo();
 private:

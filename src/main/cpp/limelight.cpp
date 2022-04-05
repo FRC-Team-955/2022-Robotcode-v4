@@ -11,7 +11,39 @@ double Limelight::GetDrivebaseSpeed() {
       ramp_speed = 0;
 
       //line to calculate yaw with PID
-      return -controller->Calculate(result.GetBestTarget().GetYaw(), 0);
+      double set_pt = -controller->Calculate(result.GetBestTarget().GetYaw(),0);
+
+      if(set_pt >= 0){
+        return std::max(set_pt, .2);
+      }else{
+        return std::min(set_pt, -.2);
+      }
+    }else{
+      if(ramp_speed < .35){
+        ramp_speed+=.1;
+      }
+      if(result.GetBestTarget().GetYaw()>0){
+        return ramp_speed;
+      }else{
+        return -ramp_speed;
+      }
+    }
+  } else {
+    // If we have no targets, stay still
+    ramp_speed = 0;
+    return 0;
+  }
+}
+
+double Limelight::GetDrivebaseSpeedAuto() {
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+
+  if (result.HasTargets()) {
+    if(std::abs(result.GetBestTarget().GetYaw()) < 7){
+      ramp_speed = 0;
+
+      //line to calculate yaw with PID
+      return -controller->Calculate(result.GetBestTarget().GetYaw(),0);
     }else{
       if(ramp_speed < .35){
         ramp_speed+=.1;
@@ -108,9 +140,10 @@ double Limelight::GetShooterSpeedFar() {
 
     // return 64.4 * range - 626;
     // return 51.4 * range - 50.1;
-    //1400 - 9.76*range +0.609*range*range 
+    //
     //59.9* range- 519
-    return -284 +50.7*range+0.08*range*range;
+    //-284 +50.7*range+0.08*range*range
+    return 1400 - 9.76*range +0.609*range*range;
   }else {
     // If we have no targets don't spin up
     return 0;
@@ -123,6 +156,10 @@ bool Limelight::IsAligned(){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
 
   return std::abs(result.GetBestTarget().GetYaw()) < 2;
+}
+bool Limelight::IsAlignedAuto(){
+  photonlib::PhotonPipelineResult result = camera->GetLatestResult();
+  return std::abs(result.GetBestTarget().GetYaw()) < 3;
 }
 bool Limelight::IsAligned(double offset){
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();

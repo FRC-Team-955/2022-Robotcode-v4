@@ -7,12 +7,12 @@ void Elevator::ElevatorMove(double joystick_position) {
   if (limit_switch_bottom->Get() == 0) {
     ResetPosition();
   }
-  if (joystick_position > 0 && elevator_motor->GetOutputCurrent() > 40) {
-    hit_top_limit = true;
-  }
-  if (joystick_position < 0){
-    hit_top_limit = false;
-  }
+  // if (joystick_position > 0 && elevator_motor->GetOutputCurrent() > 40) {
+  //   hit_top_limit = true;
+  // }
+  // if (joystick_position < 0){
+  //   hit_top_limit = false;
+  // }
   if (elevator_solenoid_lock->Get() == 1){
         elevator_motor->Set(ControlMode::PercentOutput, 0);
   }else{
@@ -46,6 +46,6 @@ void Elevator::UnlockElevator() {
 void Elevator::DisplayElevatorInfo(){
   frc::SmartDashboard::PutBoolean("Elevator Amp Limit Hit", hit_top_limit);
   // frc::SmartDashboard::PutNumber("Elevator Amp", elevator_motor->GetOutputCurrent());
-  frc::SmartDashboard::PutNumber("Elevator Position", elevator_motor->GetSelectedSensorPosition(0));
+  // frc::SmartDashboard::PutNumber("Elevator Position", elevator_motor->GetSelectedSensorPosition(0));
   frc::SmartDashboard::PutBoolean("Elevator Solenoid Extended", !(bool)(elevator_solenoid_lock->Get()-1));
 }

@@ -6,6 +6,9 @@ void DriveBase::Drive() {
 void DriveBase::Align() {
   differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeed());
 }
+void DriveBase::AlignAuto() {
+  differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeedAuto());
+}
 void DriveBase::AlignToOffset(double offset) {
   differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), 0.8*limelight->GetDrivebaseSpeedToOffset(offset));
 }
