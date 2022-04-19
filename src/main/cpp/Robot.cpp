@@ -756,12 +756,12 @@ void Robot::TeleopPeriodic() {
         hopper->RunHopperMotor(0,0);
       }
     }
-  }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
+  }else if (joystick_1->GetRawButton(Joy0Const::kshoot_launchpad_button)){
     hopper->InitShoot();
     shooter->SolenoidUp();
     drive->Align();
     limelight->DisplayLimelightFar();
-    if (ball_manager->RevLaunchPad() && limelight->IsAligned()){
+    if (ball_manager->RevLaunchPad()){
       ball_manager->Shoot();
     }else{
       hopper->RunHopperMotor(0,0);
@@ -771,7 +771,7 @@ void Robot::TeleopPeriodic() {
     drive->Drive();
     shooter->SolenoidDown();
     limelight->DisplayLimelightClose();
-    if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
+    if(joystick_1->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
       hopper->InitShoot();
       shooter->SolenoidDown();
       //shooting
