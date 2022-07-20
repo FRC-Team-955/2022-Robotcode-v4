@@ -180,130 +180,131 @@ void Robot::AutonomousPeriodic() {
   else if(AutoState == -1){
     AutoState++;
   }
-  
-  // if(ganyu_auto_selection == "5BR"){
-  //   if(AutoState == 0){
-  //     shooter->SolenoidDown();
-  //     //init shoot
-  //     if(ball_manager->RevLimeLightClose()){
-  //       ball_manager -> Shoot();
-  //       intake->RunIntake(0);
-  //       if (ball_manager -> IsEmpty()){
-  //         timer_auto->Reset();
-  //         timer_auto->Start();
-  //         AutoState++;
-  //       }
-  //     }
-  //   }
-  //   if(AutoState == 1){
-  //     //shoot rest
-  //     if(ball_manager->RevLimeLightClose()){
-  //       ball_manager -> Shoot();
-  //     }
-  //     if(timer_auto->Get()>0.6_s){
-  //       shooter->ShootPercentOutput(0,0);
-  //       hopper->RunHopperMotor(0,0);
-  //       timer_auto->Reset();
-  //       timer_auto->Start();
-  //       AutoState++;
-  //     }
-  //   }
+  /*
+  if(ganyu_auto_selection == "5BR"){
+    if(AutoState == 0){
+      shooter->SolenoidDown();
+      //init shoot
+      if(ball_manager->RevLimeLightClose()){
+        ball_manager -> Shoot();
+        intake->RunIntake(0);
+        if (ball_manager -> IsEmpty()){
+          timer_auto->Reset();
+          timer_auto->Start();
+          AutoState++;
+        }
+      }
+    }
+    if(AutoState == 1){
+      //shoot rest
+      if(ball_manager->RevLimeLightClose()){
+        ball_manager -> Shoot();
+      }
+      if(timer_auto->Get()>0.6_s){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        timer_auto->Reset();
+        timer_auto->Start();
+        AutoState++;
+      }
+    }
 
-  //   if(AutoState == 2){
-  //     intake->RunIntake(0.8);
-  //     ball_manager->LoadHopper();
-  //     shooter->SolenoidUp();
-  //     trajectory_auto->LoadTrajectory("5BallOut1.wpilib.json");
-  //     AutoState++;
-  //   }
+    if(AutoState == 2){
+      intake->RunIntake(0.8);
+      ball_manager->LoadHopper();
+      shooter->SolenoidUp();
+      trajectory_auto->LoadTrajectory("5BallOut1.wpilib.json");
+      AutoState++;
+    }
     
-  //   if(AutoState == 3){
-  //     //to ball
-  //     intake->RunIntake(0.8);
-  //     ball_manager->LoadHopper();
-  //     ball_manager->RevLimeLightFar();
-  //     if(trajectory_auto->FollowTrajectory()){
-  //       AutoState++;
-  //     }
-  //   }
-  //   if(AutoState == 4){
-  //     intake->RunIntake(0.8);
-  //     ball_manager->RevLimeLightFar();
-  //     AutoState++;
-  //   }
-  //   if(AutoState == 5){
-  //     //init shoot
-  //     if(ball_manager->RevLimeLightFar()){
-  //       ball_manager -> Shoot();
-  //       intake->RunIntake(0);
-  //       if (ball_manager -> IsEmpty()){
-  //         timer_auto->Reset();
-  //         timer_auto->Start();
-  //         AutoState++;
-  //       }
-  //     }else{
-  //       ball_manager->LoadHopper();
-  //     }
-  //   }
-  //   if(AutoState == 6){
-  //     //shoot rest
-  //     if(ball_manager->RevLimeLightFar()){
-  //       ball_manager -> Shoot();
-  //     }
-  //     if(timer_auto->Get()>0.8_s){
-  //       shooter->ShootPercentOutput(0,0);
-  //       hopper->RunHopperMotor(0,0);
-  //       timer_auto->Reset();
-  //       timer_auto->Start();
-  //       AutoState++;
-  //     }
-  //   }
-  //   if(AutoState == 7){
-  //     intake->RunIntake(0.8);
-  //     ball_manager->LoadHopper();
-  //     trajectory_auto->LoadTrajectory("5BallOut2.wpilib.json");
-  //     AutoState++;
-  //   }
-  //   if(AutoState == 8){
-  //     //to terminal and back
-  //     intake->RunIntake(0.8);
-  //     ball_manager->LoadHopper();
-  //     if(trajectory_auto->FollowTrajectory()){
-  //       timer_auto->Reset();
-  //       timer_auto->Start();
-  //       AutoState++;
-  //     }
-  //   }
-  //   if(AutoState == 9){
-  //     //shoot
-  //     intake->RunIntake(0);
-  //     if(ball_manager->RevLimeLightFar()){
-  //       ball_manager -> Shoot();
-  //       if (ball_manager -> IsEmpty()){
-  //         timer_auto->Reset();
-  //         timer_auto->Start();
-  //         AutoState++;
-  //       }
-  //     }
-  //   }
-  //   if(AutoState == 10){
-  //     //shoot rest
-  //     if(ball_manager->RevLimeLightFar()){
-  //       ball_manager -> Shoot();
-  //     }
-  //     if(timer_auto->Get()>3_s){
-  //       // shooter->ShootPercentOutput(0,0);
-  //       hopper->RunHopperMotor(0,0);
-  //       timer_auto->Reset();
-  //       timer_auto->Start();
-  //       AutoState++;
-  //     }
-  //   }
-  //   if(timer_auto_wait->GetMatchTime()<1_s){
-  //     ball_manager->RevLimeLightFar();
-  //     ball_manager->Shoot();
-  //   }
-  // }
+    if(AutoState == 3){
+      //to ball
+      intake->RunIntake(0.8);
+      ball_manager->LoadHopper();
+      ball_manager->RevLimeLightFar();
+      if(trajectory_auto->FollowTrajectory()){
+        AutoState++;
+      }
+    }
+    if(AutoState == 4){
+      intake->RunIntake(0.8);
+      ball_manager->RevLimeLightFar();
+      AutoState++;
+    }
+    if(AutoState == 5){
+      //init shoot
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+        intake->RunIntake(0);
+        if (ball_manager -> IsEmpty()){
+          timer_auto->Reset();
+          timer_auto->Start();
+          AutoState++;
+        }
+      }else{
+        ball_manager->LoadHopper();
+      }
+    }
+    if(AutoState == 6){
+      //shoot rest
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+      }
+      if(timer_auto->Get()>0.8_s){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        timer_auto->Reset();
+        timer_auto->Start();
+        AutoState++;
+      }
+    }
+    if(AutoState == 7){
+      intake->RunIntake(0.8);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("5BallOut2.wpilib.json");
+      AutoState++;
+    }
+    if(AutoState == 8){
+      //to terminal and back
+      intake->RunIntake(0.8);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        timer_auto->Reset();
+        timer_auto->Start();
+        AutoState++;
+      }
+    }
+    if(AutoState == 9){
+      //shoot
+      intake->RunIntake(0);
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+        if (ball_manager -> IsEmpty()){
+          timer_auto->Reset();
+          timer_auto->Start();
+          AutoState++;
+        }
+      }
+    }
+    if(AutoState == 10){
+      //shoot rest
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+      }
+      if(timer_auto->Get()>3_s){
+        // shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        timer_auto->Reset();
+        timer_auto->Start();
+        AutoState++;
+      }
+    }
+    if(timer_auto_wait->GetMatchTime()<1_s){
+      ball_manager->RevLimeLightFar();
+      ball_manager->Shoot();
+    }
+  }
+  */
  
   if(ganyu_auto_selection == "4BR"){
     if(AutoState == 0){
