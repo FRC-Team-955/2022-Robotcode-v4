@@ -140,7 +140,7 @@ void Robot::RobotInit() {
   m_team_color_Chooser.AddOption("Red","Red");
   frc::Shuffleboard::GetTab("Pre").Add("Team Color", m_team_color_Chooser).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
   
-  frc::SmartDashboard::PutNumber("Velocity Offset Limelight", 0);
+  // frc::SmartDashboard::PutNumber("Velocity Offset Limelight", 0);
   frc::SmartDashboard::PutNumber("Velocity Offset Fixed", 0);
   trajectory_auto = new Auto();
 }
@@ -173,7 +173,7 @@ void Robot::AutonomousPeriodic() {
   DisplayShuffle();
   ball_manager->CheckHopperState();
   intake->PistonDown();
-  std::cout<<AutoState<<std::endl;
+  // std::cout<<AutoState<<std::endl;
   if (AutoState == -1 && ganyu_auto_wait == "True" && timer_auto_wait->Get()>5_s){
     AutoState++;
   }
@@ -181,131 +181,131 @@ void Robot::AutonomousPeriodic() {
     AutoState++;
   }
   
-  // if(ganyu_auto_selection == "5BR"){
-  //   if(AutoState == 0){
-  //     shooter->SolenoidDown();
-  //     //init shoot
-  //     if(ball_manager->RevLimeLightClose()){
-  //       ball_manager -> Shoot();
-  //       intake->RunIntake(0);
-  //       if (ball_manager -> IsEmpty()){
-  //         timer_auto->Reset();
-  //         timer_auto->Start();
-  //         AutoState++;
-  //       }
-  //     }
-  //   }
-  //   if(AutoState == 1){
-  //     //shoot rest
-  //     if(ball_manager->RevLimeLightClose()){
-  //       ball_manager -> Shoot();
-  //     }
-  //     if(timer_auto->Get()>0.6_s){
-  //       shooter->ShootPercentOutput(0,0);
-  //       hopper->RunHopperMotor(0,0);
-  //       timer_auto->Reset();
-  //       timer_auto->Start();
-  //       AutoState++;
-  //     }
-  //   }
+  /*if(ganyu_auto_selection == "5BR"){
+    if(AutoState == 0){
+      shooter->SolenoidDown();
+      //init shoot
+      if(ball_manager->RevLimeLightClose()){
+        ball_manager -> Shoot();
+        intake->RunIntake(0);
+        if (ball_manager -> IsEmpty()){
+          timer_auto->Reset();
+          timer_auto->Start();
+          AutoState++;
+        }
+      }
+    }
+    if(AutoState == 1){
+      //shoot rest
+      if(ball_manager->RevLimeLightClose()){
+        ball_manager -> Shoot();
+      }
+      if(timer_auto->Get()>0.6_s){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        timer_auto->Reset();
+        timer_auto->Start();
+        AutoState++;
+      }
+    }
 
-  //   if(AutoState == 2){
-  //     intake->RunIntake(0.8);
-  //     ball_manager->LoadHopper();
-  //     shooter->SolenoidUp();
-  //     trajectory_auto->LoadTrajectory("5BallOut1.wpilib.json");
-  //     AutoState++;
-  //   }
+    if(AutoState == 2){
+      intake->RunIntake(0.8);
+      ball_manager->LoadHopper();
+      shooter->SolenoidUp();
+      trajectory_auto->LoadTrajectory("5BallOut1.wpilib.json");
+      AutoState++;
+    }
     
-  //   if(AutoState == 3){
-  //     //to ball
-  //     intake->RunIntake(0.8);
-  //     ball_manager->LoadHopper();
-  //     ball_manager->RevLimeLightFar();
-  //     if(trajectory_auto->FollowTrajectory()){
-  //       AutoState++;
-  //     }
-  //   }
-  //   if(AutoState == 4){
-  //     intake->RunIntake(0.8);
-  //     ball_manager->RevLimeLightFar();
-  //     AutoState++;
-  //   }
-  //   if(AutoState == 5){
-  //     //init shoot
-  //     if(ball_manager->RevLimeLightFar()){
-  //       ball_manager -> Shoot();
-  //       intake->RunIntake(0);
-  //       if (ball_manager -> IsEmpty()){
-  //         timer_auto->Reset();
-  //         timer_auto->Start();
-  //         AutoState++;
-  //       }
-  //     }else{
-  //       ball_manager->LoadHopper();
-  //     }
-  //   }
-  //   if(AutoState == 6){
-  //     //shoot rest
-  //     if(ball_manager->RevLimeLightFar()){
-  //       ball_manager -> Shoot();
-  //     }
-  //     if(timer_auto->Get()>0.8_s){
-  //       shooter->ShootPercentOutput(0,0);
-  //       hopper->RunHopperMotor(0,0);
-  //       timer_auto->Reset();
-  //       timer_auto->Start();
-  //       AutoState++;
-  //     }
-  //   }
-  //   if(AutoState == 7){
-  //     intake->RunIntake(0.8);
-  //     ball_manager->LoadHopper();
-  //     trajectory_auto->LoadTrajectory("5BallOut2.wpilib.json");
-  //     AutoState++;
-  //   }
-  //   if(AutoState == 8){
-  //     //to terminal and back
-  //     intake->RunIntake(0.8);
-  //     ball_manager->LoadHopper();
-  //     if(trajectory_auto->FollowTrajectory()){
-  //       timer_auto->Reset();
-  //       timer_auto->Start();
-  //       AutoState++;
-  //     }
-  //   }
-  //   if(AutoState == 9){
-  //     //shoot
-  //     intake->RunIntake(0);
-  //     if(ball_manager->RevLimeLightFar()){
-  //       ball_manager -> Shoot();
-  //       if (ball_manager -> IsEmpty()){
-  //         timer_auto->Reset();
-  //         timer_auto->Start();
-  //         AutoState++;
-  //       }
-  //     }
-  //   }
-  //   if(AutoState == 10){
-  //     //shoot rest
-  //     if(ball_manager->RevLimeLightFar()){
-  //       ball_manager -> Shoot();
-  //     }
-  //     if(timer_auto->Get()>3_s){
-  //       // shooter->ShootPercentOutput(0,0);
-  //       hopper->RunHopperMotor(0,0);
-  //       timer_auto->Reset();
-  //       timer_auto->Start();
-  //       AutoState++;
-  //     }
-  //   }
-  //   if(timer_auto_wait->GetMatchTime()<1_s){
-  //     ball_manager->RevLimeLightFar();
-  //     ball_manager->Shoot();
-  //   }
-  // }
- 
-  if(ganyu_auto_selection == "4BR"){
+    if(AutoState == 3){
+      //to ball
+      intake->RunIntake(0.8);
+      ball_manager->LoadHopper();
+      ball_manager->RevLimeLightFar();
+      if(trajectory_auto->FollowTrajectory()){
+        AutoState++;
+      }
+    }
+    if(AutoState == 4){
+      intake->RunIntake(0.8);
+      ball_manager->RevLimeLightFar();
+      AutoState++;
+    }
+    if(AutoState == 5){
+      //init shoot
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+        intake->RunIntake(0);
+        if (ball_manager -> IsEmpty()){
+          timer_auto->Reset();
+          timer_auto->Start();
+          AutoState++;
+        }
+      }else{
+        ball_manager->LoadHopper();
+      }
+    }
+    if(AutoState == 6){
+      //shoot rest
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+      }
+      if(timer_auto->Get()>0.8_s){
+        shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        timer_auto->Reset();
+        timer_auto->Start();
+        AutoState++;
+      }
+    }
+    if(AutoState == 7){
+      intake->RunIntake(0.8);
+      ball_manager->LoadHopper();
+      trajectory_auto->LoadTrajectory("5BallOut2.wpilib.json");
+      AutoState++;
+    }
+    if(AutoState == 8){
+      //to terminal and back
+      intake->RunIntake(0.8);
+      ball_manager->LoadHopper();
+      if(trajectory_auto->FollowTrajectory()){
+        timer_auto->Reset();
+        timer_auto->Start();
+        AutoState++;
+      }
+    }
+    if(AutoState == 9){
+      //shoot
+      intake->RunIntake(0);
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+        if (ball_manager -> IsEmpty()){
+          timer_auto->Reset();
+          timer_auto->Start();
+          AutoState++;
+        }
+      }
+    }
+    if(AutoState == 10){
+      //shoot rest
+      if(ball_manager->RevLimeLightFar()){
+        ball_manager -> Shoot();
+      }
+      if(timer_auto->Get()>3_s){
+        // shooter->ShootPercentOutput(0,0);
+        hopper->RunHopperMotor(0,0);
+        timer_auto->Reset();
+        timer_auto->Start();
+        AutoState++;
+      }
+    }
+    if(timer_auto_wait->GetMatchTime()<1_s){
+      ball_manager->RevLimeLightFar();
+      ball_manager->Shoot();
+    }
+  }*/
+ //ganyu_auto_selection == "4BR"
+  if(false){
     if(AutoState == 0){
       shooter->SolenoidUp();
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
@@ -435,7 +435,8 @@ void Robot::AutonomousPeriodic() {
       ball_manager->Shoot();
     }
   }
-  if(ganyu_auto_selection == "3BR"){
+  //ganyu_auto_selection == "3BR"
+  if(false){
     if(AutoState == 0){
       shooter->SolenoidUp();
       trajectory_auto->LoadTrajectory("3BOut1.wpilib.json");
@@ -561,7 +562,8 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     }
   }
-  if(ganyu_auto_selection == "Any*2Ball"){
+  //ganyu_auto_selection == "Any*2Ball"
+  if(true){
     if (AutoState == 0){
       shooter->SolenoidUp();
       intake->RunIntake(0.8);
@@ -609,7 +611,8 @@ void Robot::AutonomousPeriodic() {
       }
     }
   }
-  if(ganyu_auto_selection == "Wall"){
+  //ganyu_auto_selection == "Wall"
+  if(false){
     shooter->SolenoidDown();
     if ((AutoState == 0) && ball_manager->RevHigh()){
       ball_manager -> Shoot();
@@ -630,7 +633,9 @@ void Robot::AutonomousPeriodic() {
       m_leftLeadMotor->Set(0);
       AutoState++;
     }
-  }else if(ganyu_auto_selection == "Wall2Ball"){
+  }
+  //ganyu_auto_selection == "Wall2Ball"
+  else if(false){
     shooter->SolenoidDown();
     ball_manager->LoadHopper();
     if ((AutoState == 0) && ball_manager->RevHigh()){
@@ -676,7 +681,9 @@ void Robot::AutonomousPeriodic() {
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
     }
-  }if(ganyu_auto_selection == "Taxi"){
+  }
+  //ganyu_auto_selection == "Taxi"
+  if(false){
     if ( AutoState == 0){
       shooter->ShootPercentOutput(0,0);
       hopper->RunHopperMotor(0,0);
@@ -724,21 +731,21 @@ void Robot::TeleopPeriodic() {
     // frc::SmartDashboard::PutBoolean("Compressor", false);
   }
   //The toggle for pid mode
-  if (toggle_pid_only.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kpid_only_toggle_button))){
-    ball_manager->pid_only = true;
-  }else{
-    ball_manager->pid_only = false;
-  }
+  // if (toggle_pid_only.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kpid_only_toggle_button))){
+  //   ball_manager->pid_only = true;
+  // }else{
+  //   ball_manager->pid_only = false;
+  // }
   //The toggle for Low Goal
-  if(toggle_shooter_goal.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
-    low_goal_mode = true;
-  }else{
-    low_goal_mode = false;
-  }
+  // if(toggle_shooter_goal.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
+  //   low_goal_mode = true;
+  // }else{
+  //   low_goal_mode = false;
+  // }
 
   if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
     hopper->InitShoot();
-    drive->Align();
+    drive->Align(joystick_1->GetRawAxis(Joy0Const::kdrive_curvature_axis)*0.2);
     if(ball_manager->ShootFromClose(shooter_solenoid->Get())){
       shooter->SolenoidDown();
       limelight->DisplayLimelightClose();
@@ -865,11 +872,11 @@ void Robot::DisplayShuffle() {
   // drive->DisplayDriveInfo();
   // intake->DisplayIntakeInfo();
   // hopper->DiplayHopperInfo();
-  shooter->DisplayShooterInfo();
+  // shooter->DisplayShooterInfo();
   ball_manager->DisplayBallManagerInfo();
-  elevator->DisplayElevatorInfo();
-  limelight->DisplayLimelightInfo();
-  frc::SmartDashboard::PutBoolean("Low Goal Mode", low_goal_mode);
+  // elevator->DisplayElevatorInfo();
+  // limelight->DisplayLimelightInfo();
+  // frc::SmartDashboard::PutBoolean("Low Goal Mode", low_goal_mode);
 }
 void Robot::DisabledInit() {
   //joystick

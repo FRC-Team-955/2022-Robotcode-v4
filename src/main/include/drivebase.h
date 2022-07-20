@@ -21,6 +21,7 @@ public:
   };
   void Drive();
   void Align();
+  void Align(double joystick_offset);
   void AlignAuto();
   void AlignToOffset(double offset);
   void DisplayDriveInfo();

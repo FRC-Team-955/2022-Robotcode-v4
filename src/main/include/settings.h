@@ -78,15 +78,15 @@ constexpr int ktarget_switch_control_mode = 250; //g?
 constexpr int ktarget_low_bottom = 1300; //g
 constexpr int ktarget_low_top = 2000; //g
 //high goal
-constexpr int ktarget_high_top = 1000;
-constexpr int ktarget_high_bottom = 3200; //g
+constexpr int ktarget_high_top = 3000;
+constexpr int ktarget_high_bottom = 5800; //g
  //g// constexpr int ktarget_high_bottom = 2300; //g
 // constexpr int ktarget_high_top = 3300; //g
 //Min bottom speed
 constexpr double ktarget_limelight_bottom_min = 1700;
 //launch pad goal
 //2925
-constexpr int ktarget_launch_top= 2550;//for range shot
+constexpr int ktarget_launch_top= 2550;//for range shots
 constexpr int ktarget_launch_bottom = 2300; //for range shot
 //side goal
 constexpr int ktarget_side_bottom = 2200; //g

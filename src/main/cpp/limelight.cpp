@@ -14,9 +14,9 @@ double Limelight::GetDrivebaseSpeed() {
       double set_pt = -controller->Calculate(result.GetBestTarget().GetYaw(),0);
 
       if(set_pt >= 0){
-        return std::max(set_pt, .2);
+        return std::max(set_pt, .1);
       }else{
-        return std::min(set_pt, -.2);
+        return std::min(set_pt, -.1);
       }
     }else{
       if(ramp_speed < .35){
@@ -189,12 +189,12 @@ bool Limelight::ShootIsCloseFromFar(){
   }
 }
 void Limelight::DisplayLimelightClose(){
-    frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedClose("Top"));
-    frc::SmartDashboard::PutNumber("Target Bottom Velocity", GetShooterSpeedClose("Bottom"));
+    // frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedClose("Top"));
+    // frc::SmartDashboard::PutNumber("Target Bottom Velocity", GetShooterSpeedClose("Bottom"));
 }
 void Limelight::DisplayLimelightFar(){
-    frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedFar());
-    frc::SmartDashboard::PutNumber("Target Bottom Velocity", 2300);
+    // frc::SmartDashboard::PutNumber("Target Top Velocity", GetShooterSpeedFar());
+    // frc::SmartDashboard::PutNumber("Target Bottom Velocity", 2300);
 
 }
 void Limelight::DisplayLimelightInfo(){

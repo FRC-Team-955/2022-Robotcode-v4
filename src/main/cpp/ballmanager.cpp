@@ -94,19 +94,23 @@ bool BallManager::RevLow(){
     return Rev(MechanismConst::ktarget_low_top,MechanismConst::ktarget_low_bottom);
 }
 bool BallManager::RevHigh(){
-    return Rev(MechanismConst::ktarget_high_top + velocity_offset_fixed, MechanismConst::ktarget_high_bottom  + velocity_offset_fixed);
+    //+ velocity_offset_fixed
+    return Rev(MechanismConst::ktarget_high_top -200, MechanismConst::ktarget_high_bottom  -200);
 }
 bool BallManager::RevSide(){
     return Rev(MechanismConst::ktarget_side_top, MechanismConst::ktarget_side_bottom);
 }
 bool BallManager::RevLimeLightClose(){
-    return Rev(limelight->GetShooterSpeedClose("Top") + velocity_offset_limelight, limelight->GetShooterSpeedClose("Bottom") + velocity_offset_limelight);
+    //+ velocity_offset_limelight
+    return Rev(limelight->GetShooterSpeedClose("Top") -100, limelight->GetShooterSpeedClose("Bottom")-75);
 }
 bool BallManager::RevLimeLightFar(){
-    return Rev(limelight->GetShooterSpeedFar() + velocity_offset_limelight, 2300);
+    return Rev(limelight->GetShooterSpeedFar() -175, 2300);
 }
 bool BallManager::RevLaunchPad(){
-    return Rev(MechanismConst::ktarget_launch_top + velocity_offset_fixed, MechanismConst::ktarget_launch_bottom  + velocity_offset_fixed);
+    // + 
+    //MechanismConst::ktarget_launch_top -200, MechanismConst::ktarget_launch_bottom
+    return Rev(velocity_offset_fixed,2300);
 }
 void BallManager::Shoot(){
     if (position[1] == "None"){
@@ -184,8 +188,8 @@ void BallManager::DisplayBallManagerInfo(){
     SmartDashboard::PutBoolean("Top Red", top[1]);
     SmartDashboard::PutBoolean("Top Blue", top[2]);
 
-    frc::SmartDashboard::PutBoolean("Pid Only", pid_only);
+    // frc::SmartDashboard::PutBoolean("Pid Only", pid_only);
 
-    velocity_offset_limelight = frc::SmartDashboard::GetNumber("Velocity Offset Limelight", 0);
-    velocity_offset_fixed = frc::SmartDashboard::GetNumber("Velocity Offset Fixed", 0);
+    // velocity_offset_limelight = frc::SmartDashboard::GetNumber("Velocity Offset Limelight", 0);
+    // velocity_offset_fixed = frc::SmartDashboard::GetNumber("Velocity Offset Fixed", 0);
 }
