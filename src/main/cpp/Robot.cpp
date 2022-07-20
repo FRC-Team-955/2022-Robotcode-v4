@@ -180,8 +180,8 @@ void Robot::AutonomousPeriodic() {
   else if(AutoState == -1){
     AutoState++;
   }
-  
-  /*if(ganyu_auto_selection == "5BR"){
+  /*
+  if(ganyu_auto_selection == "5BR"){
     if(AutoState == 0){
       shooter->SolenoidDown();
       //init shoot
@@ -303,9 +303,10 @@ void Robot::AutonomousPeriodic() {
       ball_manager->RevLimeLightFar();
       ball_manager->Shoot();
     }
-  }*/
- //ganyu_auto_selection == "4BR"
-  if(false){
+  }
+  */
+ 
+  if(ganyu_auto_selection == "4BR"){
     if(AutoState == 0){
       shooter->SolenoidUp();
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
