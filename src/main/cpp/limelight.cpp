@@ -137,13 +137,13 @@ double Limelight::GetShooterSpeedFar() {
   // First calculate range (in meters)
     range = double(photonlib::PhotonUtils::CalculateDistanceToTarget(AutoConst::camera_height, AutoConst::target_height,AutoConst::camera_pitch,units::degree_t{result.GetBestTarget().GetPitch()}));
     range = range*39.3701;
-
+    std::cout<<range<<std::endl;
     // return 64.4 * range - 626;
     // return 51.4 * range - 50.1;
     //
     //59.9* range- 519
     //-284 +50.7*range+0.08*range*range
-    return 1400 - 9.76*range +0.609*range*range;
+    return 39.6 * range + 260 - 200;
   }else {
     // If we have no targets don't spin up
     return 0;

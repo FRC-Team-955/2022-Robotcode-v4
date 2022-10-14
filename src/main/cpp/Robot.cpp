@@ -95,7 +95,7 @@ Spark *rgb_spark_color_sensor;
 Auto *trajectory_auto;
 int AutoState = 0;
 double offset = 0;
- 
+
 ButtonToggle toggle_intake_deploy;
 ButtonToggle toggle_hopper_manual;
 ButtonToggle toggle_shooter_goal;
@@ -305,8 +305,8 @@ void Robot::AutonomousPeriodic() {
     }
   }
   */
- 
-  if(ganyu_auto_selection == "4BR"){
+  //4 ball
+  if(false){
     if(AutoState == 0){
       shooter->SolenoidUp();
       trajectory_auto->LoadTrajectory("Out4-1.wpilib.json");
@@ -436,7 +436,7 @@ void Robot::AutonomousPeriodic() {
       ball_manager->Shoot();
     }
   }
-  //ganyu_auto_selection == "3BR"
+  //ganyu_auto_selection == "3BR" never used
   if(false){
     if(AutoState == 0){
       shooter->SolenoidUp();
@@ -563,7 +563,7 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     }
   }
-  //ganyu_auto_selection == "Any*2Ball"
+  //ganyu_auto_selection == "Any*2Ball" go back, can start anywhere
   if(true){
     if (AutoState == 0){
       shooter->SolenoidUp();
@@ -612,7 +612,7 @@ void Robot::AutonomousPeriodic() {
       }
     }
   }
-  //ganyu_auto_selection == "Wall"
+  //ganyu_auto_selection == "Wall" only shoots one, no limelight
   if(false){
     shooter->SolenoidDown();
     if ((AutoState == 0) && ball_manager->RevHigh()){
@@ -635,7 +635,7 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     }
   }
-  //ganyu_auto_selection == "Wall2Ball"
+  //ganyu_auto_selection == "Wall2Ball" same as wall with 2 balls
   else if(false){
     shooter->SolenoidDown();
     ball_manager->LoadHopper();
@@ -683,7 +683,7 @@ void Robot::AutonomousPeriodic() {
       hopper->RunHopperMotor(0,0);
     }
   }
-  //ganyu_auto_selection == "Taxi"
+  //ganyu_auto_selection == "Taxi" only taxi
   if(false){
     if ( AutoState == 0){
       shooter->ShootPercentOutput(0,0);
@@ -739,10 +739,11 @@ void Robot::TeleopPeriodic() {
   // }
   //The toggle for Low Goal
   // if(toggle_shooter_goal.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
-  //   low_goal_mode = true;
-  // }else{
   //   low_goal_mode = false;
+  // }else{
+  //   low_goal_mode = true;
   // }
+  // low_goal_mode = true;
 
   if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
     hopper->InitShoot();

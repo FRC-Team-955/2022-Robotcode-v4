@@ -95,22 +95,22 @@ bool BallManager::RevLow(){
 }
 bool BallManager::RevHigh(){
     //+ velocity_offset_fixed
-    return Rev(MechanismConst::ktarget_high_top -200, MechanismConst::ktarget_high_bottom  -200);
+    return Rev(MechanismConst::ktarget_high_top, MechanismConst::ktarget_high_bottom);
 }
 bool BallManager::RevSide(){
     return Rev(MechanismConst::ktarget_side_top, MechanismConst::ktarget_side_bottom);
 }
 bool BallManager::RevLimeLightClose(){
     //+ velocity_offset_limelight
-    return Rev(limelight->GetShooterSpeedClose("Top") -100, limelight->GetShooterSpeedClose("Bottom")-75);
+    return Rev(limelight->GetShooterSpeedClose("Top") -200, limelight->GetShooterSpeedClose("Bottom")-200);
 }
 bool BallManager::RevLimeLightFar(){
-    return Rev(limelight->GetShooterSpeedFar() -175, 2300);
+    return Rev(limelight->GetShooterSpeedFar(), 2300);
 }
 bool BallManager::RevLaunchPad(){
     // + 
     //MechanismConst::ktarget_launch_top -200, MechanismConst::ktarget_launch_bottom
-    return Rev(velocity_offset_fixed,2300);
+    return Rev(3500,2500);
 }
 void BallManager::Shoot(){
     if (position[1] == "None"){

@@ -4,6 +4,7 @@ using namespace frc;
 
 void Elevator::ElevatorMove(double joystick_position) {
   joystick_position = -joystick_position;
+  std::cout<<elevator_motor->GetSelectedSensorPosition()<<std::endl;
   if (limit_switch_bottom->Get() == 0) {
     ResetPosition();
   }
@@ -20,7 +21,7 @@ void Elevator::ElevatorMove(double joystick_position) {
     if (joystick_position < 0 && (elevator_motor->GetSelectedSensorPosition() <= 5000)) {
       //if trying to move downwards and position is less than 5000 
       elevator_motor->Set(ControlMode::PercentOutput, 0);
-    }else if(joystick_position > 0 && (limit_switch_top->Get() == 1 || hit_top_limit)){
+    }else if(joystick_position > 0 && (limit_switch_top->Get() == 1)){
       //if trying to move upwards and top limit hit or amp limit hit
       elevator_motor->SetSelectedSensorPosition(300000);
       elevator_motor->Set(ControlMode::PercentOutput, 0);
