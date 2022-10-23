@@ -44,7 +44,10 @@ ColorSensor *color_sensor_top;
 ColorSensor *color_sensor_bot;
 BallManager *ball_manager;
 Elevator *elevator;
- 
+
+//Josh's talon
+TalonSRX *josh_talon;
+
 //Joysticks
 frc::Joystick *joystick_0;
 frc::Joystick *joystick_1;
@@ -700,6 +703,11 @@ void Robot::AutonomousPeriodic() {
       AutoState++;
     }
   }
+
+  // josh's request
+  if (joystick_0.GetRawAxis(0)) {
+    josh_talon.Set(ControlMode::PercentOutput, 0.1);
+  }
 }
  
 void Robot::TeleopInit() {
@@ -998,6 +1006,9 @@ void Robot::Build(){
   //rgb
   rgb_spark = new Spark(0);
   rgb_spark_color_sensor = new Spark(1);
+
+  // josh talon
+  josh_talon = new TalonSRX{54};
 
   //timer
   timer_auto_wait = new frc::Timer();
