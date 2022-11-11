@@ -152,10 +152,14 @@ void Robot::AutonomousInit() {
   Build();
   DisplayShuffle();
   compressor->Disable();
-  m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
-  m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
-  m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
-  m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  // m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  // m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  // m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  // m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_rightFollowMotor->Follow(*m_rightLeadMotor);
   m_leftFollowMotor->Follow(*m_leftLeadMotor);
   trajectory_auto->Initilize(m_leftLeadMotor, m_rightLeadMotor, m_leftLeadMotor_encoder, m_rightLeadMotor_encoder);
@@ -183,6 +187,26 @@ void Robot::AutonomousPeriodic() {
   else if(AutoState == -1){
     AutoState++;
   }
+  //Tests Path
+  if(true){
+    if(AutoState == 0){
+      trajectory_auto->LoadTrajectory("TestingPath.wpilib.json");
+      AutoState++;
+    }
+    if(AutoState == 1){
+      //to ball
+      if(trajectory_auto->FollowTrajectory()){
+        AutoState++;
+      }
+    }
+    if(AutoState == 2){
+      m_leftLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+      m_rightLeadMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+      m_leftFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+      m_rightFollowMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+    }
+  }
+  //5BallTesting
   /*
   if(ganyu_auto_selection == "5BR"){
     if(AutoState == 0){
@@ -567,7 +591,7 @@ void Robot::AutonomousPeriodic() {
     }
   }
   //ganyu_auto_selection == "Any*2Ball" go back, can start anywhere
-  if(true){
+  if(false){
     if (AutoState == 0){
       shooter->SolenoidUp();
       intake->RunIntake(0.8);
@@ -704,10 +728,6 @@ void Robot::AutonomousPeriodic() {
     }
   }
 
-  // josh's request
-  if (joystick_0.GetRawAxis(0)) {
-    josh_talon.Set(ControlMode::PercentOutput, 0.1);
-  }
 }
  
 void Robot::TeleopInit() {
@@ -731,142 +751,142 @@ void Robot::TeleopPeriodic() {
   DisplayShuffle();
   UpdateRGB();
   ball_manager->CheckHopperState();
-  //compressor
-  if (toggle_compressor.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
-    compressor->EnableDigital();
-    // frc::SmartDashboard::PutBoolean("Compressor", true);
-  }else{
-    compressor->Disable();
-    // frc::SmartDashboard::PutBoolean("Compressor", false);
-  }
-  //The toggle for pid mode
-  // if (toggle_pid_only.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kpid_only_toggle_button))){
-  //   ball_manager->pid_only = true;
+  // //compressor
+  // if (toggle_compressor.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kcompressor_toggle_button))){
+  //   compressor->EnableDigital();
+  //   // frc::SmartDashboard::PutBoolean("Compressor", true);
   // }else{
-  //   ball_manager->pid_only = false;
+  //   compressor->Disable();
+  //   // frc::SmartDashboard::PutBoolean("Compressor", false);
   // }
-  //The toggle for Low Goal
-  // if(toggle_shooter_goal.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
-  //   low_goal_mode = false;
+  // //The toggle for pid mode
+  // // if (toggle_pid_only.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kpid_only_toggle_button))){
+  // //   ball_manager->pid_only = true;
+  // // }else{
+  // //   ball_manager->pid_only = false;
+  // // }
+  // //The toggle for Low Goal
+  // // if(toggle_shooter_goal.GetToggleNoDebounce(joystick_0->GetRawButton(Joy0Const::kshooter_goal_toggle_button))){
+  // //   low_goal_mode = false;
+  // // }else{
+  // //   low_goal_mode = true;
+  // // }
+  // // low_goal_mode = true;
+
+  // if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
+  //   hopper->InitShoot();
+  //   drive->Align(joystick_1->GetRawAxis(Joy0Const::kdrive_curvature_axis)*0.2);
+  //   if(ball_manager->ShootFromClose(shooter_solenoid->Get())){
+  //     shooter->SolenoidDown();
+  //     limelight->DisplayLimelightClose();
+  //     if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
+  //       ball_manager->Shoot();
+  //     }else{
+  //       hopper->RunHopperMotor(0,0);
+  //     }
+  //   }else{
+  //     shooter->SolenoidUp();
+  //     limelight->DisplayLimelightFar();
+  //     if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
+  //       ball_manager->Shoot();
+  //     }else{
+  //       hopper->RunHopperMotor(0,0);
+  //     }
+  //   }
+  // }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
+  //   hopper->InitShoot();
+  //   shooter->SolenoidUp();
+  //   drive->Align();
+  //   limelight->DisplayLimelightFar();
+  //   if (ball_manager->RevLaunchPad() && limelight->IsAligned()){
+  //     ball_manager->Shoot();
+  //   }else{
+  //     hopper->RunHopperMotor(0,0);
+  //   }
+  // }
+  // else{
+  //   drive->Drive();
+  //   shooter->SolenoidDown();
+  //   limelight->DisplayLimelightClose();
+  //   if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
+  //     hopper->InitShoot();
+  //     shooter->SolenoidDown();
+  //     //shooting
+  //     if(low_goal_mode){
+  //       //low goal
+  //       if(ball_manager->RevLow()){
+  //         ball_manager->Shoot();
+  //       }else{
+  //         hopper->RunHopperMotor(0,0);
+  //       }
+  //     }else{
+  //       //high goal
+  //       if(ball_manager->RevHigh()){
+  //         ball_manager->Shoot();
+  //       }else{
+  //         hopper->RunHopperMotor(0,0);
+  //       }
+  //     }
+  //   }else{
+  //     //if not shooting
+  //     shooter->VelocityControl(0,0);
+  //     //Reject code
+  //     if (joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
+  //       shooter->SolenoidDown();
+
+  //       hopper->hopper_on = true;
+  //       toggle_intake_deploy.SetToggleState(true);
+  //       ball_manager->Reject();
+  //     }else if(joystick_1->GetPOV() == 0){
+  //       shooter->SolenoidDown();
+  //       hopper->hopper_on = true;
+  //       toggle_intake_deploy.SetToggleState(true);
+  //       ball_manager->RejectTop();
+  //     }else if(joystick_1->GetPOV() == 180){
+  //       shooter->SolenoidDown();
+  //       hopper->hopper_on = true;
+  //       toggle_intake_deploy.SetToggleState(true);
+  //       ball_manager->RejectBottom();
+  //     }else{
+  //       //if not rejecting
+  //       //if the m_intake_timer is less than 5s then run the hopper
+  //       //hopper in manual or auto will add the run loadhopper automatically later
+  //       if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
+  //         hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
+  //         // frc::SmartDashboard::PutBoolean("Manual Hopper", true);
+  //         hopper->hopper_on = true;
+  //       }else if(!m_timer_intake->HasElapsed(3_s)){
+  //         // frc::SmartDashboard::PutBoolean("Manual Hopper", false);
+  //         hopper->hopper_on = true;
+  //         if (hopper_init){
+  //           ball_manager->LoadHopper();
+  //         }
+  //       }else{
+  //         hopper->RunHopperMotor(0,0);
+  //       }
+  //     }
+  //   }
+  // }
+  // if(toggle_intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
+  //   intake->PistonDown();
+  //   //If the intake is in the down state allow the intake to run
+  //   if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)|| joystick_1->GetPOV() == 0|| joystick_1->GetPOV() == 180){
+  //     //if running any reject dont run or shut off the intake
+  //   }else if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
+  //     hopper_init = true;
+  //     intake->RunIntake(0.8);
+  //     m_timer_intake->Start();
+  //     m_timer_intake->Reset();
+  //   }else if (joystick_1->GetPOV() == 270){
+  //     intake->RunIntake(-1);
+  //   }else{
+  //     intake->RunIntake(0);
+  //   }
   // }else{
-  //   low_goal_mode = true;
+  //   intake->PistonUp();
+  //   intake->RunIntake(0);
   // }
-  // low_goal_mode = true;
-
-  if (joystick_0->GetRawAxis(Joy0Const::kshoot_limelight_trigger)>0.3){
-    hopper->InitShoot();
-    drive->Align(joystick_1->GetRawAxis(Joy0Const::kdrive_curvature_axis)*0.2);
-    if(ball_manager->ShootFromClose(shooter_solenoid->Get())){
-      shooter->SolenoidDown();
-      limelight->DisplayLimelightClose();
-      if (ball_manager->RevLimeLightClose() && limelight->IsAligned()){
-        ball_manager->Shoot();
-      }else{
-        hopper->RunHopperMotor(0,0);
-      }
-    }else{
-      shooter->SolenoidUp();
-      limelight->DisplayLimelightFar();
-      if (ball_manager->RevLimeLightFar() && limelight->IsAligned()){
-        ball_manager->Shoot();
-      }else{
-        hopper->RunHopperMotor(0,0);
-      }
-    }
-  }else if (joystick_0->GetRawButton(Joy0Const::kshoot_launchpad_button)){
-    hopper->InitShoot();
-    shooter->SolenoidUp();
-    drive->Align();
-    limelight->DisplayLimelightFar();
-    if (ball_manager->RevLaunchPad() && limelight->IsAligned()){
-      ball_manager->Shoot();
-    }else{
-      hopper->RunHopperMotor(0,0);
-    }
-  }
-  else{
-    drive->Drive();
-    shooter->SolenoidDown();
-    limelight->DisplayLimelightClose();
-    if(joystick_0->GetRawAxis(Joy0Const::kshoot_wall_trigger)>0.3){
-      hopper->InitShoot();
-      shooter->SolenoidDown();
-      //shooting
-      if(low_goal_mode){
-        //low goal
-        if(ball_manager->RevLow()){
-          ball_manager->Shoot();
-        }else{
-          hopper->RunHopperMotor(0,0);
-        }
-      }else{
-        //high goal
-        if(ball_manager->RevHigh()){
-          ball_manager->Shoot();
-        }else{
-          hopper->RunHopperMotor(0,0);
-        }
-      }
-    }else{
-      //if not shooting
-      shooter->VelocityControl(0,0);
-      //Reject code
-      if (joystick_1->GetRawButton(Joy1Const::kreject_ball_button)){
-        shooter->SolenoidDown();
-
-        hopper->hopper_on = true;
-        toggle_intake_deploy.SetToggleState(true);
-        ball_manager->Reject();
-      }else if(joystick_1->GetPOV() == 0){
-        shooter->SolenoidDown();
-        hopper->hopper_on = true;
-        toggle_intake_deploy.SetToggleState(true);
-        ball_manager->RejectTop();
-      }else if(joystick_1->GetPOV() == 180){
-        shooter->SolenoidDown();
-        hopper->hopper_on = true;
-        toggle_intake_deploy.SetToggleState(true);
-        ball_manager->RejectBottom();
-      }else{
-        //if not rejecting
-        //if the m_intake_timer is less than 5s then run the hopper
-        //hopper in manual or auto will add the run loadhopper automatically later
-        if(joystick_1->GetRawButton(Joy1Const::khopper_manual_button)){
-          hopper->RunHopperMotor(-joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis), -joystick_1->GetRawAxis(Joy1Const::khopper_manual_axis));
-          // frc::SmartDashboard::PutBoolean("Manual Hopper", true);
-          hopper->hopper_on = true;
-        }else if(!m_timer_intake->HasElapsed(3_s)){
-          // frc::SmartDashboard::PutBoolean("Manual Hopper", false);
-          hopper->hopper_on = true;
-          if (hopper_init){
-            ball_manager->LoadHopper();
-          }
-        }else{
-          hopper->RunHopperMotor(0,0);
-        }
-      }
-    }
-  }
-  if(toggle_intake_deploy.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kintake_toggle_button))){
-    intake->PistonDown();
-    //If the intake is in the down state allow the intake to run
-    if(joystick_1->GetRawButton(Joy1Const::kreject_ball_button)|| joystick_1->GetPOV() == 0|| joystick_1->GetPOV() == 180){
-      //if running any reject dont run or shut off the intake
-    }else if(joystick_1->GetRawAxis(Joy1Const::kintake_motor_run_axis)>0.3){
-      hopper_init = true;
-      intake->RunIntake(0.8);
-      m_timer_intake->Start();
-      m_timer_intake->Reset();
-    }else if (joystick_1->GetPOV() == 270){
-      intake->RunIntake(-1);
-    }else{
-      intake->RunIntake(0);
-    }
-  }else{
-    intake->PistonUp();
-    intake->RunIntake(0);
-  }
-
+  drive->Drive();
   if(joystick_1->GetRawButton(Joy1Const::kelevator_allow)){
     if(toggle_elevator_lock.GetToggleNoDebounce(joystick_1->GetRawButton(Joy1Const::kelevator_lock_button))){
       elevator->LockElevator();
@@ -877,6 +897,8 @@ void Robot::TeleopPeriodic() {
   }else{
     elevator_motor->Set(ControlMode::PercentOutput, 0);
   }
+  // josh's request
+  josh_talon->Set(ControlMode::PercentOutput, joystick_1->GetRawAxis(0)*0.1);
 }
 void Robot::DisplayShuffle() {
   // drive->DisplayDriveInfo();
@@ -944,6 +966,8 @@ void Robot::DisabledInit() {
   //timer
   delete m_timer_intake;
   //Delete();
+
+  delete josh_talon;
 }
 void Robot::DisabledPeriodic() {}
  
@@ -1007,9 +1031,6 @@ void Robot::Build(){
   rgb_spark = new Spark(0);
   rgb_spark_color_sensor = new Spark(1);
 
-  // josh talon
-  josh_talon = new TalonSRX{54};
-
   //timer
   timer_auto_wait = new frc::Timer();
   timer_auto = new frc::Timer();
@@ -1018,6 +1039,9 @@ void Robot::Build(){
   toggle_compressor.SetToggleState(false);
   toggle_elevator_lock.SetToggleState(false);
   toggle_pid_only.SetToggleState(false);
+
+  // josh talon
+  josh_talon = new TalonSRX(9);
 }
 void Robot::UpdateRGB(){
   rgb_spark_color_sensor->Set(0.93);

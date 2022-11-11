@@ -61,7 +61,7 @@ constexpr int kintake_motor = 10; //g
 constexpr int kintake_double_solonoid_port_forward = 1;
 constexpr int kintake_double_solonoid_port_reverse = 2; 
 //hopper
-constexpr int khopper_motor_top_port = 9; //g
+constexpr int khopper_motor_top_port = 119; //this has been change ori 9
 constexpr int khopper_motor_bottom_port = 11; //g
 //shooter
 constexpr double top_kP = 0.00008, top_kI = 0, top_kD = 0, top_kFF =0.000187, top_kMinOutput=0,top_kMaxOutput = 1;

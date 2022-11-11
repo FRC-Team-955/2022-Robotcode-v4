@@ -1,10 +1,12 @@
 #include <auto.h>
+#include <frc/geometry/Rotation2d.h>
 /**
  * A 2nd constructor that must be run in auto init
  */
 void Auto::Initilize(rev::CANSparkMax *left_spark, rev::CANSparkMax *right_spark, rev::SparkMaxRelativeEncoder *m_leftLeadMotor_encoder, rev::SparkMaxRelativeEncoder *m_rightLeadMotor_encoder) {
   auto_controller = new frc::RamseteController();
   auto_timer = new frc::Timer();
+  std::cout<<"init angle: "<< double(navx->GetRotation2d().Degrees())<<std::endl;
   m_odometry = new frc::DifferentialDriveOdometry(navx->GetRotation2d());
   kinematics = new frc::DifferentialDriveKinematics(AutoConst::ktrack_width);
   m_leftLeadMotor = left_spark;
@@ -18,8 +20,10 @@ void Auto::Initilize(rev::CANSparkMax *left_spark, rev::CANSparkMax *right_spark
   drive_encoder_right->SetPosition(0);
 
   drive_pid_left->SetP(0.000014053);
+  //000014053
   drive_pid_left->SetI(0);
   drive_pid_left->SetD(0);
+  // /00025594
   drive_pid_left->SetFF(0.00025594);
 
   drive_pid_right->SetP(0.000014053);
@@ -38,15 +42,16 @@ void Auto::LoadTrajectory(std::string name) {
   // loads trajectory from deploy directory
   fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
   /// "pathplanner"/"generatedJSON"
-  deployDirectory = deployDirectory/ "paths"  / name;
+  deployDirectory = deployDirectory/ "pathplanner"/"generatedJSON" / name;
   trajectory = new frc::Trajectory(
       frc::TrajectoryUtil::FromPathweaverJson(deployDirectory.string()));
 
   // sets robot position to start of trajectory, to deal with inconsistent
   // placement
-  // navx->Reset(double(trajectory->InitialPose().Rotation().Degrees()));
+  navx->Reset(double(trajectory->InitialPose().Rotation().Degrees()));
   drive_encoder_left->SetPosition(0);
   drive_encoder_right->SetPosition(0);
+  std::cout<<"resetangle: "<< double(navx->GetRotation2d().Degrees())<<std::endl;
   m_odometry->ResetPosition(trajectory->InitialPose(), navx->GetRotation2d());
 }
 
@@ -65,6 +70,7 @@ units::meter_t Auto::ConvertToMeters(double value) {
  */
 bool Auto::FollowTrajectory() {
   // updates postionon and returns current pose
+  std::cout<<"angle: "<< double(navx->GetRotation2d().Degrees())<<std::endl;
   pose = m_odometry->Update(
       navx->GetRotation2d(), ConvertToMeters(drive_encoder_left->GetPosition()),
       ConvertToMeters(drive_encoder_right->GetPosition()));
@@ -78,7 +84,7 @@ bool Auto::FollowTrajectory() {
 
   // sets wheels speeds
   drive_pid_left->SetReference(ConvertToRPM(left), rev::ControlType::kVelocity);
-  drive_pid_right->SetReference(ConvertToRPM(right), rev::ControlType::kVelocity);\
+  drive_pid_right->SetReference(ConvertToRPM(right), rev::ControlType::kVelocity);
   if (auto_timer->Get() > trajectory->TotalTime()) {
     delete trajectory;
     return true;
