@@ -7,32 +7,8 @@ double Limelight::GetDrivebaseSpeed() {
   photonlib::PhotonPipelineResult result = camera->GetLatestResult();
 
   if (result.HasTargets()) {
-    if(std::abs(result.GetBestTarget().GetYaw()) < 7){
-      ramp_speed = 0;
-
-      //line to calculate yaw with PID
-      double set_pt = -controller->Calculate(result.GetBestTarget().GetYaw(),0);
-
-      if(set_pt >= 0){
-        return std::max(set_pt, .1);
-      }else{
-        return std::min(set_pt, -.1);
-      }
-    }else{
-      if(ramp_speed < .35){
-        ramp_speed+=.1;
-      }
-      if(result.GetBestTarget().GetYaw()>0){
-        return ramp_speed;
-      }else{
-        return -ramp_speed;
-      }
-    }
-  } else {
-    // If we have no targets, stay still
-    ramp_speed = 0;
-    return 0;
-  }
+    std::cout<<result.GetBestTarget().getBestCameraToTarget()<<std::endl;
+    
 }
 
 double Limelight::GetDrivebaseSpeedAuto() {
