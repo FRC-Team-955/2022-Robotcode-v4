@@ -1,7 +1,7 @@
 #include "drivebase.h"
 
 void DriveBase::Drive() {
-  differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis)*1, joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*.8);
+  differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis)*.4, joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)*.4);
 }
 void DriveBase::Align() {
   differential_drive->ArcadeDrive(-joystick_0->GetRawAxis(Joy0Const::kdrive_speed_axis), limelight->GetDrivebaseSpeed()+(0.2*joystick_0->GetRawAxis(Joy0Const::kdrive_curvature_axis)));
